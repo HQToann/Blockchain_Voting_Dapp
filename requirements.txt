@@ -1,0 +1,24 @@
+# BLOCKCHAIN VOTING DAPP - PYTHON DEPENDENCIES (DOCKER & PRODUCTION)
+
+# [1] Django Core & Admin UI
+Django>=5.0,<6.0
+django-jazzmin>=3.0.0
+whitenoise>=6.6.0
+python-dotenv>=1.0.0
+
+# [2] Database (PostgreSQL)
+psycopg2-binary>=2.9.9
+dj-database-url>=2.1.0
+
+# [3] ASGI Server & WebSockets (Django Channels & Redis)
+daphne>=4.1.0
+channels>=4.0.0
+channels-redis>=4.2.0
+redis>=5.0.0
+
+# [4] Web3 & Blockchain Interaction
+web3>=7.0.0
+eth-account>=0.13.0
+
+# [5] HTTP & IPFS Integration (Pinata)
+requests>=2.31.0
