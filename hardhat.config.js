@@ -1,5 +1,5 @@
 /**
- * CẤU HÌNH TRUNG TÂM HARDHAT - DỰ ÁN DECENTRALIZED VOTING DAPP
+ * Cấu hình trung tâm hardhat - Dự án Decentralized Voting Dapp
  * File này đóng vai trò là "bộ não" điều khiển toàn bộ quy trình phát triển Blockchain:
  * - Biên dịch Smart Contract (Solidity solc compiler & optimizer)
  * - Định vị cấu trúc các thư mục mã nguồn, kiểm thử, script deploy và artifacts
@@ -13,9 +13,7 @@ import "@nomicfoundation/hardhat-toolbox";
 import "dotenv/config";
 
 export default {
-  /**
-   * 1. CẤU HÌNH TRÌNH BIÊN DỊCH SOLIDITY
-   */
+  // 1. CẤU HÌNH TRÌNH BIÊN DỊCH SOLIDITY
   solidity: {
     // Phiên bản trình biên dịch Solidity (phải khớp với khai báo pragma trong file .sol)
     version: "0.8.26",
