@@ -1,0 +1,235 @@
+# 1. BẢO MẬT & KHÓA BÍ MẬT (TUYỆT ĐỐI KHÔNG COMMIT LÊN GITHUB)
+.env
+.env.*
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+# Ngoại lệ: Giữ lại file .env.example mẫu để đồng đội biết cấu hình
+!.env.example
+
+# Khóa bảo mật, chứng chỉ, ví lạnh
+*.pem
+*.key
+*.keystore
+secrets.json
+credentials.json
+id_rsa*
+
+# 2. BLOCKCHAIN & HARDHAT (NODE.JS)
+# Thư viện Node.js (cực nặng, cài qua `npm install`)
+node_modules/
+
+# Thư mục biên dịch của Hardhat (tự sinh qua `npx hardhat compile`)
+artifacts/
+cache/
+typechain/
+typechain-types/
+
+# Thư mục kiểm thử & đo lường gas
+coverage/
+coverage.json
+.nyc_output/
+
+# Hardhat Ignition Deployments:
+# - Bỏ qua mạng local Hardhat (chain-31337) vì mỗi máy tạo ngẫu nhiên, không cần chia sẻ
+blockchain/ignition/deployments/chain-31337/
+# - Lưu ý: Các mạng public như Sepolia (chain-11155111) được giữ lại để lưu vết contract
+
+# 3. PYTHON & DJANGO BACKEND
+# Bytecode & bộ nhớ đệm Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Môi trường ảo Python (Virtual Environments)
+.venv/
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Cơ sở dữ liệu cục bộ (Chứa dữ liệu test, không đẩy lên Git)
+*.sqlite3
+db.sqlite3
+*.db
+
+# Thư mục nén file tĩnh khi chạy lệnh `collectstatic` trên Production/Docker
+staticfiles/
+
+# Thư mục chứa file tải lên của người dùng (nếu có lưu local trước khi lên IPFS)
+media/
+
+# Báo cáo kiểm thử Python
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+
+# 4. NHẬT KÝ VÀ TẬP TIN TẠM (LOGS & TEMPORARY FILES)
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+celerybeat-schedule
+celerybeat.pid
+
+# 5. DOCKER & CONTAINER LOCAL MOUNTS
+# Volume data mount cục bộ của PostgreSQL hoặc Redis khi test docker
+pgdata/
+redisdata/
+.docker/
+
+# 6. HỆ ĐIỀU HÀNH (WINDOWS, MACOS, LINUX)
+# Windows
+Thumbs.db
+ehthumbs.db
+desktop.ini
+$RECYCLE.BIN/
+
+# macOS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+
+# Linux
+*~
+
+# 7. IDE & TRÌNH SOẠN THẢO CODE
+# Visual Studio Code (bỏ qua cấu hình cá nhân của người dùng)
+.vscode/settings.json
+.vscode/tasks.json
+.vscode/*.log
+
+# JetBrains (PyCharm, WebStorm)
+.idea/
+
+# Vim / Nano
+*.swp
+*.swo
+
+# Tài liệu
+docs/
+
+# 1. BẢO MẬT & KHÓA BÍ MẬT (TUYỆT ĐỐI KHÔNG COMMIT LÊN GITHUB)
+.env
+.env.*
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+# Ngoại lệ: Giữ lại file .env.example mẫu để đồng đội biết cấu hình
+!.env.example
+
+# Khóa bảo mật, chứng chỉ, ví lạnh
+*.pem
+*.key
+*.keystore
+secrets.json
+credentials.json
+id_rsa*
+
+# 2. BLOCKCHAIN & HARDHAT (NODE.JS)
+# Thư viện Node.js (cực nặng, cài qua `npm install`)
+node_modules/
+
+# Thư mục biên dịch của Hardhat (tự sinh qua `npx hardhat compile`)
+artifacts/
+cache/
+typechain/
+typechain-types/
+
+# Thư mục kiểm thử & đo lường gas
+coverage/
+coverage.json
+.nyc_output/
+
+# Hardhat Ignition Deployments:
+# - Bỏ qua mạng local Hardhat (chain-31337) vì mỗi máy tạo ngẫu nhiên, không cần chia sẻ
+blockchain/ignition/deployments/chain-31337/
+# - Lưu ý: Các mạng public như Sepolia (chain-11155111) được giữ lại để lưu vết contract
+
+# 3. PYTHON & DJANGO BACKEND
+# Bytecode & bộ nhớ đệm Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Môi trường ảo Python (Virtual Environments)
+.venv/
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Cơ sở dữ liệu cục bộ (Chứa dữ liệu test, không đẩy lên Git)
+*.sqlite3
+db.sqlite3
+*.db
+
+# Thư mục nén file tĩnh khi chạy lệnh `collectstatic` trên Production/Docker
+staticfiles/
+
+# Thư mục chứa file tải lên của người dùng (nếu có lưu local trước khi lên IPFS)
+media/
+
+# Báo cáo kiểm thử Python
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+
+# 4. NHẬT KÝ VÀ TẬP TIN TẠM (LOGS & TEMPORARY FILES)
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+celerybeat-schedule
+celerybeat.pid
+
+# 5. DOCKER & CONTAINER LOCAL MOUNTS
+# Volume data mount cục bộ của PostgreSQL hoặc Redis khi test docker
+pgdata/
+redisdata/
+.docker/
+
+# 6. HỆ ĐIỀU HÀNH (WINDOWS, MACOS, LINUX)
+# Windows
+Thumbs.db
+ehthumbs.db
+desktop.ini
+$RECYCLE.BIN/
+
+# macOS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+
+# Linux
+*~
+
+# 7. IDE & TRÌNH SOẠN THẢO CODE
+# Visual Studio Code (bỏ qua cấu hình cá nhân của người dùng)
+.vscode/settings.json
+.vscode/tasks.json
+.vscode/*.log
+
+# JetBrains (PyCharm, WebStorm)
+.idea/
+
+# Vim / Nano
+*.swp
+*.swo
+
+# Tài liệu
+docs/
