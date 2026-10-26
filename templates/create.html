@@ -1,0 +1,78 @@
+{% extends 'base.html' %}{% load static %}
+{% block title %}Tạo hòm phiếu — Hòm Phiếu Cộng Đồng{% endblock %}
+{% block nav_create %}active{% endblock %}
+{% block content %}
+<h1>Tạo hòm phiếu mới</h1>
+<p>Bạn sẽ là <b>chủ sở hữu</b> của hòm phiếu: chỉ ví của bạn mới có quyền cấp phép cử tri, dời lịch hoặc đóng sớm. Các lựa chọn <b>không thể sửa</b> sau khi tạo để đảm bảo công bằng.</p>
+
+<div id="needWallet" class="notice info">Bạn cần kết nối ví MetaMask để tạo hòm phiếu. Phí gas (ETH testnet) do ví của bạn chi trả.</div>
+
+<div class="card">
+    <div class="field">
+        <label>Loại hòm phiếu</label>
+        <div class="seg" id="kindSeg">
+            <label><input type="radio" name="kind" value="0" checked><span>👤 Bầu chọn ứng viên</span></label>
+            <label><input type="radio" name="kind" value="1"><span>📋 Bỏ phiếu một vấn đề</span></label>
+        </div>
+    </div>
+    <div class="field">
+        <label for="name" id="nameLabel">Tên cuộc bầu cử</label>
+        <input id="name" type="text" maxlength="200" placeholder="VD: Bầu Chủ nhiệm CLB nhiệm kỳ 2026">
+    </div>
+    <div class="field">
+        <label for="desc">Mô tả (không bắt buộc)</label>
+        <textarea id="desc" maxlength="2000" placeholder="Bối cảnh, quy tắc, thông tin cần cử tri biết…"></textarea>
+        <div class="hint">Mô tả và ảnh được lưu trên IPFS, liên kết bất biến với hòm phiếu.</div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="row between"><h2 id="optTitle">Danh sách ứng viên</h2><span class="muted small" id="optCount"></span></div>
+    <div id="options"></div>
+    <div class="row">
+        <button type="button" id="addOpt" class="btn-ghost">➕ Thêm lựa chọn</button>
+        <button type="button" id="tplYesNo" class="btn-ghost hidden">Điền mẫu: Đồng ý / Không đồng ý</button>
+    </div>
+</div>
+
+<div class="card">
+    <h2>Quy tắc bỏ phiếu</h2>
+    <div class="field">
+        <label for="maxChoices">Số lựa chọn tối đa mỗi cử tri được chọn</label>
+        <input id="maxChoices" type="number" min="1" value="1" style="max-width:140px">
+        <div class="hint" id="maxHint"></div>
+    </div>
+    <div class="field">
+        <label>Ai được bỏ phiếu?</label>
+        <div class="seg">
+            <label><input type="radio" name="priv" value="0" checked><span>🌐 Công khai (ai có ví cũng bỏ được)</span></label>
+            <label><input type="radio" name="priv" value="1"><span>🔒 Riêng tư (chỉ ví trong danh sách)</span></label>
+        </div>
+        <div class="hint">Hòm phiếu riêng tư: bạn thêm danh sách ví cử tri ở trang hòm phiếu sau khi tạo.</div>
+    </div>
+    <div class="row" style="align-items:flex-start">
+        <div class="field" style="flex:1;min-width:240px">
+            <label>Thời điểm bắt đầu</label>
+            <div class="seg">
+                <label><input type="radio" name="startMode" value="now" checked><span>Mở ngay</span></label>
+                <label><input type="radio" name="startMode" value="at"><span>Hẹn giờ</span></label>
+            </div>
+            <input id="startAt" type="datetime-local" class="hidden" style="margin-top:8px">
+        </div>
+        <div class="field" style="flex:1;min-width:240px">
+            <label>Thời điểm kết thúc</label>
+            <div class="seg">
+                <label><input type="radio" name="endMode" value="none" checked><span>Tôi tự đóng</span></label>
+                <label><input type="radio" name="endMode" value="at"><span>Hẹn giờ</span></label>
+            </div>
+            <input id="endAt" type="datetime-local" class="hidden" style="margin-top:8px">
+        </div>
+    </div>
+    <div class="hint">Dù có hẹn giờ, bạn vẫn có thể đóng sớm bất cứ lúc nào (không thể mở lại).</div>
+</div>
+
+<div id="errors" class="notice error hidden"></div>
+<div id="progress" class="card hidden"></div>
+<button id="submit" class="btn-lg" type="button">🚀 Tạo hòm phiếu</button>
+{% endblock %}
+{% block scripts %}<script src="{% static 'js/create.js' %}"></script>{% endblock %}
