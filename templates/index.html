@@ -1,0 +1,40 @@
+{% extends 'base.html' %}{% load static %}
+{% block title %}Khám phá hòm phiếu — Hòm Phiếu Cộng Đồng{% endblock %}
+{% block nav_home %}active{% endblock %}
+{% block content %}
+<div class="row between" style="margin-bottom:18px">
+    <div>
+        <h1>Khám phá hòm phiếu</h1>
+        <p>Ai cũng có thể tạo hòm phiếu bầu chọn ứng viên hoặc lấy ý kiến về một vấn đề — minh bạch, không thể sửa kết quả, mọi phiếu đều kiểm chứng được trên blockchain.</p>
+    </div>
+    <a class="btn btn-lg" href="/create/">➕ Tạo hòm phiếu</a>
+</div>
+
+<div id="syncWarning" class="notice warn hidden">⚠️ Trình đồng bộ blockchain có vẻ đang chậm hoặc mất kết nối — dữ liệu hiển thị có thể chưa mới nhất.</div>
+
+<div class="card" style="margin-bottom:18px">
+    <div class="row between">
+        <div class="chips" id="statusChips">
+            <button class="chip active" data-status="all">Tất cả</button>
+            <button class="chip" data-status="open">Đang mở</button>
+            <button class="chip" data-status="upcoming">Sắp diễn ra</button>
+            <button class="chip" data-status="finished">Đã kết thúc</button>
+        </div>
+        <div class="row">
+            <select id="kind" style="width:auto">
+                <option value="">Mọi loại</option>
+                <option value="0">Bầu chọn ứng viên</option>
+                <option value="1">Bỏ phiếu một vấn đề</option>
+            </select>
+            <input id="q" type="text" placeholder="Tìm theo tên hoặc địa chỉ ví/hòm phiếu…" style="width:280px">
+        </div>
+    </div>
+</div>
+
+<div id="list" class="grid"></div>
+<div id="pager" class="pager"></div>
+{% endblock %}
+{% block scripts %}
+<script src="{% static 'js/cards.js' %}"></script>
+<script src="{% static 'js/index.js' %}"></script>
+{% endblock %}
