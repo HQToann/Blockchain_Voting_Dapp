@@ -1,21 +1,40 @@
-{% extends 'base.html' %}{% load static %}
-{% block title %}Của tôi — Hòm Phiếu Cộng Đồng{% endblock %}
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Của tôi - VoteChain{% endblock %}
 {% block nav_my %}active{% endblock %}
+
 {% block content %}
-<h1>Của tôi</h1>
-<div id="needWallet" class="card empty hidden">
-    <p>Kết nối ví để xem các hòm phiếu bạn đã tạo và đã tham gia.</p>
-    <button id="btnConnect" class="btn-lg">🦊 Kết nối ví</button>
+<div style="text-align: center; margin: 40px 0 32px;">
+    <h1 style="background: linear-gradient(to right, #60a5fa, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+        <i class="fa-solid fa-folder-open" style="color: #60a5fa; margin-right: 8px;"></i>Hòm Phiếu Của Tôi
+    </h1>
+    <p>Quản lý các cuộc bầu cử bạn đã tạo và xem lại lịch sử bỏ phiếu.</p>
 </div>
+
+<!-- Trạng thái chưa kết nối ví -->
+<div id="needWallet" class="glass-panel hidden" style="text-align: center; padding: 60px 20px;">
+    <i class="fa-solid fa-wallet" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 16px;"></i>
+    <h3 style="color: var(--text-main);">Vui lòng kết nối ví</h3>
+    <p style="margin-bottom: 24px;">Hệ thống cần đọc địa chỉ ví của bạn để truy xuất dữ liệu cá nhân.</p>
+    <button id="btnConnect" class="btn btn-primary" style="padding: 12px 28px;">
+        <i class="fa-solid fa-link"></i> Kết nối MetaMask
+    </button>
+</div>
+
+<!-- Trạng thái đã kết nối -->
 <div id="mine" class="hidden">
-    <div class="tabs">
-        <button class="tab active" data-tab="owner">Tôi đã tạo</button>
-        <button class="tab" data-tab="voted">Tôi đã bỏ phiếu</button>
+    <!-- Cụm Tabs -->
+    <div class="filter-tabs" style="display: flex; gap: 8px; justify-content: center; margin-bottom: 32px;">
+        <button class="tab-btn active" data-tab="owner"><i class="fa-solid fa-crown"></i> Tôi đã tạo</button>
+        <button class="tab-btn" data-tab="voted"><i class="fa-solid fa-check-to-slot"></i> Tôi đã bỏ phiếu</button>
     </div>
+    
+    <!-- Lưới chứa thẻ hòm phiếu -->
     <div id="list" class="grid"></div>
-    <div id="pager" class="pager"></div>
+    <div id="pager" class="pager" style="margin-top: 32px;"></div>
 </div>
 {% endblock %}
+
 {% block scripts %}
 <script src="{% static 'js/cards.js' %}"></script>
 <script src="{% static 'js/my.js' %}"></script>
