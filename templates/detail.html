@@ -1,0 +1,74 @@
+{% extends 'base.html' %}{% load static %}
+{% block title %}Hòm phiếu — Hòm Phiếu Cộng Đồng{% endblock %}
+{% block content %}
+<div id="loading" class="card empty">Đang tải hòm phiếu…</div>
+<div id="syncing" class="card empty hidden">
+    <h3>⏳ Đang đồng bộ từ blockchain…</h3>
+    <p>Giao dịch tạo hòm phiếu đã thành công. Hệ thống đang đọc dữ liệu từ chuỗi, thường mất vài giây đến một phút.</p>
+</div>
+<div id="fatal" class="notice error hidden"></div>
+
+<div id="content" class="hidden">
+    <div id="syncWarning" class="notice warn hidden">⚠️ Trình đồng bộ blockchain có vẻ đang chậm — số liệu có thể chưa mới nhất. Bạn vẫn có thể bỏ phiếu bình thường.</div>
+
+    <div class="card">
+        <div class="row" id="badges"></div>
+        <h1 id="title" style="margin-top:10px"></h1>
+        <div class="meta" id="metaLine"></div>
+        <p id="desc" style="margin-top:12px;white-space:pre-wrap"></p>
+        <div class="notice info" id="ruleBox" style="margin:14px 0 0"></div>
+        <div class="muted small" id="countdown" style="margin-top:10px"></div>
+    </div>
+
+    <!-- Khu vực bỏ phiếu -->
+    <div class="card" id="voteCard">
+        <h2 id="voteTitle">Bỏ phiếu</h2>
+        <div id="voteStatus"></div>
+        <div id="options" class="options"></div>
+        <div class="pickbar hidden" id="pickbar">
+            <div><b id="pickCount">0</b> đã chọn · <span class="muted" id="pickRule"></span></div>
+            <button id="btnVote" disabled>🗳 Gửi phiếu bầu</button>
+        </div>
+    </div>
+
+    <!-- Bảng điều khiển CHỦ hòm phiếu: chỉ hiện khi ví kết nối đúng là chủ -->
+    <div class="card owner-panel hidden" id="ownerPanel">
+        <div class="row between"><h2>⭐ Quản lý hòm phiếu (chỉ chủ sở hữu)</h2><span class="muted small">Mỗi thao tác là 1 giao dịch do ví của bạn ký</span></div>
+        <div class="stack">
+            <div id="ownerWhitelist" class="hidden">
+                <label for="wlInput">Thêm cử tri (mỗi ví 1 dòng, hoặc cách nhau bằng dấu phẩy/khoảng trắng)</label>
+                <textarea id="wlInput" placeholder="0xAbc…&#10;0xDef…"></textarea>
+                <div class="row" style="margin-top:8px"><button id="btnWl">➕ Thêm vào danh sách</button><span class="muted small" id="wlHint"></span></div>
+            </div>
+            <div id="ownerSchedule" class="hidden">
+                <label>Dời lịch (chỉ khi chưa bắt đầu)</label>
+                <div class="row">
+                    <input id="rsStart" type="datetime-local" style="width:auto"> <span class="muted">→</span>
+                    <input id="rsEnd" type="datetime-local" style="width:auto">
+                    <button id="btnResched" class="btn-ghost">Lưu lịch mới</button>
+                </div>
+                <div class="hint">Để trống "bắt đầu" = mở ngay; để trống "kết thúc" = chỉ đóng thủ công.</div>
+            </div>
+            <div id="ownerClose" class="hidden">
+                <button id="btnClose" class="btn-danger">⛔ Đóng hòm phiếu ngay</button>
+                <span class="muted small">Không thể mở lại sau khi đóng.</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="tabs">
+            <button class="tab active" data-tab="results">📊 Kết quả</button>
+            <button class="tab" data-tab="voters">🧾 Phiếu đã bỏ</button>
+            <button class="tab hidden" data-tab="whitelist" id="tabWl">🔒 Danh sách cử tri</button>
+        </div>
+        <div id="pane-results"></div>
+        <div id="pane-voters" class="hidden"></div>
+        <div id="pane-whitelist" class="hidden"></div>
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="{% static 'js/cards.js' %}"></script>
+<script src="{% static 'js/detail.js' %}"></script>
+{% endblock %}
