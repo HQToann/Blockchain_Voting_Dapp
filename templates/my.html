@@ -1,0 +1,22 @@
+{% extends 'base.html' %}{% load static %}
+{% block title %}Của tôi — Hòm Phiếu Cộng Đồng{% endblock %}
+{% block nav_my %}active{% endblock %}
+{% block content %}
+<h1>Của tôi</h1>
+<div id="needWallet" class="card empty hidden">
+    <p>Kết nối ví để xem các hòm phiếu bạn đã tạo và đã tham gia.</p>
+    <button id="btnConnect" class="btn-lg">🦊 Kết nối ví</button>
+</div>
+<div id="mine" class="hidden">
+    <div class="tabs">
+        <button class="tab active" data-tab="owner">Tôi đã tạo</button>
+        <button class="tab" data-tab="voted">Tôi đã bỏ phiếu</button>
+    </div>
+    <div id="list" class="grid"></div>
+    <div id="pager" class="pager"></div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="{% static 'js/cards.js' %}"></script>
+<script src="{% static 'js/my.js' %}"></script>
+{% endblock %}

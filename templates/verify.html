@@ -1,0 +1,15 @@
+{% extends 'base.html' %}{% load static %}
+{% block title %}Xác minh phiếu — Hòm Phiếu Cộng Đồng{% endblock %}
+{% block nav_verify %}active{% endblock %}
+{% block content %}
+<h1>Xác minh phiếu bầu</h1>
+<p>Dán mã giao dịch (transaction hash) của lần bỏ phiếu để kiểm tra phiếu đã được ghi nhận trên blockchain và hệ thống hay chưa.</p>
+<div class="card">
+    <div class="row">
+        <input id="tx" type="text" placeholder="0x… (64 ký tự hex)" style="flex:1;min-width:260px" autocomplete="off" spellcheck="false">
+        <button id="btnVerify">🔍 Kiểm tra</button>
+    </div>
+</div>
+<div id="result" style="margin-top:18px"></div>
+{% endblock %}
+{% block scripts %}<script src="{% static 'js/verify.js' %}"></script>{% endblock %}
