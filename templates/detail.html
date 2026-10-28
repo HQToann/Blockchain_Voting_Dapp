@@ -1,73 +1,111 @@
-{% extends 'base.html' %}{% load static %}
-{% block title %}Hòm phiếu — Hòm Phiếu Cộng Đồng{% endblock %}
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Chi tiết Hòm phiếu - VoteChain{% endblock %}
+
 {% block content %}
-<div id="loading" class="card empty">Đang tải hòm phiếu…</div>
-<div id="syncing" class="card empty hidden">
-    <h3>⏳ Đang đồng bộ từ blockchain…</h3>
-    <p>Giao dịch tạo hòm phiếu đã thành công. Hệ thống đang đọc dữ liệu từ chuỗi, thường mất vài giây đến một phút.</p>
+<!-- Trạng thái Loading / Lỗi -->
+<div id="loading" class="glass-panel" style="padding: 60px 20px; text-align: center;">
+    <i class="fa-solid fa-circle-notch fa-spin" style="font-size: 2.5rem; color: var(--accent); margin-bottom: 16px;"></i>
+    <h3>Đang tải dữ liệu hòm phiếu...</h3>
 </div>
-<div id="fatal" class="notice error hidden"></div>
 
+<div id="syncing" class="glass-panel hidden" style="padding: 60px 20px; text-align: center; border-color: var(--warn);">
+    <i class="fa-solid fa-cloud-arrow-down" style="font-size: 2.5rem; color: var(--warn); margin-bottom: 16px; animation: bounce 2s infinite;"></i>
+    <h3>Đang đồng bộ từ blockchain...</h3>
+    <p>Giao dịch tạo đã thành công. Hệ thống đang đọc dữ liệu từ chuỗi (mất vài giây).</p>
+</div>
+
+<div id="fatal" class="notice error hidden" style="background: var(--danger-soft); border-left: 4px solid var(--danger); padding: 16px; border-radius: 12px;"></div>
+
+<!-- Giao diện chính -->
 <div id="content" class="hidden">
-    <div id="syncWarning" class="notice warn hidden">⚠️ Trình đồng bộ blockchain có vẻ đang chậm — số liệu có thể chưa mới nhất. Bạn vẫn có thể bỏ phiếu bình thường.</div>
-
-    <div class="card">
-        <div class="row" id="badges"></div>
-        <h1 id="title" style="margin-top:10px"></h1>
-        <div class="meta" id="metaLine"></div>
-        <p id="desc" style="margin-top:12px;white-space:pre-wrap"></p>
-        <div class="notice info" id="ruleBox" style="margin:14px 0 0"></div>
-        <div class="muted small" id="countdown" style="margin-top:10px"></div>
+    
+    <div id="syncWarning" class="notice warn hidden" style="background: var(--warn-soft); border-left: 4px solid var(--warn); padding: 12px 16px; border-radius: 12px; margin-bottom: 24px;">
+        <i class="fa-solid fa-triangle-exclamation"></i> Trình đồng bộ blockchain có vẻ đang chậm. Bạn vẫn có thể bỏ phiếu bình thường.
     </div>
 
-    <!-- Khu vực bỏ phiếu -->
-    <div class="card" id="voteCard">
-        <h2 id="voteTitle">Bỏ phiếu</h2>
-        <div id="voteStatus"></div>
-        <div id="options" class="options"></div>
-        <div class="pickbar hidden" id="pickbar">
-            <div><b id="pickCount">0</b> đã chọn · <span class="muted" id="pickRule"></span></div>
-            <button id="btnVote" disabled>🗳 Gửi phiếu bầu</button>
+    <!-- 1. Cụm thông tin hòm phiếu -->
+    <div class="glass-panel" style="padding: 32px; margin-bottom: 24px;">
+        <div class="row" id="badges" style="display: flex; gap: 8px; margin-bottom: 12px;"></div>
+        <h1 id="title" style="font-size: 2rem;"></h1>
+        <div class="meta" id="metaLine" style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 16px;"></div>
+        <p id="desc" style="white-space: pre-wrap; font-size: 1.05rem;"></p>
+        
+        <div id="ruleBox" style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.2); padding: 12px 16px; border-radius: 8px; margin-top: 24px;"></div>
+        <div id="countdown" style="margin-top: 12px; font-weight: 500; color: var(--warn);"></div>
+    </div>
+
+    <!-- 2. Khu vực Bỏ phiếu -->
+    <div class="glass-panel" id="voteCard" style="padding: 32px; margin-bottom: 24px;">
+        <h2 id="voteTitle" style="display: flex; align-items: center; gap: 8px;"><i class="fa-solid fa-person-booth"></i> Bỏ Phiếu</h2>
+        <div id="voteStatus" style="margin-bottom: 16px;"></div>
+        
+        <!-- Lưới Ứng viên -->
+        <div id="options" class="options" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px;"></div>
+        
+        <!-- Thanh công cụ Submit (Hiện khi chọn) -->
+        <div class="pickbar hidden" id="pickbar" style="background: rgba(15, 23, 42, 0.9); border: 1px solid var(--glass-border); padding: 16px 24px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; margin-top: 24px; position: sticky; bottom: 24px; z-index: 10;">
+            <div>
+                Đã chọn <b id="pickCount" style="color: var(--accent); font-size: 1.2rem;">0</b> · <span id="pickRule" style="color: var(--text-muted);"></span>
+            </div>
+            <button id="btnVote" class="btn btn-primary" disabled>
+                <i class="fa-solid fa-paper-plane"></i> Gửi phiếu bầu
+            </button>
         </div>
     </div>
 
-    <!-- Bảng điều khiển CHỦ hòm phiếu: chỉ hiện khi ví kết nối đúng là chủ -->
-    <div class="card owner-panel hidden" id="ownerPanel">
-        <div class="row between"><h2>⭐ Quản lý hòm phiếu (chỉ chủ sở hữu)</h2><span class="muted small">Mỗi thao tác là 1 giao dịch do ví của bạn ký</span></div>
-        <div class="stack">
+    <!-- 3. Bảng điều khiển riêng của Chủ sở hữu -->
+    <div class="glass-panel owner-panel hidden" id="ownerPanel" style="padding: 24px; margin-bottom: 24px; border: 1px solid rgba(245, 158, 11, 0.4); background: rgba(245, 158, 11, 0.05);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2 style="color: #fcd34d; margin: 0;"><i class="fa-solid fa-crown"></i> Quản lý hòm phiếu (Owner)</h2>
+            <span class="small" style="color: var(--text-muted);">Mỗi thao tác tốn 1 lần ký ví</span>
+        </div>
+        
+        <div style="display: flex; flex-direction: column; gap: 24px;">
             <div id="ownerWhitelist" class="hidden">
-                <label for="wlInput">Thêm cử tri (mỗi ví 1 dòng, hoặc cách nhau bằng dấu phẩy/khoảng trắng)</label>
-                <textarea id="wlInput" placeholder="0xAbc…&#10;0xDef…"></textarea>
-                <div class="row" style="margin-top:8px"><button id="btnWl">➕ Thêm vào danh sách</button><span class="muted small" id="wlHint"></span></div>
-            </div>
-            <div id="ownerSchedule" class="hidden">
-                <label>Dời lịch (chỉ khi chưa bắt đầu)</label>
-                <div class="row">
-                    <input id="rsStart" type="datetime-local" style="width:auto"> <span class="muted">→</span>
-                    <input id="rsEnd" type="datetime-local" style="width:auto">
-                    <button id="btnResched" class="btn-ghost">Lưu lịch mới</button>
+                <label for="wlInput" style="color: var(--text-main);">Thêm cử tri Whitelist (Mỗi ví 1 dòng)</label>
+                <textarea id="wlInput" placeholder="0xAbc...&#10;0xDef..." style="min-height: 80px;"></textarea>
+                <div style="margin-top: 12px; display: flex; align-items: center; gap: 12px;">
+                    <button id="btnWl" class="btn btn-ghost" style="border-color: rgba(245, 158, 11, 0.4); color: #fcd34d;">
+                        <i class="fa-solid fa-user-plus"></i> Thêm vào danh sách
+                    </button>
+                    <span id="wlHint" class="small muted"></span>
                 </div>
-                <div class="hint">Để trống "bắt đầu" = mở ngay; để trống "kết thúc" = chỉ đóng thủ công.</div>
             </div>
-            <div id="ownerClose" class="hidden">
-                <button id="btnClose" class="btn-danger">⛔ Đóng hòm phiếu ngay</button>
-                <span class="muted small">Không thể mở lại sau khi đóng.</span>
+            
+            <div id="ownerSchedule" class="hidden" style="border-top: 1px solid var(--glass-border); padding-top: 16px;">
+                <label style="color: var(--text-main);">Dời lịch (Chỉ áp dụng khi chưa bắt đầu)</label>
+                <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+                    <input id="rsStart" type="datetime-local" style="width: auto;"> 
+                    <i class="fa-solid fa-arrow-right" style="color: var(--text-muted);"></i>
+                    <input id="rsEnd" type="datetime-local" style="width: auto;">
+                    <button id="btnResched" class="btn btn-primary"><i class="fa-solid fa-calendar-check"></i> Lưu lịch mới</button>
+                </div>
+            </div>
+            
+            <div id="ownerClose" class="hidden" style="border-top: 1px solid var(--glass-border); padding-top: 16px;">
+                <button id="btnClose" class="btn btn-danger"><i class="fa-solid fa-ban"></i> Đóng hòm phiếu ngay</button>
+                <span class="small" style="color: var(--danger); margin-left: 12px;">Hành động này không thể hoàn tác!</span>
             </div>
         </div>
     </div>
 
-    <div class="card">
-        <div class="tabs">
-            <button class="tab active" data-tab="results">📊 Kết quả</button>
-            <button class="tab" data-tab="voters">🧾 Phiếu đã bỏ</button>
-            <button class="tab hidden" data-tab="whitelist" id="tabWl">🔒 Danh sách cử tri</button>
+    <!-- 4. Tab Kết quả & Cử tri -->
+    <div class="glass-panel" style="padding: 24px;">
+        <div class="filter-tabs" style="display: flex; gap: 8px; border-bottom: 1px solid var(--glass-border); padding-bottom: 16px; margin-bottom: 24px;">
+            <button class="tab-btn active" data-tab="results" style="border: none;"><i class="fa-solid fa-chart-bar"></i> Kết quả</button>
+            <button class="tab-btn" data-tab="voters" style="border: none;"><i class="fa-solid fa-receipt"></i> Phiếu đã bỏ</button>
+            <button class="tab-btn hidden" data-tab="whitelist" id="tabWl" style="border: none;"><i class="fa-solid fa-lock"></i> Danh sách cử tri</button>
         </div>
+        
         <div id="pane-results"></div>
         <div id="pane-voters" class="hidden"></div>
         <div id="pane-whitelist" class="hidden"></div>
     </div>
+    
 </div>
 {% endblock %}
+
 {% block scripts %}
 <script src="{% static 'js/cards.js' %}"></script>
 <script src="{% static 'js/detail.js' %}"></script>
