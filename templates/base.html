@@ -3,20 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{% block title %}Hòm Phiếu Cộng Đồng{% endblock %}</title>
+    <title>{% block title %}VoteChain - Hòm Phiếu Cộng Đồng{% endblock %}</title>
+    
+    <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="{% static 'img/favicon.ico' %}">
+    
+    <!-- FontAwesome để dùng Icon sạch sẽ thay cho Emoji -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- CSS Hệ thống -->
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
     <nav class="nav">
         <div class="nav-inner">
-            <a class="brand" href="/">🗳️ Hòm Phiếu Cộng Đồng</a>
-            <a class="link {% block nav_home %}{% endblock %}" href="/">Khám phá</a>
-            <a class="link {% block nav_create %}{% endblock %}" href="/create/">Tạo hòm phiếu</a>
-            <a class="link {% block nav_my %}{% endblock %}" href="/my/">Của tôi</a>
-            <a class="link {% block nav_verify %}{% endblock %}" href="/verify/">Xác minh phiếu</a>
+            <!-- Logo chuyên nghiệp -->
+            <a class="brand" href="/">
+                <i class="fa-solid fa-check-to-slot" style="color: #60a5fa;"></i> 
+                VoteChain
+            </a>
+            
+            <a class="link {% block nav_home %}{% endblock %}" href="/">
+                <i class="fa-solid fa-house fa-sm"></i> Khám phá
+            </a>
+            <a class="link {% block nav_create %}{% endblock %}" href="/create/">
+                <i class="fa-solid fa-plus fa-sm"></i> Tạo hòm phiếu
+            </a>
+            <a class="link {% block nav_my %}{% endblock %}" href="/my/">
+                <i class="fa-solid fa-folder-open fa-sm"></i> Của tôi
+            </a>
+            <a class="link {% block nav_verify %}{% endblock %}" href="/verify/">
+                <i class="fa-solid fa-shield-halved fa-sm"></i> Xác minh phiếu
+            </a>
+            
             <span class="spacer"></span>
-            <button id="btnWallet" class="btn-ghost" type="button">🦊 Kết nối ví</button>
+            
+            <!-- Nút kết nối ví nổi bật -->
+            <button id="btnWallet" class="btn btn-ghost" type="button">
+                <i class="fa-solid fa-wallet"></i> Kết nối ví
+            </button>
         </div>
     </nav>
 
@@ -24,8 +49,10 @@
         <div id="banner"></div>
         {% block content %}{% endblock %}
     </div>
+    
     <div id="toasts"></div>
 
+    <!-- Script bắt buộc -->
     <script src="{% static 'vendor/ethers.umd.min.js' %}"></script>
     <script src="{% static 'js/abi.js' %}"></script>
     <script src="{% static 'js/common.js' %}"></script>
