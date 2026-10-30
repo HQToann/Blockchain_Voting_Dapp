@@ -1,39 +1,66 @@
-{% extends 'base.html' %}{% load static %}
-{% block title %}Khám phá hòm phiếu — Hòm Phiếu Cộng Đồng{% endblock %}
+{% extends 'base.html' %}
+{% load static %}
+
 {% block nav_home %}active{% endblock %}
+{% block title %}Khám phá - VoteChain{% endblock %}
+
 {% block content %}
-<div class="row between" style="margin-bottom:18px">
-    <div>
-        <h1>Khám phá hòm phiếu</h1>
-        <p>Ai cũng có thể tạo hòm phiếu bầu chọn ứng viên hoặc lấy ý kiến về một vấn đề — minh bạch, không thể sửa kết quả, mọi phiếu đều kiểm chứng được trên blockchain.</p>
-    </div>
-    <a class="btn btn-lg" href="/create/">➕ Tạo hòm phiếu</a>
+<!-- Cụm giới thiệu trung tâm (Hero Section) -->
+<div style="text-align: center; margin: 40px 0 48px 0;">
+    <h1 style="font-size: 2.5rem; background: linear-gradient(to right, #60a5fa, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+        Khám Phá Các Cuộc Bầu Cử
+    </h1>
+    <p style="max-width: 600px; margin: 16px auto 24px auto; font-size: 1.05rem;">
+        Tham gia bỏ phiếu minh bạch và an toàn. Mọi quyết định đều được xác thực và lưu trữ vĩnh viễn trên mạng lưới blockchain.
+    </p>
+    <a href="/create/" class="btn btn-primary" style="padding: 12px 28px; font-size: 1.05rem;">
+        <i class="fa-solid fa-plus"></i> Tạo hòm phiếu mới
+    </a>
 </div>
 
-<div id="syncWarning" class="notice warn hidden">⚠️ Trình đồng bộ blockchain có vẻ đang chậm hoặc mất kết nối — dữ liệu hiển thị có thể chưa mới nhất.</div>
-
-<div class="card" style="margin-bottom:18px">
-    <div class="row between">
-        <div class="chips" id="statusChips">
-            <button class="chip active" data-status="all">Tất cả</button>
-            <button class="chip" data-status="open">Đang mở</button>
-            <button class="chip" data-status="upcoming">Sắp diễn ra</button>
-            <button class="chip" data-status="finished">Đã kết thúc</button>
-        </div>
-        <div class="row">
-            <select id="kind" style="width:auto">
-                <option value="">Mọi loại</option>
-                <option value="0">Bầu chọn ứng viên</option>
-                <option value="1">Bỏ phiếu một vấn đề</option>
-            </select>
-            <input id="q" type="text" placeholder="Tìm theo tên hoặc địa chỉ ví/hòm phiếu…" style="width:280px">
-        </div>
-    </div>
+<!-- Cảnh báo đồng bộ mềm mỏng hơn -->
+<div id="syncWarning" class="notice warn hidden" style="border-radius: 12px; margin-bottom: 24px; background: var(--warn-soft); border-left: 4px solid var(--warn); padding: 16px;">
+    <i class="fa-solid fa-rotate" style="animation: spin 2s linear infinite;"></i> 
+    Hệ thống đang đồng bộ dữ liệu từ blockchain. Kết quả có thể mất vài giây để cập nhật toàn diện.
 </div>
 
-<div id="list" class="grid"></div>
-<div id="pager" class="pager"></div>
+<!-- Thanh công cụ (Bộ lọc & Tìm kiếm) -->
+<div class="glass-panel" style="padding: 16px 20px; border-radius: 16px; margin-bottom: 32px; display: flex; flex-wrap: wrap; gap: 16px; justify-content: space-between; align-items: center;">
+    
+    <!-- Cụm Tabs -->
+    <div class="filter-tabs" style="display: flex; gap: 8px;">
+        <button class="tab-btn active" data-status="all">Tất cả</button>
+        <button class="tab-btn" data-status="open">Đang mở</button>
+        <button class="tab-btn" data-status="upcoming">Sắp diễn ra</button>
+        <button class="tab-btn" data-status="closed">Đã kết thúc</button>
+    </div>
+    
+ <!-- Cụm Tìm kiếm -->
+    <div style="display: flex; gap: 12px; flex: 1; min-width: 300px; justify-content: flex-end;">
+        <select id="typeFilter" style="width: 180px;">
+            <option value="all">Mọi thể loại</option>
+            <option value="candidate">Bầu ứng viên</option>
+        </select>
+        
+        <div style="position: relative; width: 100%; max-width: 320px;">
+            <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 14px; top: 14px; color: var(--text-muted);"></i>
+            <input type="text" id="searchInput" placeholder="Tìm tên hoặc địa chỉ..." style="padding-left: 40px;">
+        </div>
+    </div>
+
+<!-- Danh sách hòm phiếu render từ JS -->
+<div id="electionGrid" class="grid"></div>
+
+<!-- Trạng thái trống (Empty State) -->
+<div id="emptyState" class="empty hidden" style="padding: 60px 20px; text-align: center;">
+    <div style="width: 80px; height: 80px; background: rgba(255,255,255,0.05); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto;">
+        <i class="fa-solid fa-box-open" style="font-size: 2rem; color: var(--text-muted);"></i>
+    </div>
+    <h3 style="color: var(--text-main);">Chưa có cuộc bầu cử nào</h3>
+    <p>Hãy là người đầu tiên khởi tạo phong trào tại đây!</p>
+</div>
 {% endblock %}
+
 {% block scripts %}
 <script src="{% static 'js/cards.js' %}"></script>
 <script src="{% static 'js/index.js' %}"></script>
