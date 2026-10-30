@@ -8,14 +8,15 @@
     <h1 style="background: linear-gradient(to right, #60a5fa, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
         <i class="fa-solid fa-shield-halved" style="color: #60a5fa; margin-right: 8px;"></i>Xác Minh Phiếu Bầu
     </h1>
-    <p style="margin-bottom: 32px;">Dán mã giao dịch (TxHash) để kiểm tra tính toàn vẹn và hợp lệ của phiếu bầu trên mạng lưới blockchain.</p>
+    <p style="margin-bottom: 32px; color: var(--text-main);">Dán mã giao dịch (TxHash) để kiểm tra tính toàn vẹn và hợp lệ của phiếu bầu trên mạng lưới blockchain.</p>
     
-    <div class="glass-panel" style="padding: 12px; display: flex; gap: 12px; align-items: center;">
-        <div style="position: relative; flex: 1;">
-            <i class="fa-solid fa-hashtag" style="position: absolute; left: 16px; top: 16px; color: var(--text-muted);"></i>
-            <input id="tx" type="text" placeholder="Dán mã 0x... (64 ký tự hex) vào đây" style="width: 100%; padding: 14px 14px 14px 44px; background: rgba(0,0,0,0.2); border: none;" autocomplete="off" spellcheck="false">
+    <!-- ĐÃ SỬA: Giao diện ô nhập liệu chuẩn Light Theme -->
+    <div class="glass-panel" style="padding: 24px; background: #ffffff; border: 1px solid var(--glass-border); border-radius: 12px; box-shadow: var(--shadow-sm); display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+        <div style="position: relative; flex: 1; min-width: 280px;">
+            <i class="fa-solid fa-hashtag" style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+            <input id="tx" type="text" placeholder="Dán mã 0x... (64 ký tự hex) vào đây" style="width: 100%; padding: 14px 16px 14px 44px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; color: var(--text-main); font-family: monospace; font-size: 1rem;" autocomplete="off" spellcheck="false">
         </div>
-        <button id="btnVerify" class="btn btn-primary" style="padding: 14px 24px; white-space: nowrap;">
+        <button id="btnVerify" class="btn btn-primary" style="padding: 14px 28px; white-space: nowrap;">
             <i class="fa-solid fa-magnifying-glass"></i> Kiểm tra
         </button>
     </div>
