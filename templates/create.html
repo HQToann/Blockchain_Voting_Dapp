@@ -32,10 +32,12 @@
                 <label>Danh sách ứng viên / Lựa chọn</label>
                 
                 <div id="optionsContainer" style="display: flex; flex-direction: column; gap: 16px; margin-bottom: 16px;">
-                    <div class="option-row" style="padding: 16px; border: 1px solid var(--glass-border); border-radius: 12px; background: rgba(0,0,0,0.2); display: flex; gap: 16px; align-items: flex-start;">
+                    <!-- ĐÃ SỬA: Thẻ ứng viên dùng nền trắng, có bóng đổ nhẹ -->
+                    <div class="option-row" style="padding: 16px; border: 1px solid var(--glass-border); border-radius: 12px; background: #ffffff; display: flex; gap: 16px; align-items: flex-start; box-shadow: var(--shadow-sm);">
                         <div style="flex: 1; display: flex; flex-direction: column; gap: 12px;">
-                            <input type="text" class="opt-name" placeholder="Tên ứng viên hoặc lựa chọn 1" required>
-                            <input type="file" class="opt-img" accept="image/*" style="font-size: 0.85rem; padding: 8px;" required>
+                            <!-- ĐÃ SỬA: Ô nhập liệu nền xám sáng -->
+                            <input type="text" class="opt-name" placeholder="Tên ứng viên hoặc lựa chọn 1" required style="background: #f8fafc; border: 1px solid #cbd5e1; color: var(--text-main);">
+                            <input type="file" class="opt-img" accept="image/*" style="font-size: 0.85rem; padding: 8px; background: #f8fafc; border: 1px solid #cbd5e1; color: var(--text-muted);" required>
                         </div>
                         <button type="button" class="btn btn-danger btn-sm remove-opt" disabled>
                             <i class="fa-solid fa-trash"></i>
@@ -43,8 +45,8 @@
                     </div>
                 </div>
                 
-                <button type="button" id="btnAddOption" class="btn btn-ghost" style="width: 100%; border-style: dashed;">
-                    <i class="fa-solid fa-plus"></i> Thêm ứng viên
+                <button type="button" id="btnAddOption" class="btn btn-ghost" style="width: 100%; border: 1px dashed #cbd5e1; background: #f8fafc; color: var(--text-main);">
+                    <i class="fa-solid fa-plus" style="color: var(--accent);"></i> Thêm ứng viên
                 </button>
             </div>
 
