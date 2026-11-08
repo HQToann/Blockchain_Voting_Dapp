@@ -1,68 +1,123 @@
 {% extends 'base.html' %}
 {% load static %}
-
+{% block title %}Tạo hòm phiếu — VoteChain{% endblock %}
 {% block nav_create %}active{% endblock %}
-{% block title %}Tạo Hòm Phiếu - VoteChain{% endblock %}
 
 {% block content %}
-<div style="max-width: 800px; margin: 40px auto;">
-    
-    <div style="text-align: center; margin-bottom: 32px;">
-        <h1 style="background: linear-gradient(to right, #60a5fa, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-            <i class="fa-solid fa-square-plus" style="color: #60a5fa; margin-right: 8px;"></i>Tạo Hòm Phiếu Mới
+<div style="max-width: 800px; margin: 0 auto; padding-bottom: 60px;">
+    <!-- Header -->
+    <div style="text-align: center; margin-bottom: 32px; margin-top: 20px;">
+        <h1 style="color: #1e3a8a; display: flex; justify-content: center; align-items: center; gap: 12px; margin-bottom: 12px; font-size: 1.75rem;">
+            <i class="fa-solid fa-square-plus" style="color: #3b82f6;"></i> Tạo hòm phiếu mới
         </h1>
-        <p>Thiết lập cuộc bầu cử của bạn an toàn, minh bạch trên blockchain.</p>
+        <p style="color: #64748b; font-size: 0.95rem; line-height: 1.6; margin: 0;">
+            Bạn sẽ là <b>chủ sở hữu</b> của hòm phiếu: chỉ ví của bạn mới có quyền cấp phép cử tri, dời lịch hoặc đóng sớm.<br>
+            <span style="color: #d97706; font-weight: 600;">Các lựa chọn không thể sửa sau khi tạo để đảm bảo công bằng.</span>
+        </p>
     </div>
 
-    <div class="glass-panel" style="padding: 32px;">
-        <form id="createForm">
-            
-            <div class="field">
-                <label for="title">Tiêu đề cuộc bầu cử</label>
-                <input type="text" id="title" placeholder="VD: Bầu ban cán sự lớp nhiệm kỳ 2026..." required>
-            </div>
-            
-            <div class="field" style="margin-top: 24px;">
-                <label for="endTime">Thời gian kết thúc</label>
-                <input type="datetime-local" id="endTime" required>
-                <div class="small muted" style="margin-top: 6px;">Sau thời điểm này, hệ thống tự động chốt sổ và không ai có thể bỏ phiếu thêm.</div>
-            </div>
+    <div id="needWallet" class="notice info hidden" style="margin-bottom: 24px; background: #eff6ff; border-left: 4px solid #3b82f6; padding: 16px; border-radius: 8px;">
+        <i class="fa-solid fa-wallet"></i> Bạn cần kết nối ví MetaMask để tạo hòm phiếu. Phí gas do ví của bạn chi trả.
+    </div>
 
-            <div class="field" style="margin-top: 32px;">
-                <label>Danh sách ứng viên / Lựa chọn</label>
-                
-                <div id="optionsContainer" style="display: flex; flex-direction: column; gap: 16px; margin-bottom: 16px;">
-                    <!-- ĐÃ SỬA: Thẻ ứng viên dùng nền trắng, có bóng đổ nhẹ -->
-                    <div class="option-row" style="padding: 16px; border: 1px solid var(--glass-border); border-radius: 12px; background: #ffffff; display: flex; gap: 16px; align-items: flex-start; box-shadow: var(--shadow-sm);">
-                        <div style="flex: 1; display: flex; flex-direction: column; gap: 12px;">
-                            <!-- ĐÃ SỬA: Ô nhập liệu nền xám sáng -->
-                            <input type="text" class="opt-name" placeholder="Tên ứng viên hoặc lựa chọn 1" required style="background: #f8fafc; border: 1px solid #cbd5e1; color: var(--text-main);">
-                            <input type="file" class="opt-img" accept="image/*" style="font-size: 0.85rem; padding: 8px; background: #f8fafc; border: 1px solid #cbd5e1; color: var(--text-muted);" required>
-                        </div>
-                        <button type="button" class="btn btn-danger btn-sm remove-opt" disabled>
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
-                    </div>
+    <!-- Khối 1: Thông tin chung -->
+    <div style="margin-bottom: 24px; padding: 32px; border-radius: 12px; background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+        
+        <div class="field" style="margin-bottom: 24px;">
+            <label style="font-weight: 600; margin-bottom: 12px; display: block; color: #334155; font-size: 0.95rem;">Loại hòm phiếu</label>
+            <div class="seg" id="kindSeg" style="display: flex; gap: 24px;">
+                <label style="cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: 500; font-size: 0.95rem;">
+                    <input type="radio" name="kind" value="0" checked> Bầu chọn ứng viên
+                </label>
+                <label style="cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: 500; font-size: 0.95rem;">
+                    <input type="radio" name="kind" value="1"> Bỏ phiếu một vấn đề
+                </label>
+            </div>
+        </div>
+
+        <div class="field" style="margin-bottom: 24px;">
+            <label for="name" id="nameLabel" style="font-weight: 600; margin-bottom: 8px; display: block; color: #334155; font-size: 0.95rem;">Tên cuộc bầu cử <span style="color: #ef4444;">*</span></label>
+            <input id="name" type="text" maxlength="200" placeholder="VD: Bầu Chủ nhiệm Câu lạc bộ nhiệm kỳ 2026" style="width: 100%; padding: 12px 16px; border: 1px solid #cbd5e1; border-radius: 6px; background: #f8fafc; font-size: 0.95rem;">
+        </div>
+
+        <div class="field">
+            <label for="desc" style="font-weight: 600; margin-bottom: 8px; display: block; color: #334155; font-size: 0.95rem;">Mô tả (không bắt buộc)</label>
+            <textarea id="desc" maxlength="2000" placeholder="Bối cảnh, quy tắc, thông tin cần cử tri biết..." style="width: 100%; padding: 12px 16px; border: 1px solid #cbd5e1; border-radius: 6px; background: #f8fafc; min-height: 100px; font-family: inherit; font-size: 0.95rem; resize: vertical;"></textarea>
+            <div class="hint" style="font-size: 0.8rem; color: #94a3b8; margin-top: 8px;">Mô tả và ảnh được lưu trên IPFS, liên kết bất biến với hòm phiếu.</div>
+        </div>
+    </div>
+
+    <!-- Khối 2: Danh sách lựa chọn -->
+    <div style="margin-bottom: 24px; padding: 32px; border-radius: 12px; background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; border-bottom: 1px solid #f1f5f9; padding-bottom: 16px;">
+            <h2 id="optTitle" style="margin: 0; font-size: 1.15rem; color: #1e293b; display: flex; align-items: center; gap: 8px;">
+                <i class="fa-solid fa-list-check" style="color: #64748b;"></i> Danh sách Ứng viên
+            </h2>
+            <span id="optCount" style="font-size: 0.85rem; font-weight: 600; color: #64748b;"></span>
+        </div>
+        
+        <div id="options" id="optionsContainer" style="display: flex; flex-direction: column; gap: 16px;"></div>
+        
+        <div style="margin-top: 24px;">
+            <!-- Nút thêm ứng viên (Sẽ tự ẩn khi chọn Bỏ phiếu vấn đề) -->
+            <button type="button" id="addOpt" style="width: 100%; padding: 14px; border: 2px dashed #3b82f6; border-radius: 8px; background: #ffffff; color: #3b82f6; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; justify-content: center; align-items: center; gap: 8px;">
+                <i class="fa-solid fa-plus"></i> Thêm lựa chọn
+            </button>
+            
+            <!-- Nút điền mẫu tự động (Sẽ hiện ra khi chọn Bỏ phiếu vấn đề) -->
+            <button type="button" id="tplYesNo" class="hidden" style="width: 100%; padding: 14px; border: 1px solid #3b82f6; border-radius: 8px; background: #eff6ff; color: #1d4ed8; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; justify-content: center; align-items: center; gap: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                <i class="fa-solid fa-wand-magic-sparkles" style="color: #f59e0b;"></i> Điền mẫu tự động: Đồng ý / Phản đối / Phiếu trắng
+            </button>
+        </div>
+    </div>
+
+    <!-- Khối 3: Quy tắc -->
+    <div style="margin-bottom: 32px; padding: 32px; border-radius: 12px; background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+        <h2 style="margin: 0 0 24px 0; font-size: 1.15rem; color: #1e293b;">Quy tắc bỏ phiếu</h2>
+        
+        <div class="field" style="margin-bottom: 24px;">
+            <label for="maxChoices" style="font-weight: 600; margin-bottom: 8px; display: block; color: #334155; font-size: 0.95rem;">Số lựa chọn tối đa mỗi cử tri được chọn</label>
+            <input id="maxChoices" type="number" min="1" value="1" style="width: 100px; padding: 10px 16px; border: 1px solid #cbd5e1; border-radius: 6px; text-align: center; font-weight: 600; font-size: 1rem;">
+            <div id="maxHint" style="font-size: 0.85rem; color: #3b82f6; margin-top: 8px;"></div>
+        </div>
+
+        <div class="field" style="margin-bottom: 24px;">
+            <label style="font-weight: 600; margin-bottom: 12px; display: block; color: #334155; font-size: 0.95rem;">Ai được bỏ phiếu?</label>
+            <div class="seg" style="display: flex; gap: 32px;">
+                <label style="cursor: pointer; font-size: 0.95rem; font-weight: 500;"><input type="radio" name="priv" value="0" checked> Công khai (ai có ví cũng bỏ được)</label>
+                <label style="cursor: pointer; font-size: 0.95rem; font-weight: 600; color: #1e293b;"><input type="radio" name="priv" value="1"> Riêng tư (chỉ ví trong danh sách)</label>
+            </div>
+            <div style="font-size: 0.85rem; color: #64748b; margin-top: 8px;">Hòm phiếu riêng tư: bạn thêm danh sách ví cử tri ở trang hòm phiếu sau khi tạo.</div>
+        </div>
+
+        <div class="row" style="display: flex; gap: 32px; flex-wrap: wrap;">
+            <div class="field" style="flex: 1; min-width: 250px;">
+                <label style="font-weight: 600; margin-bottom: 12px; display: block; color: #334155; font-size: 0.95rem;">Thời điểm bắt đầu</label>
+                <div class="seg" style="display: flex; gap: 24px; margin-bottom: 12px;">
+                    <label style="cursor: pointer; font-size: 0.95rem;"><input type="radio" name="startMode" value="now" checked> Mở ngay</label>
+                    <label style="cursor: pointer; font-size: 0.95rem;"><input type="radio" name="startMode" value="at"> Hẹn giờ</label>
                 </div>
-                
-                <button type="button" id="btnAddOption" class="btn btn-ghost" style="width: 100%; border: 1px dashed #cbd5e1; background: #f8fafc; color: var(--text-main);">
-                    <i class="fa-solid fa-plus" style="color: var(--accent);"></i> Thêm ứng viên
-                </button>
+                <input id="startAt" type="datetime-local" class="hidden" style="width: 100%; padding: 10px 16px; border: 1px solid #cbd5e1; border-radius: 6px;">
             </div>
-
-            <div class="field" style="margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--glass-border);">
-                <label for="whitelist">Danh sách cử tri (Whitelist) - Chế độ riêng tư</label>
-                <textarea id="whitelist" placeholder="Nhập địa chỉ ví Web3 của những người được phép bầu, mỗi ví một dòng. &#10;Để trống nếu muốn mở công khai cho tất cả mọi người."></textarea>
+            
+            <div class="field" style="flex: 1; min-width: 250px;">
+                <label style="font-weight: 600; margin-bottom: 12px; display: block; color: #334155; font-size: 0.95rem;">Thời điểm kết thúc</label>
+                <div class="seg" style="display: flex; gap: 24px; margin-bottom: 12px;">
+                    <label style="cursor: pointer; font-size: 0.95rem;"><input type="radio" name="endMode" value="none" checked> Tôi tự đóng</label>
+                    <label style="cursor: pointer; font-size: 0.95rem;"><input type="radio" name="endMode" value="at"> Hẹn giờ</label>
+                </div>
+                <input id="endAt" type="datetime-local" class="hidden" style="width: 100%; padding: 10px 16px; border: 1px solid #cbd5e1; border-radius: 6px;">
             </div>
-
-            <div style="margin-top: 40px; text-align: center;">
-                <button type="button" id="btnSubmit" class="btn btn-primary" style="width: 100%; padding: 14px; font-size: 1.1rem;">
-                    <i class="fa-solid fa-rocket"></i> Đăng Ký Lên Blockchain
-                </button>
-            </div>
-
-        </form>
+        </div>
     </div>
+
+    <!-- Errors & Submit -->
+    <div id="errors" class="notice error hidden" style="margin-bottom: 24px; padding: 16px; background: #fef2f2; border: 1px solid #fecaca; color: #b91c1c; border-radius: 8px; font-weight: 500;"></div>
+    <div id="progress" class="card hidden"></div>
+    
+    <button id="submit" class="btn btn-primary" type="button" style="width: 100%; padding: 16px; font-size: 1.1rem; font-weight: 600; background: #3b82f6; color: #fff; border: none; border-radius: 8px; cursor: pointer; transition: 0.2s;">
+        Tạo hòm phiếu
+    </button>
 </div>
 {% endblock %}
 
