@@ -4,58 +4,95 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}VoteChain - Hòm Phiếu Cộng Đồng{% endblock %}</title>
-    
-    <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="{% static 'img/favicon.ico' %}">
     
-    <!-- FontAwesome để dùng Icon sạch sẽ thay cho Emoji -->
+    <!-- 1. Tích hợp Google Fonts (Inter) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- 2. Tích hợp FontAwesome cho icon -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- CSS Hệ thống -->
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    
+    <!-- 3. CSS bổ sung để đảm bảo thanh Menu Responsive 100% trên điện thoại -->
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; margin: 0; color: #1e293b; }
+        
+        .nav { background: #ffffff; border-bottom: 1px solid #e2e8f0; position: sticky; top: 0; z-index: 50; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .nav-inner { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; padding: 12px 24px; max-width: 1200px; margin: 0 auto; }
+        
+        .brand { font-size: 1.25rem; font-weight: 700; text-decoration: none; color: #1e293b; display: flex; align-items: center; gap: 8px; }
+        .brand i { color: #2563eb; }
+        
+        .nav-links { display: flex; align-items: center; gap: 12px; width: auto; }
+        
+        .link { text-decoration: none; color: #64748b; font-weight: 500; padding: 8px 14px; border-radius: 8px; transition: all 0.2s ease; display: flex; align-items: center; gap: 6px; }
+        .link:hover, .link.active { background: #eff6ff; color: #2563eb; }
+        
+        .btn-wallet { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 20px; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; color: #334155; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        .btn-wallet:hover { background: #f8fafc; border-color: #94a3b8; }
+        
+        .mobile-menu-btn { display: none; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #1e293b; padding: 4px; }
+        
+        /* Chế độ Mobile */
+        @media (max-width: 768px) {
+            .nav-inner { padding: 16px; }
+            .mobile-menu-btn { display: block; }
+            .nav-links { display: none; width: 100%; flex-direction: column; align-items: stretch; margin-top: 16px; gap: 8px; }
+            .nav-links.show { display: flex; }
+            .spacer { display: none; }
+            .btn-wallet { width: 100%; margin-top: 8px; }
+        }
+    </style>
 </head>
 <body>
     <nav class="nav">
         <div class="nav-inner">
-            <!-- Logo chuyên nghiệp -->
+            <!-- Tên thương hiệu + Icon Khối lập phương (Cube) đại diện cho Blockchain -->
             <a class="brand" href="/">
-                <i class="fa-solid fa-check-to-slot" style="color: #60a5fa;"></i> 
-                VoteChain
+                <i class="fa-solid fa-cube"></i> VoteChain
             </a>
             
-            <a class="link {% block nav_home %}{% endblock %}" href="/">
-                <i class="fa-solid fa-house fa-sm"></i> Khám phá
-            </a>
-            <a class="link {% block nav_create %}{% endblock %}" href="/create/">
-                <i class="fa-solid fa-plus fa-sm"></i> Tạo hòm phiếu
-            </a>
-            <a class="link {% block nav_my %}{% endblock %}" href="/my/">
-                <i class="fa-solid fa-folder-open fa-sm"></i> Của tôi
-            </a>
-            <a class="link {% block nav_verify %}{% endblock %}" href="/verify/">
-                <i class="fa-solid fa-shield-halved fa-sm"></i> Xác minh phiếu
-            </a>
-            
-            <span class="spacer"></span>
-            
-            <!-- Nút kết nối ví nổi bật -->
-            <button id="btnWallet" class="btn btn-ghost" type="button">
-                <i class="fa-solid fa-wallet"></i> Kết nối ví
+            <!-- Nút Hamburger cho Mobile -->
+            <button class="mobile-menu-btn" id="mobileMenuBtn">
+                <i class="fa-solid fa-bars"></i>
             </button>
+
+            <!-- Cụm Links và Nút kết nối -->
+            <div class="nav-links" id="navLinks">
+                <a class="link {% block nav_home %}{% endblock %}" href="/"><i class="fa-solid fa-house"></i> Khám phá</a>
+                <a class="link {% block nav_create %}{% endblock %}" href="/create/"><i class="fa-solid fa-square-plus"></i> Tạo hòm phiếu</a>
+                <a class="link {% block nav_my %}{% endblock %}" href="/my/"><i class="fa-solid fa-folder-open"></i> Của tôi</a>
+                <a class="link {% block nav_verify %}{% endblock %}" href="/verify/"><i class="fa-solid fa-shield-halved"></i> Xác minh</a>
+                
+                <span class="spacer" style="flex-grow: 1;"></span>
+                
+                <!-- Nút ví với icon MetaMask màu cam -->
+                <button id="btnWallet" class="btn-wallet" type="button">
+                    <i class="fa-brands fa-meta" style="color: #f6851b; font-size: 1.1rem;"></i> <span>Kết nối MetaMask</span>
+                </button>
+            </div>
         </div>
     </nav>
 
-    <div class="container">
+    <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 24px 16px; min-height: calc(100vh - 120px);">
         <div id="banner"></div>
         {% block content %}{% endblock %}
     </div>
     
-    <div id="toasts"></div>
+    <div id="toasts" style="position: fixed; bottom: 24px; right: 24px; z-index: 1000; display: flex; flex-direction: column; gap: 12px;"></div>
 
-    <!-- Script bắt buộc -->
     <script src="{% static 'vendor/ethers.umd.min.js' %}"></script>
     <script src="{% static 'js/abi.js' %}"></script>
     <script src="{% static 'js/common.js' %}"></script>
+    
+    <!-- Script nhỏ xíu xử lý xổ menu trên điện thoại -->
+    <script>
+        document.getElementById('mobileMenuBtn').addEventListener('click', function() {
+            document.getElementById('navLinks').classList.toggle('show');
+        });
+    </script>
+    
     {% block scripts %}{% endblock %}
 </body>
 </html>
