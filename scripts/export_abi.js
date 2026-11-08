@@ -1,9 +1,3 @@
-/**
- * Script tự động trích xuất ABI từ artifacts/ của Hardhat ra thư mục gốc.
- * Chạy sau khi: npx hardhat compile
- * Lệnh: node scripts/export_abi.js
- */
-
 import { readFileSync, writeFileSync, existsSync } from 'fs';
 import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
@@ -13,12 +7,12 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, '..');
 
 // 2. Khai báo các đường dẫn nguồn và đích đến (input - output)
-// danh sách đường dẫn tuyệt đối tới các file artifact do Hardhat tạo ra sau khi compile
+// input -> artifacts affter compile
 const ARTIFACTS = {
   Election: resolve(ROOT, 'artifacts/blockchain/contracts/VotingSystem.sol/Election.json'),
   ElectionFactory: resolve(ROOT, 'artifacts/blockchain/contracts/VotingSystem.sol/ElectionFactory.json'),
 };
-// danh sách các file đích mà script sẽ xuất dữ liệu ra
+// output -> .json affter script
 const OUTPUT = {
   Election_ABI: resolve(ROOT, 'Election_ABI.json'),
   Factory_ABI: resolve(ROOT, 'Factory_ABI.json'),
@@ -26,8 +20,7 @@ const OUTPUT = {
 };
 
 // 3. Kiểm tra điều kiện tiên quyết
-// cờ trạng thái -> các file artifact đầu vào đã sẵn sàng
-let ok = true;
+let ok = true;  // artifacts ready
 
 // duyệt qua từng file artifact để xác nhận xem đã chạy lệnh compile chưa
 for (const [name, path] of Object.entries(ARTIFACTS)) {
