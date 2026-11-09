@@ -1,0 +1,20 @@
+{
+  "name": "blockchain_decentralized_voting_dapp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "compile": "hardhat compile && node scripts/export_abi.js",
+    "test": "hardhat test",
+    "deploy:sepolia": "hardhat ignition deploy ./blockchain/ignition/modules/Factory.js --network sepolia"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^6.1.2",
+    "dotenv": "^17.4.2",
+    "hardhat": "^2.29.1"
+  }
+}
