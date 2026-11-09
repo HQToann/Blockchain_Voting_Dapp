@@ -5,9 +5,9 @@ from django.http import JsonResponse
 
 
 def get_client_ip(request):
-    """IP thật của client.
-
-    KHÔNG tin phần tử đầu của X-Forwarded-For (do client tự điền, giả mạo được).
+    """
+    IP thật của client.
+    Không tin phần tử đầu của X-Forwarded-For (do client tự điền, giả mạo được).
     Khi chạy sau N proxy tin cậy (settings.TRUSTED_PROXY_COUNT, Render = 1), phần tử thứ N
     tính từ cuối là địa chỉ mà proxy tin cậy của ta đã thực sự nhìn thấy.
     """
@@ -23,9 +23,11 @@ def get_client_ip(request):
 def allow(key, limit, window_seconds):
     """Cửa sổ cố định, đếm nguyên tử (cache.add + cache.incr). True = được phép."""
     ck = f'rl:{key}'
+    # Thao tác Add nguyên tử (chỉ thành công nếu key chưa tồn tại)
     if cache.add(ck, 1, window_seconds):
         return True
     try:
+        # 2. Thao tác Incr nguyên tử (Tăng trực tiếp giá trị trên Redis)
         return cache.incr(ck) <= limit
     except ValueError:  # khoá vừa hết hạn giữa 2 lệnh
         cache.set(ck, 1, window_seconds)
