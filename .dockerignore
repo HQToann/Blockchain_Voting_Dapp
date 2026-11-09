@@ -1,0 +1,35 @@
+# Python bytecode & cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment & Local Database
+.env
+db.sqlite3
+*.sqlite3
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Version control & IDE
+.git/
+.gitignore
+.dockerignore
+.vscode/
+.idea/
+
+# Node.js & Hardhat (Chỉ dùng lúc compile/test contract, không cần trong Python container)
+node_modules/
+artifacts/
+cache/
+blockchain/test/
+package.json
+package-lock.json
+hardhat.config.js
+
+# Local scripts & Documentation
+docs/
+*.md
+start_local.bat
