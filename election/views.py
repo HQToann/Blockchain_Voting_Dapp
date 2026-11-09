@@ -2,7 +2,7 @@
 API của nền tảng hòm phiếu cộng đồng.
 
 Nguyên tắc:
-  * Chỉ ĐỌC dữ liệu đã được Chain Watcher dựng từ blockchain. Không có API nào cho phép
+  * Chỉ đọc dữ liệu đã được Chain Watcher dựng từ blockchain. Không có API nào cho phép
     "khai báo" phiếu hay kết quả — nên không thể làm giả dữ liệu qua HTTP.
   * Đăng nhập bằng chữ ký ví chỉ để dùng tính năng tốn tài nguyên của server (upload IPFS).
     Mọi quyền sở hữu hòm phiếu được quyết định ON-CHAIN (contract kiểm tra msg.sender).
@@ -34,7 +34,6 @@ from .utils import ADDRESS_RE, get_factory_address, is_address, norm_tx_hash, to
 logger = logging.getLogger('election.views')
 
 NONCE_TTL = 300  # giây
-
 
 def _err(message, status=400):
     return JsonResponse({'error': message}, status=status)
@@ -73,11 +72,7 @@ def _get_election_or_404(address):
         return None, _err('Hòm phiếu này đã bị ẩn bởi quản trị nền tảng.', 410)
     return e, None
 
-
-# =====================================================================
 # Cấu hình + sức khoẻ hệ thống
-# =====================================================================
-
 @ensure_csrf_cookie      # đặt cookie csrftoken để frontend gửi kèm các POST sau đó
 @require_GET
 def config(request):
@@ -97,26 +92,32 @@ def config(request):
         },
     })
 
-
 def _indexer_info():
     st = IndexerState.objects.filter(key='main').first()
     if not st:
-        return {'last_block': 0, 'updated_at': None, 'lagging': True}
+        return {
+            'last_block': 0, 
+            'updated_at': None, 
+            'lagging': True
+        }
     age = (timezone.now() - st.updated_at).total_seconds()
-    return {'last_block': st.last_block, 'updated_at': _iso(st.updated_at),
-            'lagging': age > settings.INDEXER_STALE_SECONDS}
-
+    return {
+            'last_block': st.last_block, 
+            'updated_at': _iso(st.updated_at),
+            'lagging': age > settings.INDEXER_STALE_SECONDS
+        }
 
 @require_GET
 def health(request):
-    return JsonResponse({'status': 'ok', 'factory_configured': bool(get_factory_address()),
-                         'indexer': _indexer_info()})
+    return JsonResponse(
+        {
+            'status': 'ok', 
+            'factory_configured': bool(get_factory_address()),
+            'indexer': _indexer_info()
+        }
+    )
 
-
-# =====================================================================
 # Đăng nhập bằng chữ ký ví (chỉ phục vụ upload IPFS)
-# =====================================================================
-
 def login_message(request, nonce):
     """Thông điệp ký. Có cả domain + chain để chữ ký không dùng lại được ở nơi khác."""
     return (
@@ -127,7 +128,6 @@ def login_message(request, nonce):
         f'Nonce: {nonce}'
     )
 
-
 @require_GET
 def auth_nonce(request):
     limited = rate_limited(request, 'nonce', 20, 60)
@@ -136,7 +136,6 @@ def auth_nonce(request):
     nonce = secrets.token_hex(16)
     cache.set(f'nonce:{nonce}', 1, NONCE_TTL)
     return JsonResponse({'nonce': nonce, 'message': login_message(request, nonce)})
-
 
 @require_POST
 def auth_verify(request):
@@ -166,7 +165,6 @@ def auth_verify(request):
     request.session['wallet'] = to_checksum(address)
     return JsonResponse({'success': True, 'address': to_checksum(address)})
 
-
 @require_GET
 def auth_me(request):
     return JsonResponse({'address': request.session.get('wallet')})
@@ -177,11 +175,7 @@ def auth_logout(request):
     request.session.flush()
     return JsonResponse({'success': True})
 
-
-# =====================================================================
 # Danh sách / chi tiết hòm phiếu (đọc từ DB do watcher dựng)
-# =====================================================================
-
 def _summary(e, option_count=None):
     return {
         'address': e.contract_addr,
@@ -198,7 +192,6 @@ def _summary(e, option_count=None):
         'created_at': _iso(e.created_at),
     }
 
-
 def _apply_status_filter(qs, status, now):
     if status == 'open':
         return qs.filter(closed_by_owner=False, start_time__lte=now).filter(Q(end_time__isnull=True) | Q(end_time__gt=now))
@@ -211,7 +204,6 @@ def _apply_status_filter(qs, status, now):
     if status == 'finished':      # đã kết thúc theo bất kỳ cách nào
         return qs.filter(Q(closed_by_owner=True) | Q(end_time__lte=now))
     return qs
-
 
 @require_GET
 def elections_list(request):
@@ -250,7 +242,6 @@ def elections_list(request):
         'indexer': _indexer_info(),
     })
 
-
 @require_GET
 def election_detail(request, address):
     e, err = _get_election_or_404(address)
@@ -273,7 +264,6 @@ def election_detail(request, address):
         'indexer': _indexer_info(),
     })
     return JsonResponse(data)
-
 
 @require_GET
 def election_voters(request, address):
@@ -300,7 +290,6 @@ def election_voters(request, address):
         } for v in rows],
     })
 
-
 @require_GET
 def election_whitelist(request, address):
     e, err = _get_election_or_404(address)
@@ -319,17 +308,12 @@ def election_whitelist(request, address):
         'entries': [{'address': w.voter_address, 'voted': w.voter_address in voted} for w in rows],
     })
 
-
-# =====================================================================
 # Xác minh một giao dịch bỏ phiếu (công khai, chỉ đọc)
-# =====================================================================
-
 def get_http_w3():
     url = os.getenv('INFURA_RPC_URL') or os.getenv('RPC_URL', '')
     if not url:
         return None
     return Web3(Web3.HTTPProvider(url, request_kwargs={'timeout': 10}))
-
 
 def _vote_payload(v):
     e = v.election
@@ -340,7 +324,6 @@ def _vote_payload(v):
         'choice_labels': [labels.get(c, f'#{c}') for c in v.choices],
         'tx_hash': v.tx_hash, 'block': v.block_number, 'time': _iso(v.created_at),
     }
-
 
 @require_GET
 def verify_tx(request):
@@ -386,11 +369,7 @@ def verify_tx(request):
         })
     return JsonResponse({'status': 'not_vote'})
 
-
-# =====================================================================
 # Upload IPFS (cần đăng nhập ví + giới hạn tần suất)
-# =====================================================================
-
 def _require_wallet(request):
     wallet = request.session.get('wallet')
     if not wallet:
@@ -412,7 +391,6 @@ def _upload_quota(wallet):
     if not allow(f'upload:{wallet}', settings.UPLOADS_PER_HOUR, 3600):
         return _err('Bạn đã upload quá nhiều trong 1 giờ qua, vui lòng thử lại sau.', 429)
     return None
-
 
 @require_POST
 def upload_image(request):
@@ -438,7 +416,6 @@ def upload_image(request):
     except IpfsError as ex:
         return _err(str(ex), 502)
     return JsonResponse({'cid': cid, 'url': _image_url(cid)})
-
 
 @require_POST
 def upload_metadata(request):
