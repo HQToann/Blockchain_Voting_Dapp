@@ -1,56 +1,34 @@
-/**
- * Cấu hình trung tâm hardhat - Dự án Decentralized Voting Dapp
- * File này đóng vai trò là "bộ não" điều khiển toàn bộ quy trình phát triển Blockchain:
- * - Biên dịch Smart Contract (Solidity solc compiler & optimizer)
- * - Định vị cấu trúc các thư mục mã nguồn, kiểm thử, script deploy và artifacts
- * - Cấu hình thông số kết nối các mạng blockchain (Localhost, Sepolia Testnet)
- */
+import "@nomicfoundation/hardhat-toolbox";  // bộ công cụ chuẩn của Hardhat
 
-// Bộ công cụ chuẩn của Hardhat: bao gồm Ethers.js, Hardhat Ignition, Chai matchers, Mocha test runner, v.v.
-import "@nomicfoundation/hardhat-toolbox";
-
-// Nạp tự động các biến môi trường từ file .env vào process.env (RPC URL, Private Key)
-import "dotenv/config";
+import "dotenv/config"; // tự động nạp biến .env
 
 export default {
-  // 1. CẤU HÌNH TRÌNH BIÊN DỊCH SOLIDITY
+  // 1. Cấu hình trình biên dịch Solidity
   solidity: {
-    // Phiên bản trình biên dịch Solidity (phải khớp với khai báo pragma trong file .sol)
-    version: "0.8.26",
+    version: "0.8.26",  // phiên bản biên dịch
     settings: {
       optimizer: {
-        // Bật trình tối ưu hóa mã máy Bytecode
-        enabled: true,
-        // runs: 200 là giá trị tối ưu cân bằng giữa chi phí gas khi Deploy và gas khi gọi hàm thực thi
-        // Rất quan trọng khi ElectionFactory chứa toàn bộ bytecode của Election để tạo contract con
-        runs: 200,
+        enabled: true,  // trình tối ưu hoá bytecode
+        runs: 200,  // giá trị cân bằng giứ phí gas deploy và phí gas hàm thực thi
       },
     },
   },
 
-  /**
-   * 2. ĐỊNH TUYẾN ĐƯỜNG DẪN THƯ MỤC DỰ ÁN
-   * Chỉ định cho Hardhat biết vị trí đọc file nguồn và nơi xuất sản phẩm biên dịch
-   */
+  // 2. Định tuyến được dẫn thư mục dự án -> blockchain
   paths: {
-    sources: "./blockchain/contracts", // Chứa mã nguồn hợp đồng thông minh (.sol)
-    tests: "./blockchain/test",      // Chứa các kịch bản kiểm thử tự động (Unit Test)
-    ignition: "./blockchain/ignition",  // Chứa các module triển khai tự động bằng Hardhat Ignition
-    cache: "./cache",                // Thư mục lưu cache biên dịch (giúp compile nhanh hơn)
-    artifacts: "./artifacts",            // Thư mục lưu kết quả sau biên dịch (Bytecode, ABI, metadata)
+    sources: "./blockchain/contracts", // smart contract
+    tests: "./blockchain/test", // unit test
+    ignition: "./blockchain/ignition",  // auto deploy for hardhat
+    cache: "./cache", // cache hỗ trợ biên dịch nhanh
+    artifacts: "./artifacts", // lưu kết quả sau khi biên dịch
   },
 
-  /**
-   * 3. CẤU HÌNH CÁC MẠNG BLOCKCHAIN (NETWORKS)
-   * Định nghĩa cách Hardhat kết nối và tương tác với các mạng thử nghiệm hoặc mainnet
-   */
+
+  // 3. Cấu hình mạng blockchain -> ethereum sepolia testnet
   networks: {
-    // Cấu hình mạng thử nghiệm Ethereum Sepolia Testnet
     sepolia: {
-      // Địa chỉ RPC Node (Infura hoặc Alchemy) để gửi nhận giao dịch lên mạng Sepolia
-      url: process.env.INFURA_RPC_URL || process.env.RPC_URL || "",
-      // Private Key của ví cá nhân (có chứa Sepolia ETH) dùng để ký và trả phí gas khi deploy
-      accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
+      url: process.env.INFURA_RPC_URL || process.env.RPC_URL || "", // địa chỉ RPC Node (Infura) -> gửi/nhận giao dịch blockchain
+      accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [], // private key metamask
     },
   },
 };

@@ -8,7 +8,7 @@ pragma solidity ^0.8.20;
 */
 struct ElectionParams {
     string name; // Tên hòm phiếu / câu hỏi (<= 200 byte)
-    string metadataURL; // CID IPFS chứa mô tả + ảnh (không bắt buộc, có thể để trống)
+    string metadataURI; // CID IPFS chứa mô tả + ảnh (không bắt buộc, có thể để trống)
     uint8 kind; // 0 = Candidates (bầu ứng viên), 1 = Proposal (bỏ phiếu vấn đề) -> Số nguyên không dấu 8-bit (0-255)
     bool isPrivate; // true = chỉ ví trong whitelist mới được bỏ phiếu (riêng tư)
     uint256 maxChoices; // Số lựa chọn tối đa mỗi cử tri được chọn
@@ -32,7 +32,7 @@ contract Election {
     address public immutable owner;
 
     string public name;
-    string public metadataURL;
+    string public metadataURI;
     Kind public kind;
     bool public isPrivate;
     uint256 public maxChoices;
@@ -101,12 +101,12 @@ contract Election {
         factory = msg.sender;
         owner = owner_;
         name = p.name;
-        metadataURL = p.metadataURL;
+        metadataURI = p.metadataURI;
         kind = Kind(p.kind);
         isPrivate = p.isPrivate;
         maxChoices = p.maxChoices;
         startTime = start;
-        endTime =p.endTime;
+        endTime = p.endTime;
     }
 
     // Xác định và trả về trạng thái hiện tại của hòm phiếu
@@ -130,7 +130,7 @@ contract Election {
         }
 
         uint256 n = choices.length;
-        require(n >= 1, "Loi: Phai chon it nhat mot lua chon");
+        require(n >= 1, "Loi: Phai chon it nhat 1 lua chon");
         require(n <= maxChoices, "Loi: Chon vuot qua so luong cho phep");
 
         uint256 count = _options.length;
@@ -177,7 +177,7 @@ contract Election {
      * Điều kiện: người đó chưa bỏ phiếu
      */
     function removeFromWhitelist(address[] calldata voters) external onlyOwner notFinished {
-        require(voters.length <= MAX_BATCH, "Loi: Toi da 200 dia chi moi mot lan");
+        require(voters.length <= MAX_BATCH, "Loi: Toi da 200 dia chi moi lan");
         for (uint256 i = 0; i < voters.length; i++) {
             address v = voters[i];
             // kiểm tra tồn tại của địa chỉ
@@ -201,7 +201,7 @@ contract Election {
      * Chỉ được khi hòm phiếu chưa bắt đầu (không đổi luật giữa chừng)
      */
     function reschedule(uint64 newStart, uint64 newEnd) external onlyOwner {
-        require(status() == Status.Upcoming, "Loi: Chi duoc doi lich truoc khi bat dau");
+        require(status() == Status.Upcoming, "Loi: Chi doi lich truoc khi bat dau");
         uint64 start = newStart == 0 ? uint64(block.timestamp) : newStart;
         if (newEnd != 0) {
             require(newEnd > start && newEnd > block.timestamp, "Loi: Thoi gian ket thuc khong hop le");
@@ -256,7 +256,7 @@ contract ElectionFactory {
         uint256 maxChoices,
         uint64 startTime,
         uint64 endTime,
-        string metadataURL
+        string metadataURI
     );
 
     // Triển khai một Smart Contract hòm phiếu mới lên blockchain
@@ -273,7 +273,7 @@ contract ElectionFactory {
             p.maxChoices, 
             e.startTime(), // dùng đúng thời gian thực
             p.endTime, 
-            p.metadataURL
+            p.metadataURI
         );
         return address(e);
     }
