@@ -28,6 +28,7 @@ class MetadataError(ValueError):
     pass
 
 
+# Kiểm duyệt và làm sạch
 def validate_metadata(obj):
     """Kiểm tra và CHUẨN HOÁ metadata do người dùng gửi (loại bỏ khoá lạ). Ném MetadataError."""
     if not isinstance(obj, dict):
@@ -55,6 +56,7 @@ def validate_metadata(obj):
     return {'version': 1, 'description': desc, 'options': options}
 
 
+# Tải an toàn từ IPFS
 def fetch_from_gateway(cid):
     """Lấy metadata từ gateway IPFS công khai (best-effort, giới hạn dung lượng & thời gian)."""
     try:
@@ -69,6 +71,7 @@ def fetch_from_gateway(cid):
         return None
 
 
+# Nạp dữ liệu thông minh
 def load_metadata(uri):
     """Trả metadata đã chuẩn hoá hoặc None. Ưu tiên bản sao trong DB, sau đó mới gọi gateway."""
     cid = cid_from_uri(uri)
