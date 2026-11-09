@@ -1,0 +1,224 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+    /* Tông màu Light Theme Thu hút */
+    --bg-main: #f8fafc;           /* Xám nhạt cực sáng (Nền chính) */
+    --glass-bg: #ffffff;          /* Nền thẻ trắng tinh */
+    --glass-border: #e2e8f0;      /* Viền xám nhạt */
+    
+    --text-main: #0f172a;         /* Đen sâu cho văn bản chính */
+    --text-muted: #64748b;        /* Xám trung tính cho văn bản phụ */
+    
+    --accent: #2563eb;            /* Xanh dương đậm đà, thu hút */
+    --accent-hover: #1d4ed8;
+    --accent-soft: #eff6ff;       /* Nền xanh nhạt cho thẻ được chọn */
+    
+    --ok: #059669;                /* Xanh lá tươi */
+    --ok-soft: #d1fae5;
+    --warn: #d97706;              /* Cam ấm */
+    --warn-soft: #fef3c7;
+    --danger: #dc2626;            /* Đỏ nổi bật */
+    --danger-soft: #fee2e2;
+    
+    --radius: 16px;
+    --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    /* Đổi bóng đổ cho Light Theme để tạo chiều sâu */
+    --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.05);
+    --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.08);
+    --shadow-lg: 0 12px 24px rgba(15, 23, 42, 0.12);
+}
+
+* { box-sizing: border-box; }
+
+body { 
+    margin: 0; 
+    font-family: 'Inter', system-ui, sans-serif; 
+    background-color: var(--bg-main); 
+    /* Pattern nền nhẹ nhàng cho Light Theme */
+    background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
+    background-size: 24px 24px;
+    color: var(--text-main); 
+    min-height: 100vh; 
+    line-height: 1.6; 
+}
+
+a { color: var(--accent); text-decoration: none; transition: var(--transition); }
+a:hover { color: var(--accent-hover); }
+h1, h2, h3 { margin: 0 0 12px; font-weight: 700; color: var(--text-main); }
+h1 { font-size: 1.9rem; } h2 { font-size: 1.35rem; } h3 { font-size: 1.1rem; }
+p { color: var(--text-muted); margin: 0 0 12px; }
+.container { max-width: 1080px; margin: 0 auto; padding: 30px 20px 60px; }
+.muted { color: var(--text-muted); } .small { font-size: .85rem; }
+.hidden { display: none !important; }
+
+/* ---------- Thẻ & Khung (Thay kính mờ bằng thẻ trắng có bóng đổ) ---------- */
+.glass-panel, .card, .nav {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow-sm);
+}
+
+/* ---------- Thanh điều hướng ---------- */
+.nav { 
+    position: sticky; top: 0; z-index: 50; 
+    border-radius: 0; border-top: none; border-left: none; border-right: none;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+.nav-inner { 
+    max-width: 1080px; margin: 0 auto; padding: 16px 20px; 
+    display: flex; align-items: center; gap: 24px; flex-wrap: wrap; 
+}
+.brand { 
+    font-weight: 800; font-size: 1.25rem; 
+    background: linear-gradient(to right, #2563eb, #7c3aed); /* Gradient sáng hơn */
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: flex; align-items: center; gap: 8px;
+}
+.nav a.link { color: var(--text-muted); font-weight: 600; font-size: 0.95rem; padding: 8px 16px; border-radius: 8px; }
+.nav a.link:hover, .nav a.link.active { color: var(--accent); background: var(--accent-soft); }
+.nav .spacer { flex: 1; }
+
+/* ---------- Nút bấm (Buttons) ---------- */
+button, .btn { 
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px; 
+    background: var(--accent); color: #fff; border: 0; 
+    padding: 10px 20px; font: 600 0.95rem 'Inter', sans-serif; 
+    border-radius: 10px; cursor: pointer; text-decoration: none; 
+    transition: var(--transition); 
+}
+button:hover:not(:disabled), .btn:hover { 
+    background: var(--accent-hover); 
+    transform: translateY(-2px); 
+    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3); 
+}
+button:disabled { background: #cbd5e1; color: #64748b; cursor: not-allowed; }
+.btn-ghost { background: var(--glass-bg); color: var(--text-main); border: 1px solid var(--glass-border); }
+.btn-ghost:hover:not(:disabled) { background: #f1f5f9; border-color: #cbd5e1; }
+.btn-danger { background: var(--danger); } 
+.btn-danger:hover:not(:disabled) { box-shadow: 0 6px 16px rgba(220, 38, 38, 0.3); }
+
+/* ---------- Thẻ Hòm Phiếu ---------- */
+.card { border-radius: var(--radius); padding: 24px; }
+.card + .card { margin-top: 20px; }
+.election-card { 
+    background: var(--glass-bg); border: 1px solid var(--glass-border);
+    border-radius: var(--radius); padding: 20px;
+    display: flex; flex-direction: column; gap: 12px; 
+    transition: var(--transition); 
+    box-shadow: var(--shadow-sm);
+}
+.election-card:hover { 
+    transform: translateY(-6px); 
+    border-color: #bfdbfe;
+    box-shadow: var(--shadow-lg); 
+}
+
+/* ---------- Form & Inputs ---------- */
+label { display: block; font-weight: 600; font-size: 0.95rem; margin: 0 0 8px; color: var(--text-main); }
+input[type=text], input[type=number], input[type=datetime-local], textarea, select { 
+    width: 100%; padding: 12px 16px; 
+    border: 1px solid #cbd5e1; border-radius: 10px; 
+    font: 400 0.95rem 'Inter', sans-serif; 
+    background: #ffffff; color: var(--text-main); 
+    transition: var(--transition);
+}
+input:focus, textarea:focus, select:focus { 
+    outline: none; border-color: var(--accent); 
+    box-shadow: 0 0 0 4px var(--accent-soft); 
+}
+
+/* ---------- Nhãn (Badges) ---------- */
+.badge { display: inline-block; padding: 4px 12px; border-radius: 999px; font-size: 0.75rem; font-weight: 700; border: 1px solid transparent; }
+.badge.open { background: var(--ok-soft); color: var(--ok); border-color: #a7f3d0; }
+.badge.closed { background: #f1f5f9; color: var(--text-muted); border-color: var(--glass-border); }
+
+/* ---------- Thông báo (Toasts) ---------- */
+#toasts { position: fixed; right: 24px; bottom: 24px; z-index: 100; display: flex; flex-direction: column; gap: 12px; }
+.toast { background: #ffffff; border: 1px solid var(--glass-border); color: var(--text-main); padding: 16px 20px; border-radius: 12px; display: flex; align-items: center; gap: 10px; box-shadow: var(--shadow-lg); animation: slideIn 0.3s ease forwards; font-weight: 500;}
+@keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+/* ---------- Bộ lọc tùy chỉnh trang chủ ---------- */
+.filter-tabs .tab-btn {
+    background: #ffffff;
+    color: var(--text-muted);
+    border: 1px solid var(--glass-border);
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    box-shadow: var(--shadow-sm);
+}
+
+.filter-tabs .tab-btn:hover {
+    background: #f8fafc;
+    color: var(--text-main);
+}
+
+.filter-tabs .tab-btn.active {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+/* =========================================
+   RESPONSIVE (ĐIỆN THOẠI & TABLET) - CHUẨN UI
+========================================= */
+@media (max-width: 768px) {
+ /* Căn chỉnh Logo và Nút Ví */
+    .nav-inner {
+        display: flex; flex-wrap: wrap; justify-content: space-between;
+        padding: 12px 10px; gap: 8px;
+    }
+    .brand { order: 1; font-size: 1.15rem; }
+    #btnWallet { order: 2; width: auto; padding: 8px 12px; font-size: 0.85rem; margin-top: 0; }
+    
+    /* Bức tường tàng hình ép 4 nút menu rớt xuống dòng */
+    .nav .spacer { 
+        display: block !important; 
+        order: 3; 
+        width: 100%; 
+        height: 0; 
+    }
+    
+    /* Khóa cứng 4 nút thành lưới 2x2 */
+    .nav a.link {
+        order: 4;
+        flex: 0 0 calc(50% - 4px) !important;
+        max-width: calc(50% - 4px) !important;
+        display: flex; flex-direction: column; align-items: center; gap: 6px;
+        font-size: 0.85rem; padding: 10px 4px;
+        background: #ffffff; 
+        border: 1px solid var(--glass-border);
+        margin: 0 !important;
+        box-sizing: border-box !important;
+    }
+    .nav a.link i { font-size: 1.1rem; }
+    h1 { font-size: 1.6rem !important; }
+    
+    /* 2. SỬA BỘ LỌC TÌM KIẾM: Ép tab thành lưới 2x2 */
+    .filter-tabs {
+        width: 100%;
+        display: grid !important;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+    .filter-tabs .tab-btn { width: 100%; margin: 0; }
+    
+    /* 3. SỬA Ô TÌM KIẾM: Ép Dropdown và Input xếp dọc 100% màn hình */
+    .filter-tabs + div {
+        flex-direction: column !important; /* Xếp từ trên xuống */
+        width: 100% !important;
+        min-width: 100% !important;
+        gap: 12px !important;
+    }
+    .filter-tabs + div select,
+    .filter-tabs + div > div {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+}
