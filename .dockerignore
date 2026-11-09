@@ -1,7 +1,3 @@
-# =====================================================================
-# DOCKERIGNORE - OPTIMIZE BUILD CONTEXT FOR PRODUCTION CONTAINER
-# =====================================================================
-
 # Python bytecode & cache
 __pycache__/
 *.py[cod]
