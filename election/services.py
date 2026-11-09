@@ -1,5 +1,8 @@
-"""Ghim ảnh / metadata lên IPFS qua Pinata. Mọi lời gọi đều có timeout; lỗi chi tiết chỉ ghi log
-nội bộ, KHÔNG trả nguyên văn cho người dùng (có thể chứa thông tin nhạy cảm)."""
+"""
+Gim ảnh / metadata lên IPFS qua Pinata. Mọi lời gọi đều có timeout; lỗi chi tiết chỉ ghi log nội bộ,
+không trả nguyên văn cho người dùng (có thể chứa thông tin nhạy cảm)
+"""
+
 import os
 import logging
 import requests
@@ -12,14 +15,17 @@ PINATA_FILE_URL = 'https://api.pinata.cloud/pinning/pinFileToIPFS'
 PINATA_JSON_URL = 'https://api.pinata.cloud/pinning/pinJSONToIPFS'
 TIMEOUT = (5, 30)  # (connect, read) giây
 
-
 class IpfsError(Exception):
-    """Lỗi ghim IPFS; message an toàn để hiển thị cho người dùng."""
+    """
+    Lỗi ghim IPFS, message an toàn để hiển thị cho người dùng.
+    """
 
-
+# Kiểm tra Magic Bytes nhị phân (Chặn SVG / Chặn Script trá hình)
 def sniff_image_type(head: bytes):
-    """Nhận dạng ảnh theo magic bytes (không tin phần mở rộng/Content-Type do client gửi).
-    Cố ý KHÔNG hỗ trợ SVG vì SVG có thể chứa script."""
+    """
+    Nhận ảnh theo magic bytes (không tin phần mở rộng/Content-Type do client gửi)
+    Không hỗ trợ SVG vì SVG có thể chứa script.
+    """
     if head.startswith(b'\x89PNG\r\n\x1a\n'):
         return 'image/png'
     if head.startswith(b'\xff\xd8\xff'):
@@ -30,28 +36,36 @@ def sniff_image_type(head: bytes):
         return 'image/webp'
     return None
 
-
 def _headers():
-    jwt = os.getenv('PINATA_JWT', '').strip()
+    jwt = os.getenv('PINATA_JWT', '').script()
     if not jwt:
-        raise IpfsError('Máy chủ chưa cấu hình IPFS (PINATA_JWT).')
-    return {'Authorization': f'Bearer {jwt}'}
-
+        raise IpfsError('Máy chủ chưa cấu hình IPFS (PINATA_JWT)')
+    return {
+        'Authorization': f'Bearer {jwt}'
+    }
 
 def _log(level, msg):
     try:
         SystemLog.objects.create(level=level, module='IPFS', message=msg[:1000])
-    except Exception:  # log không được làm hỏng luồng chính
+    except Exception:   # log không được làm hỏng luồng chính
         logger.exception('Không ghi được SystemLog')
 
-
+# Gửi tới API Pinata Cloud
 def pin_file(filename, data: bytes, content_type: str, owner: str = ''):
-    headers = _headers()
+    headers = headers()
     try:
         r = requests.post(
-            PINATA_FILE_URL, headers=headers, timeout=TIMEOUT,
-            files={'file': (filename, data, content_type)},
-            data={'pinataMetadata': '{"name": "vote-image-%s"}' % owner[:10]},
+            PINATA_FILE_URL, 
+            headers=headers, 
+            timeout=TIMEOUT,
+            files={
+                'file': (
+                    filename, data, content_type
+                )
+            },
+            data={
+                'pinataMetadata': '{"name": "vote-image-%s"}' % owner[:10]
+            },
         )
     except requests.RequestException as e:
         _log('ERROR', f'Pinata lỗi mạng khi ghim ảnh: {type(e).__name__}')
@@ -63,7 +77,7 @@ def pin_file(filename, data: bytes, content_type: str, owner: str = ''):
     _log('SUCCESS', f'Đã ghim ảnh {cid} cho {owner[:10]}…')
     return cid
 
-
+# Ghim file ảnh lên IPFS
 def pin_json(obj: dict, name: str = 'vote-metadata', owner: str = ''):
     headers = _headers()
     try:
