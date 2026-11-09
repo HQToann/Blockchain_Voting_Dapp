@@ -60,11 +60,11 @@ def load_abi(name):
 
 # Xử lý logic cập nhật địa chỉ Smart Contract khi deploy lại
 def get_factory_address():
-    """Địa chỉ ElectionFactory.
-
+    """
+    Địa chỉ ElectionFactory.
     1. Biến môi trường FACTORY_ADDRESS (khuyến nghị cho production).
-    2. File deployed_addresses.json của Hardhat Ignition ĐÚNG với CHAIN_ID đang dùng.
-    KHÔNG còn địa chỉ hardcode dự phòng: sai địa chỉ nghĩa là sai toàn bộ dữ liệu, nên
+    2. File deployed_addresses.json của Hardhat Ignition đúng với CHAIN_ID đang dùng.
+    không còn địa chỉ hardcode dự phòng: sai địa chỉ nghĩa là sai toàn bộ dữ liệu, nên
     thà báo thiếu cấu hình còn hơn lặng lẽ dùng nhầm contract cũ.
     """
     env_addr = os.getenv('FACTORY_ADDRESS', '').strip()
