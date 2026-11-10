@@ -100,7 +100,7 @@ def _process_log(log):
 
 @_db
 def _catch_up_sync(from_block, to_block):
-    return core.scan_logs(w3_http, from_block, to_block, FACTORY, on_batch=lambda end: core.set_last_block(end + 1))
+    return core.scan_logs(w3_http, from_block, to_block, FACTORY, on_batch=lambda end: core.set_last_block(end))
 
 
 @_db
