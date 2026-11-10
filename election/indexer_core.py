@@ -16,13 +16,14 @@ An toàn:
 """
 
 import logging
+import time
 
 from datetime import datetime, timezone as dt_timezone
 from functools import lru_cache
 
 from django.conf import settings
 from django.db import IntegrityError, transaction
-from django.db.models import F
+from django.db.models import F, Q
 from django.utils import timezone
 
 from eth_utils.abi import event_abi_to_log_topic
@@ -254,17 +255,16 @@ def process_log(w3, log, factory_address=None):
 def _sorted(logs):
     return sorted(logs, key=lambda l: (int(l['blockNumber']), int(l['logIndex'])))
 
-import time
-
 # Gọi RPC để lấy log, tích hợp cơ chế tự động chờ (Exponential Backoff) nếu bị chặn (lỗi 429)
 def _fetch_logs_with_retry(w3, params, max_retries=5):
     for attempt in range(max_retries):
         try:
             return w3.eth.get_logs(params)
         except Exception as e:
-            if '429' in str(e) and attempt < max_retries - 1:
+            err_msg = str(e).lower()
+            if ('429' in err_msg or 'too many requests' in err_msg) and attempt < max_retries - 1:
                 logger.warning(f"Rate limited (429) bởi RPC, chờ {2**attempt}s thử lại...")
-                time.sleep(2 ** attempt) # Ngủ 1s, 2s, 4s... rồi thử lại
+                time.sleep(2 ** attempt)
             else:
                 raise
 
@@ -406,7 +406,12 @@ def reconcile_all(w3, only_active=True):
     """Đối soát mọi hòm phiếu chưa kết thúc (và các hòm vừa kết thúc chưa đối soát lại)."""
     qs = Election.objects.all()
     if only_active:
-        qs = qs.filter(closed_by_owner=False) # Bỏ qua các hòm phiếu đã đóng lâu rồi để đỡ tốn tài nguyên
+        from django.utils import timezone
+        now = timezone.now()
+        # Chỉ đối soát hòm chưa đóng thủ công VÀ (chưa hết giờ hoặc mới hết giờ dưới 2 tiếng)
+        qs = qs.filter(closed_by_owner=False).filter(
+            Q(end_time__isnull=True) | Q(end_time__gt=now - timezone.timedelta(hours=2))
+        )
     results = {}
     block = w3.eth.block_number
     for e in qs:
