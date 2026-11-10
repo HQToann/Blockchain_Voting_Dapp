@@ -4,6 +4,7 @@ không trả nguyên văn cho người dùng (có thể chứa thông tin nhạy
 """
 
 import os
+import json
 import logging
 import requests
 
@@ -37,7 +38,7 @@ def sniff_image_type(head: bytes):
     return None
 
 def _headers():
-    jwt = os.getenv('PINATA_JWT', '').script()
+    jwt = os.getenv('PINATA_JWT', '').strip()
     if not jwt:
         raise IpfsError('Máy chủ chưa cấu hình IPFS (PINATA_JWT)')
     return {
@@ -52,7 +53,7 @@ def _log(level, msg):
 
 # Gửi tới API Pinata Cloud
 def pin_file(filename, data: bytes, content_type: str, owner: str = ''):
-    headers = headers()
+    headers = _headers()
     try:
         r = requests.post(
             PINATA_FILE_URL, 
@@ -64,7 +65,7 @@ def pin_file(filename, data: bytes, content_type: str, owner: str = ''):
                 )
             },
             data={
-                'pinataMetadata': '{"name": "vote-image-%s"}' % owner[:10]
+                'pinataMetadata': json.dumps({'name': f'vote-image-{owner[:10]}'})
             },
         )
     except requests.RequestException as e:
@@ -77,7 +78,7 @@ def pin_file(filename, data: bytes, content_type: str, owner: str = ''):
     _log('SUCCESS', f'Đã ghim ảnh {cid} cho {owner[:10]}…')
     return cid
 
-# Ghim file ảnh lên IPFS
+# Ghim metadata JSON lên IPFS
 def pin_json(obj: dict, name: str = 'vote-metadata', owner: str = ''):
     headers = _headers()
     try:
