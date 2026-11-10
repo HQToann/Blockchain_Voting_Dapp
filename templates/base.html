@@ -1,98 +1,217 @@
-{% load static %}<!DOCTYPE html>
-<html lang="vi">
+{% load static %}
+<!DOCTYPE html>
+<html class="h-full" lang="vi">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{% block title %}VoteChain - Hòm Phiếu Cộng Đồng{% endblock %}</title>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>{% block title %}VoteChain - Nền Tảng Bỏ Phiếu Phi Tập Trung Web3{% endblock %}</title>
     <link rel="icon" type="image/x-icon" href="{% static 'img/favicon.ico' %}">
-    
-    <!-- 1. Tích hợp Google Fonts (Inter) -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- 2. Tích hợp FontAwesome cho icon -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    
-    <!-- 3. CSS bổ sung để đảm bảo thanh Menu Responsive 100% trên điện thoại -->
+
+    <!-- Phục hồi lại Google Fonts và Material Symbols gốc của bạn -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+        rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script id="tailwind-config">
+        // Trả lại nguyên vẹn bộ Design System xịn sò của bạn
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-container": "#bdffdb", "primary-fixed-dim": "#b4c5ff", "on-secondary-fixed-variant": "#2f2ebe",
+                        "on-error-container": "#93000a", "background": "#faf8ff", "on-tertiary-fixed-variant": "#005236",
+                        "on-primary-container": "#eeefff", "on-secondary-container": "#fffbff", "on-primary-fixed": "#00174b",
+                        "error": "#ba1a1a", "surface-container-highest": "#dae2fd", "surface-container-low": "#f2f3ff",
+                        "on-secondary": "#ffffff", "primary-fixed": "#dbe1ff", "on-tertiary": "#ffffff", "primary": "#004ac6",
+                        "surface-container-high": "#e2e7ff", "on-surface": "#131b2e", "on-surface-variant": "#434655",
+                        "on-tertiary-fixed": "#002113", "tertiary-fixed-dim": "#4edea3", "primary-container": "#2563eb",
+                        "on-error": "#ffffff", "error-container": "#ffdad6", "inverse-surface": "#283044", "on-primary": "#ffffff",
+                        "surface-bright": "#faf8ff", "surface-dim": "#d2d9f4", "on-background": "#131b2e", "surface": "#faf8ff",
+                        "outline": "#737686", "outline-variant": "#c3c6d7", "secondary-fixed": "#e1e0ff", "secondary-container": "#6063ee",
+                        "on-primary-fixed-variant": "#003ea8", "secondary-fixed-dim": "#c0c1ff", "inverse-primary": "#b4c5ff",
+                        "secondary": "#4648d4", "inverse-on-surface": "#eef0ff", "surface-variant": "#dae2fd",
+                        "on-secondary-fixed": "#07006c", "tertiary-fixed": "#6ffbbe", "surface-container-lowest": "#ffffff",
+                        "surface-container": "#eaedff", "tertiary": "#006242", "surface-tint": "#0053db", "tertiary-container": "#007d55"
+                    },
+                    "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "3xl": "1.5rem", "full": "9999px" },
+                    "spacing": { "space-sm": "0.5rem", "margin": "2rem", "space-xl": "2.25rem", "gutter": "1rem", "space-xs": "0.25rem", "gutter-mobile": "0.75rem", "space-md": "1rem", "space-lg": "1.5rem", "margin-mobile": "1rem" },
+                    "fontFamily": {
+                        "headline-md": ["Plus Jakarta Sans", "sans-serif"], "headline-xl-mobile": ["Plus Jakarta Sans", "sans-serif"],
+                        "label-tag": ["Plus Jakarta Sans", "sans-serif"], "body-md": ["Plus Jakarta Sans", "sans-serif"],
+                        "body-sm": ["Plus Jakarta Sans", "sans-serif"], "headline-lg-mobile": ["Plus Jakarta Sans", "sans-serif"],
+                        "headline-xl": ["Plus Jakarta Sans", "sans-serif"], "label-code": ["JetBrains Mono", "monospace"],
+                        "headline-sm": ["Plus Jakarta Sans", "sans-serif"], "headline-lg": ["Plus Jakarta Sans", "sans-serif"],
+                        "body-lg": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["1.25rem", { "lineHeight": "1.75rem", "fontWeight": "600" }],
+                        "label-tag": ["0.6875rem", { "lineHeight": "1rem", "fontWeight": "700" }],
+                        "body-md": ["0.875rem", { "lineHeight": "1.375rem", "fontWeight": "400" }],
+                        "body-sm": ["0.75rem", { "lineHeight": "1.125rem", "fontWeight": "400" }],
+                        "headline-xl": ["2.25rem", { "lineHeight": "2.75rem", "fontWeight": "800" }],
+                        "label-code": ["0.8125rem", { "lineHeight": "1.125rem", "fontWeight": "500" }],
+                        "headline-sm": ["1rem", { "lineHeight": "1.5rem", "fontWeight": "600" }],
+                        "headline-lg": ["1.75rem", { "lineHeight": "2.25rem", "fontWeight": "700" }]
+                    }
+                }
+            }
+        };
+    </script>
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; margin: 0; color: #1e293b; }
-        
-        .nav { background: #ffffff; border-bottom: 1px solid #e2e8f0; position: sticky; top: 0; z-index: 50; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
-        .nav-inner { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; padding: 12px 24px; max-width: 1200px; margin: 0 auto; }
-        
-        .brand { font-size: 1.25rem; font-weight: 700; text-decoration: none; color: #1e293b; display: flex; align-items: center; gap: 8px; }
-        .brand i { color: #2563eb; }
-        
-        .nav-links { display: flex; align-items: center; gap: 12px; width: auto; }
-        
-        .link { text-decoration: none; color: #64748b; font-weight: 500; padding: 8px 14px; border-radius: 8px; transition: all 0.2s ease; display: flex; align-items: center; gap: 6px; }
-        .link:hover, .link.active { background: #eff6ff; color: #2563eb; }
-        
-        .btn-wallet { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 20px; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; color: #334155; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
-        .btn-wallet:hover { background: #f8fafc; border-color: #94a3b8; }
-        
-        .mobile-menu-btn { display: none; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #1e293b; padding: 4px; }
-        
-        /* Chế độ Mobile */
-        @media (max-width: 768px) {
-            .nav-inner { padding: 16px; }
-            .mobile-menu-btn { display: block; }
-            .nav-links { display: none; width: 100%; flex-direction: column; align-items: stretch; margin-top: 16px; gap: 8px; }
-            .nav-links.show { display: flex; }
-            .spacer { display: none; }
-            .btn-wallet { width: 100%; margin-top: 8px; }
+        @layer base {
+
+            html,
+            body {
+                margin: 0;
+                padding: 0;
+                font-family: 'Plus Jakarta Sans', sans-serif;
+            }
+
+            body {
+                overscroll-behavior: none;
+            }
+
+            main> :first-child {
+                margin-top: 0 !important;
+            }
+
+            main> :last-child {
+                margin-bottom: 0 !important;
+            }
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+            line-height: 1;
+        }
+
+        ::-webkit-scrollbar {
+            display: none;
         }
     </style>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
-<body>
-    <nav class="nav">
-        <div class="nav-inner">
-            <!-- Tên thương hiệu + Icon Khối lập phương (Cube) đại diện cho Blockchain -->
-            <a class="brand" href="/">
-                <i class="fa-solid fa-cube"></i> VoteChain
-            </a>
-            
-            <!-- Nút Hamburger cho Mobile -->
-            <button class="mobile-menu-btn" id="mobileMenuBtn">
-                <i class="fa-solid fa-bars"></i>
-            </button>
 
-            <!-- Cụm Links và Nút kết nối -->
-            <div class="nav-links" id="navLinks">
-                <a class="link {% block nav_home %}{% endblock %}" href="/"><i class="fa-solid fa-house"></i> Khám phá</a>
-                <a class="link {% block nav_create %}{% endblock %}" href="/create/"><i class="fa-solid fa-square-plus"></i> Tạo hòm phiếu</a>
-                <a class="link {% block nav_my %}{% endblock %}" href="/my/"><i class="fa-solid fa-folder-open"></i> Của tôi</a>
-                <a class="link {% block nav_verify %}{% endblock %}" href="/verify/"><i class="fa-solid fa-shield-halved"></i> Xác minh</a>
-                
-                <span class="spacer" style="flex-grow: 1;"></span>
-                
-                <!-- Nút ví với icon MetaMask màu cam -->
-                <button id="btnWallet" class="btn-wallet" type="button">
-                    <i class="fa-brands fa-meta" style="color: #f6851b; font-size: 1.1rem;"></i> <span>Kết nối MetaMask</span>
+<body class="bg-surface font-body-md text-body-md text-on-surface antialiased min-h-screen flex flex-col">
+
+    <!-- ========================================================================= -->
+    <!-- TOP NAVIGATION HEADER (Đã xóa 1 Gwei & Sepolia Testnet)                   -->
+    <!-- ========================================================================= -->
+    <header
+        class="fixed top-0 left-0 right-0 z-50 bg-surface-container-lowest/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] border-b border-surface-container-high/60">
+        <div class="h-20 max-w-7xl mx-auto px-margin flex items-center justify-between gap-space-md">
+
+            <!-- Brand Logo -->
+            <div class="flex items-center gap-space-md shrink-0">
+                <a class="flex items-center gap-space-xs group text-decoration-none" href="/">
+                    <div
+                        class="w-10 h-10 rounded-xl bg-primary-container flex items-center justify-center shadow-[0_4px_12px_rgba(37,99,235,0.25)] group-hover:scale-105 transition-transform">
+                        <span class="material-symbols-outlined text-on-primary text-[24px]">how_to_vote</span>
+                    </div>
+                    <div class="flex flex-col">
+                        <div class="flex items-center gap-space-xs">
+                            <span
+                                class="font-headline-sm text-headline-sm text-on-surface tracking-tight font-bold">VoteChain</span>
+                            <span class="material-symbols-outlined text-primary text-[18px]">verified</span>
+                        </div>
+                        <span
+                            class="font-label-tag text-label-tag text-on-surface-variant uppercase tracking-wider hidden sm:block">Decentralized
+                            Governance</span>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Desktop Navigation Menu -->
+            <nav
+                class="hidden md:flex items-center gap-space-xs bg-surface-container-lowest px-space-xs py-1.5 rounded-2xl shadow-[0_2px_12px_rgba(0,0,0,0.03)] border border-surface-container-high">
+                <a class="{% block nav_home %}text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface{% endblock %} font-headline-sm text-headline-sm px-space-md py-space-sm rounded-xl transition-colors text-decoration-none"
+                    href="/">
+                    Khám phá
+                </a>
+                <a class="{% block nav_create %}text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface{% endblock %} font-headline-sm text-headline-sm px-space-md py-space-sm rounded-xl transition-colors text-decoration-none"
+                    href="/create/">
+                    Tạo hòm phiếu
+                </a>
+                <a class="{% block nav_my %}text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface{% endblock %} font-headline-sm text-headline-sm px-space-md py-space-sm rounded-xl transition-colors text-decoration-none"
+                    href="/my/">
+                    Hòm phiếu của tôi
+                </a>
+                <a class="{% block nav_verify %}text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface{% endblock %} font-headline-sm text-headline-sm px-space-md py-space-sm rounded-xl transition-colors text-decoration-none"
+                    href="/verify/">
+                    Xác minh phiếu
+                </a>
+            </nav>
+
+            <!-- Wallet Info (Chỉ giữ lại nút kết nối ví) -->
+            <div class="flex items-center gap-space-sm shrink-0">
+                <button id="btnWallet" type="button"
+                    class="flex items-center gap-space-xs px-space-sm py-space-xs rounded-xl bg-surface-container-lowest shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:bg-surface-container-low transition-all cursor-pointer border border-outline-variant/30">
+                    <span id="walletDot" class="w-2.5 h-2.5 rounded-full bg-outline"></span>
+                    <span id="walletAddress" class="font-label-code text-label-code text-on-surface font-semibold">Kết
+                        nối ví</span>
+                    <div
+                        class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0 text-on-primary">
+                        <span class="material-symbols-outlined text-[18px]">account_balance_wallet</span>
+                    </div>
                 </button>
             </div>
-        </div>
-    </nav>
 
-    <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 24px 16px; min-height: calc(100vh - 120px);">
-        <div id="banner"></div>
+        </div>
+    </header>
+
+    <!-- CONTENT CHÍNH -->
+    <main class="w-full pt-20 bg-surface flex-1">
         {% block content %}{% endblock %}
-    </div>
-    
-    <div id="toasts" style="position: fixed; bottom: 24px; right: 24px; z-index: 1000; display: flex; flex-direction: column; gap: 12px;"></div>
+    </main>
+
+    <div id="toasts" class="toasts-container"></div>
+
+    <!-- FOOTER MỚI (Đã dọn dẹp link theo yêu cầu) -->
+    <footer class="w-full bg-surface-container-low border-t border-surface-container-high/60 mt-auto">
+        <div
+            class="max-w-7xl mx-auto px-margin py-space-md flex flex-col md:flex-row items-center justify-between gap-space-lg">
+            <div class="flex flex-col items-center md:items-start gap-space-xs">
+                <div class="flex items-center gap-space-xs">
+                    <div class="w-6 h-6 rounded-lg bg-primary-container flex items-center justify-center">
+                        <span class="material-symbols-outlined text-on-primary text-[14px]">how_to_vote</span>
+                    </div>
+                    <span class="font-headline-sm text-headline-sm text-on-surface font-bold">VoteChain Protocol</span>
+                </div>
+                <p class="font-body-sm text-body-sm text-on-surface-variant text-center md:text-left">
+                    Bảo đảm tính toàn vẹn và bất biến của từng phiếu bầu.
+                </p>
+            </div>
+
+            <div class="font-label-code text-label-code text-outline">
+                © 2026 VoteChain DAO.
+            </div>
+        </div>
+    </footer>
 
     <script src="{% static 'vendor/ethers.umd.min.js' %}"></script>
     <script src="{% static 'js/abi.js' %}"></script>
     <script src="{% static 'js/common.js' %}"></script>
-    
-    <!-- Script nhỏ xíu xử lý xổ menu trên điện thoại -->
+
     <script>
-        document.getElementById('mobileMenuBtn').addEventListener('click', function() {
-            document.getElementById('navLinks').classList.toggle('show');
+        document.addEventListener('DOMContentLoaded', () => {
+            setInterval(() => {
+                if (window.App && App.state && App.state.address) {
+                    document.getElementById('walletAddress').innerText = App.short(App.state.address);
+                    document.getElementById('walletDot').className = "w-2.5 h-2.5 rounded-full bg-tertiary-container";
+                }
+            }, 1000);
         });
     </script>
-    
     {% block scripts %}{% endblock %}
 </body>
+
 </html>
