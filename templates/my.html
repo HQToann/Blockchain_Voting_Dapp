@@ -1,41 +1,255 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}Của tôi - VoteChain{% endblock %}
-{% block nav_my %}active{% endblock %}
+
+{% block title %}VoteChain - Hòm Phiếu Của Tôi{% endblock %}
+
+{% block nav_my %}active bg-surface-container-low font-bold text-primary{% endblock %}
 
 {% block content %}
-<div style="text-align: center; margin: 40px 0 32px;">
-    <h1 style="background: linear-gradient(to right, #60a5fa, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-        <i class="fa-solid fa-folder-open" style="color: #60a5fa; margin-right: 8px;"></i>Hòm Phiếu Của Tôi
-    </h1>
-    <p>Quản lý các cuộc bầu cử bạn đã tạo và xem lại lịch sử bỏ phiếu.</p>
-</div>
+<div class="relative w-full flex flex-col gap-6 sm:gap-space-md mt-2 sm:mt-0">
+  
+  <!-- Ambient subtle blue gradient circle -->
+  <div class="absolute top-4 left-1/2 -translate-x-1/2 w-[320px] sm:w-[680px] h-[280px] bg-gradient-to-r from-primary-container/10 via-secondary-container/8 to-tertiary-fixed/15 blur-3xl pointer-events-none -z-10 rounded-full"></div>
 
-<!-- Trạng thái chưa kết nối ví -->
-<div id="needWallet" class="glass-panel hidden" style="text-align: center; padding: 60px 20px;">
-    <i class="fa-solid fa-wallet" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 16px;"></i>
-    <h3 style="color: var(--text-main);">Vui lòng kết nối ví</h3>
-    <p style="margin-bottom: 24px;">Hệ thống cần đọc địa chỉ ví của bạn để truy xuất dữ liệu cá nhân.</p>
-    <button id="btnConnect" class="btn btn-primary" style="padding: 12px 28px;">
-        <i class="fa-solid fa-link"></i> Kết nối MetaMask
-    </button>
-</div>
-
-<!-- Trạng thái đã kết nối -->
-<div id="mine" class="hidden">
-    <!-- Cụm Tabs -->
-    <div class="filter-tabs" style="display: flex; gap: 8px; justify-content: center; margin-bottom: 32px;">
-        <button class="tab-btn active" data-tab="owner"><i class="fa-solid fa-crown"></i> Tôi đã tạo</button>
-        <button class="tab-btn" data-tab="voted"><i class="fa-solid fa-check-to-slot"></i> Tôi đã bỏ phiếu</button>
+  <!-- 1. Breadcrumb & Sepolia Network Bar -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-space-sm pb-4 sm:pb-space-md border-b border-surface-container-high/60 px-4 sm:px-0">
+    <div class="flex items-center gap-1 sm:gap-space-xs text-on-surface-variant font-body-sm text-xs sm:text-body-sm">
+      <a class="hover:text-primary transition-colors flex items-center gap-1 text-decoration-none" href="/">
+        <span class="material-symbols-outlined text-[16px]">home</span>
+        <span>Trang chủ</span>
+      </a>
+      <span class="material-symbols-outlined text-[14px] text-outline">chevron_right</span>
+      <span class="font-semibold text-primary">Hòm phiếu của tôi</span>
     </div>
-    
-    <!-- Lưới chứa thẻ hòm phiếu -->
-    <div id="list" class="grid"></div>
-    <div id="pager" class="pager" style="margin-top: 32px;"></div>
+
+    <div class="flex items-center gap-2 sm:gap-space-xs flex-wrap">
+      <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container-lowest shadow-sm border border-surface-container-high/60">
+        <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-tertiary-container animate-pulse shrink-0"></span>
+        <span class="font-label-code text-[10px] sm:text-label-code text-on-surface font-medium">Hợp đồng Sepolia</span>
+        <span class="text-outline text-xs">|</span>
+        <span id="headerWalletBadge" class="font-label-code text-[10px] sm:text-label-code text-primary font-semibold truncate max-w-[120px] sm:max-w-none">Chưa kết nối ví</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Hero Section (Header & Quick Stats) -->
+  <div class="pt-2 sm:pt-space-lg pb-6 sm:pb-space-lg flex flex-col gap-6 sm:gap-space-md px-4 sm:px-0">
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 sm:gap-space-md">
+      <div class="max-w-2xl">
+        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary-fixed text-on-primary-fixed mb-2 sm:mb-space-xs font-label-tag text-[10px] sm:text-label-tag uppercase tracking-wider font-bold">
+          <span class="material-symbols-outlined text-[14px]">shield_person</span>
+          <span>TRUNG TÂM QUẢN LÝ &amp; LỊCH SỬ</span>
+        </div>
+        <h1 class="font-headline-xl text-3xl sm:text-headline-xl text-on-surface tracking-tight font-bold flex items-center gap-2 sm:gap-space-xs">
+          <span>Hòm Phiếu Của Tôi</span>
+          <span id="heroTotalBadge" class="inline-flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-primary-container/10 text-primary text-sm font-label-code font-bold">0</span>
+        </h1>
+        <p class="font-body-md text-sm sm:text-body-md text-on-surface-variant mt-2 sm:mt-1.5 leading-relaxed">
+          Quản lý toàn diện các cuộc bầu cử bạn đã khởi tạo trên blockchain và theo dõi lịch sử các lá phiếu bạn đã bỏ với tính minh bạch tuyệt đối.
+        </p>
+      </div>
+
+      <!-- Quick Action "+ Tạo hòm phiếu mới" -->
+      <div class="shrink-0 flex items-center gap-3 sm:gap-space-sm w-full md:w-auto mt-2 md:mt-0">
+        <a class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 sm:px-space-lg py-3 sm:py-3.5 rounded-xl bg-primary-container text-on-primary font-headline-sm text-sm sm:text-headline-sm font-bold shadow-md hover:shadow-lg hover:bg-primary transition-all duration-200 text-decoration-none" href="/create/">
+          <span class="material-symbols-outlined text-[18px] sm:text-[20px]">add_circle</span>
+          <span>Tạo hòm phiếu mới</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Quick Stats Mosaic (3 Bento Cards) -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-space-md pt-2 sm:pt-space-xs">
+      <!-- Stat 1: Cuộc bầu cử đã tạo -->
+      <div class="relative overflow-hidden rounded-2xl bg-surface-container-lowest p-4 sm:p-space-md shadow-sm hover:shadow-md transition-shadow border border-surface-container-high/60">
+        <div class="flex items-center justify-between">
+          <span class="font-label-tag text-[10px] sm:text-label-tag text-on-surface-variant uppercase tracking-wider font-bold">Cuộc bầu cử đã tạo</span>
+          <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-surface-container-high flex items-center justify-center text-primary shrink-0">
+            <span class="material-symbols-outlined text-[18px] sm:text-[20px]">ballot</span>
+          </div>
+        </div>
+        <div class="mt-2 flex items-baseline gap-2 flex-wrap">
+          <span id="statCreatedTotal" class="font-headline-xl text-3xl sm:text-headline-xl font-bold text-on-surface">0</span>
+          <span id="statCreatedOpen" class="font-body-sm text-xs sm:text-body-sm text-tertiary font-semibold flex items-center gap-1">
+            <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-tertiary-container"></span> 0 đang mở
+          </span>
+          <span id="statCreatedEnded" class="font-body-sm text-xs sm:text-body-sm text-on-surface-variant">• 0 đã kết thúc</span>
+        </div>
+        <div class="mt-3 w-full bg-surface-container-low h-1.5 rounded-full overflow-hidden">
+          <div id="statCreatedBar" class="bg-primary-container h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <!-- Stat 2: Lá phiếu đã tham gia -->
+      <div class="relative overflow-hidden rounded-2xl bg-surface-container-lowest p-4 sm:p-space-md shadow-sm hover:shadow-md transition-shadow border border-surface-container-high/60">
+        <div class="flex items-center justify-between">
+          <span class="font-label-tag text-[10px] sm:text-label-tag text-on-surface-variant uppercase tracking-wider font-bold">Lá phiếu đã tham gia</span>
+          <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-secondary-fixed flex items-center justify-center text-secondary shrink-0">
+            <span class="material-symbols-outlined text-[18px] sm:text-[20px]">how_to_reg</span>
+          </div>
+        </div>
+        <div class="mt-2 flex items-baseline gap-2">
+          <span id="statVotedTotal" class="font-headline-xl text-3xl sm:text-headline-xl font-bold text-on-surface">0</span>
+          <span class="font-body-sm text-xs sm:text-body-sm text-on-surface-variant font-medium">phiếu hợp lệ</span>
+        </div>
+        <div id="statVotedRecent" class="mt-3 flex items-center gap-1.5 font-label-code text-xs sm:text-body-sm text-on-surface-variant truncate">
+          <span class="material-symbols-outlined text-[14px] sm:text-[16px] text-tertiary shrink-0">check_circle</span>
+          <span class="truncate">Chưa tham gia bỏ phiếu</span>
+        </div>
+      </div>
+
+      <!-- Stat 3: Bảo chứng On-Chain -->
+      <div class="relative overflow-hidden rounded-2xl bg-surface-container-lowest p-4 sm:p-space-md shadow-sm hover:shadow-md transition-shadow border border-surface-container-high/60 sm:col-span-2 md:col-span-1">
+        <div class="flex items-center justify-between">
+          <span class="font-label-tag text-[10px] sm:text-label-tag text-on-surface-variant uppercase tracking-wider font-bold">Bảo chứng On-Chain</span>
+          <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-on-tertiary-container/40 flex items-center justify-center text-tertiary shrink-0">
+            <span class="material-symbols-outlined text-[18px] sm:text-[20px]">lock</span>
+          </div>
+        </div>
+        <div class="mt-2 flex items-baseline gap-2">
+          <span class="font-headline-xl text-3xl sm:text-headline-xl font-bold text-on-surface">100%</span>
+          <span class="font-body-sm text-xs sm:text-body-sm text-tertiary font-semibold">Minh bạch</span>
+        </div>
+        <div class="mt-3 flex items-center gap-1.5 font-label-code text-xs sm:text-body-sm text-on-surface-variant">
+          <span class="material-symbols-outlined text-[14px] sm:text-[16px] text-primary shrink-0">verified_user</span>
+          <span class="truncate">Mọi phiếu sinh TxHash độc lập</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Trạng thái Chưa Kết Nối Ví (Need Wallet) -->
+  <div id="needWallet" class="hidden bg-surface-container-lowest rounded-2xl p-6 sm:p-12 text-center shadow-sm border border-surface-container-high my-4 sm:my-8 flex flex-col items-center justify-center gap-4 mx-4 sm:mx-0">
+    <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-surface-container flex items-center justify-center text-primary shrink-0">
+      <span class="material-symbols-outlined text-[32px] sm:text-[36px]">account_balance_wallet</span>
+    </div>
+    <div class="flex flex-col gap-2 max-w-md">
+      <h3 class="font-headline-md text-xl sm:text-headline-md text-on-surface font-bold">Vui lòng kết nối ví MetaMask</h3>
+      <p class="font-body-md text-sm sm:text-base text-on-surface-variant leading-relaxed">
+        Hệ thống cần đọc địa chỉ ví của bạn để tra cứu danh sách các cuộc bầu cử bạn đã tạo và các lá phiếu bạn đã bỏ trên blockchain.
+      </p>
+    </div>
+    <button id="btnConnect" type="button" class="w-full sm:w-auto px-6 sm:px-space-lg py-3 rounded-xl bg-primary-container text-on-primary font-headline-sm text-sm sm:text-headline-sm font-bold shadow-md hover:bg-primary transition-all flex items-center justify-center gap-2 cursor-pointer border-0">
+      <span class="material-symbols-outlined text-[18px] sm:text-[20px]">link</span>
+      <span>Kết nối MetaMask</span>
+    </button>
+  </div>
+
+  <!-- Trạng Thái Đã Kết Nối Ví (Mine Container) -->
+  <div id="mine" class="flex flex-col gap-5 sm:gap-space-md px-4 sm:px-0">
+
+    <!-- 3. Tab Switcher & Filter Controls -->
+    <div class="flex flex-col gap-4 sm:gap-space-md">
+      
+      <!-- High-level Navigation Tabs -->
+      <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 sm:gap-space-sm bg-surface-container-low p-1.5 rounded-2xl border border-surface-container-high/60">
+        <div class="flex flex-row items-center gap-1 overflow-x-auto no-scrollbar pb-1 lg:pb-0 w-full lg:w-auto">
+          <!-- Tab 1: Tôi đã tạo -->
+          <button class="tab-btn active flex-1 lg:flex-none inline-flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-space-md py-2.5 rounded-xl bg-surface-container-lowest text-primary font-headline-sm text-xs sm:text-sm font-bold shadow-sm whitespace-nowrap transition-all cursor-pointer border-0" data-tab="owner">
+            <span class="text-sm sm:text-base">👑</span>
+            <span>Hòm phiếu tôi tạo</span>
+            <span id="tabCountOwner" class="px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed font-label-code text-[10px] sm:text-label-tag font-bold">0</span>
+          </button>
+
+          <!-- Tab 2: Lịch sử tôi đã bỏ phiếu -->
+          <button class="tab-btn flex-1 lg:flex-none inline-flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-space-md py-2.5 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container/60 font-headline-sm text-xs sm:text-sm font-medium whitespace-nowrap transition-all cursor-pointer border-0 bg-transparent" data-tab="voted">
+            <span class="text-sm sm:text-base">🗳️</span>
+            <span>Lịch sử bỏ phiếu</span>
+            <span id="tabCountVoted" class="px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant font-label-code text-[10px] sm:text-label-tag">0</span>
+          </button>
+        </div>
+
+        <div class="flex items-center justify-center lg:justify-end gap-2 px-2 mt-1 lg:mt-0 w-full lg:w-auto">
+          <span class="font-body-sm text-xs sm:text-body-sm text-on-surface-variant">Chế độ xem:</span>
+          <span id="modePill" class="px-2.5 py-1 rounded-lg bg-surface-container-highest text-on-surface font-label-code text-[10px] sm:text-label-code font-semibold">Creator Mode</span>
+        </div>
+      </div>
+
+      <!-- Search & Filters Toolbar -->
+      <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 sm:gap-space-sm bg-surface-container-lowest p-3 sm:p-space-sm rounded-2xl shadow-sm border border-surface-container-high/60">
+        <!-- Search Input -->
+        <div class="relative flex-1 w-full lg:min-w-[280px]">
+          <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-outline text-[18px] sm:text-[20px]">search</span>
+          <input id="searchInput" type="text" placeholder="Tìm tên hòm phiếu, địa chỉ contract..." class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-surface-container-low font-body-md text-xs sm:text-sm text-on-surface placeholder:text-outline focus:outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary-container border border-surface-container-high/60 transition-all">
+        </div>
+
+        <!-- Filter pills -->
+        <div class="flex items-center gap-2 overflow-x-auto pb-1 lg:pb-0 w-full lg:w-auto">
+          <button id="filterAll" class="filter-pill active px-3 sm:px-3.5 py-2 rounded-xl bg-primary text-on-primary font-headline-sm text-[11px] sm:text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer border-0" data-status="all">
+            Tất cả (<span id="filterAllCount">0</span>)
+          </button>
+          <button id="filterOpen" class="filter-pill px-3 sm:px-3.5 py-2 rounded-xl bg-surface-container-low text-on-surface-variant hover:text-on-surface font-headline-sm text-[11px] sm:text-xs font-medium whitespace-nowrap transition-colors cursor-pointer border-0" data-status="open">
+            Đang diễn ra (<span id="filterOpenCount">0</span>)
+          </button>
+          <button id="filterEnded" class="filter-pill px-3 sm:px-3.5 py-2 rounded-xl bg-surface-container-low text-on-surface-variant hover:text-on-surface font-headline-sm text-[11px] sm:text-xs font-medium whitespace-nowrap transition-colors cursor-pointer border-0" data-status="ended">
+            Đã kết thúc (<span id="filterEndedCount">0</span>)
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 4. Danh Sách Thẻ Hòm Phiếu (Polls Stack) -->
+    <div id="list" class="flex flex-col gap-4 sm:gap-space-lg mt-2">
+      <!-- JavaScript sẽ render danh sách thẻ Material 3 tại đây -->
+    </div>
+
+    <!-- 5. Phân Trang (Pager) -->
+    <div id="pager" class="pager flex justify-center py-4 sm:py-space-md"></div>
+
+  </div>
+
+  <!-- 6. Bottom Blockchain Security Notice Banner -->
+  <div class="mt-6 sm:mt-space-xl p-4 sm:p-space-md rounded-2xl bg-surface-container-lowest shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4 sm:gap-space-md border border-surface-container-high/60 mx-4 sm:mx-0">
+    <div class="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-space-md">
+      <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-tertiary-container/10 flex items-center justify-center text-tertiary shrink-0">
+        <span class="material-symbols-outlined text-[24px] sm:text-[28px]">verified_user</span>
+      </div>
+      <div>
+        <h4 class="font-headline-sm text-sm sm:text-headline-sm font-bold text-on-surface">
+          Tính minh bạch và bảo mật mật mã học
+        </h4>
+        <p class="font-body-sm text-xs sm:text-body-sm text-on-surface-variant mt-1 sm:mt-0 leading-relaxed">
+          Mọi thao tác quản trị hòm phiếu và lá phiếu đều được đóng dấu thời gian (timestamp) bất biến trên blockchain Ethereum. Không một cá nhân nào có thể chỉnh sửa dữ liệu đã xác nhận.
+        </p>
+      </div>
+    </div>
+    <div class="shrink-0 flex items-center w-full md:w-auto mt-2 md:mt-0">
+      <a class="w-full md:w-auto justify-center px-4 py-2.5 rounded-xl bg-surface-container-high hover:bg-surface-container-highest text-primary font-headline-sm text-xs sm:text-sm font-bold transition-colors flex items-center gap-1.5 text-decoration-none" href="/verify/">
+        <span class="material-symbols-outlined text-[16px] sm:text-[18px]">search</span>
+        <span>Tra cứu mã băm Hash</span>
+      </a>
+    </div>
+  </div>
+  
+  <!-- Giữ lại ID ảo để JS cũ truy vấn không bị lỗi -->
+  <span id="footerContract" class="hidden"></span>
+
 </div>
 {% endblock %}
 
 {% block scripts %}
+<style>
+  /* Override styles from JS for active tab buttons */
+  .tab-btn.active {
+    background-color: var(--color-surface-container-lowest, #ffffff) !important;
+    color: var(--color-primary, #2563eb) !important;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+  }
+  .tab-btn:not(.active) {
+    background-color: transparent !important;
+    color: var(--color-on-surface-variant, #434655) !important;
+  }
+  /* Active status for filters */
+  .filter-pill.active {
+    background-color: var(--color-primary, #2563eb) !important;
+    color: var(--color-on-primary, #ffffff) !important;
+  }
+  .filter-pill:not(.active) {
+    background-color: var(--color-surface-container-low, #f1f5f9) !important;
+    color: var(--color-on-surface-variant, #434655) !important;
+  }
+</style>
 <script src="{% static 'js/cards.js' %}"></script>
 <script src="{% static 'js/my.js' %}"></script>
 {% endblock %}
