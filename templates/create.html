@@ -1,123 +1,312 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}Tạo hòm phiếu — VoteChain{% endblock %}
-{% block nav_create %}active{% endblock %}
+
+{% block title %}VoteChain - Thiết Lập Hòm Phiếu Bầu Mới{% endblock %}
+
+{% block nav_create %}text-primary bg-surface-container-low font-bold{% endblock %}
 
 {% block content %}
-<div style="max-width: 800px; margin: 0 auto; padding-bottom: 60px;">
-    <!-- Header -->
-    <div style="text-align: center; margin-bottom: 32px; margin-top: 20px;">
-        <h1 style="color: #1e3a8a; display: flex; justify-content: center; align-items: center; gap: 12px; margin-bottom: 12px; font-size: 1.75rem;">
-            <i class="fa-solid fa-square-plus" style="color: #3b82f6;"></i> Tạo hòm phiếu mới
+<!-- Banner Lỗi kết nối máy chủ nếu có -->
+<div id="banner" class="max-w-5xl mx-auto px-4 sm:px-8 pt-4 w-full"></div>
+
+<div class="max-w-5xl mx-auto w-full px-4 sm:px-8 py-6 sm:py-10 space-y-6 sm:space-y-10">
+
+  <!-- Breadcrumbs & Standard Tag -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-on-surface-variant text-body-sm">
+    <nav class="flex items-center gap-1.5 font-medium">
+      <a class="hover:text-primary transition-colors flex items-center gap-1 text-decoration-none" href="/">
+        <span class="material-symbols-outlined text-[16px]">arrow_back</span>
+        Khám phá
+      </a>
+      <span class="text-outline">/</span>
+      <span class="text-on-surface font-semibold">Khởi tạo hợp đồng mới</span>
+    </nav>
+
+    <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container-high text-primary font-label-code text-xs sm:text-sm font-semibold self-start sm:self-auto w-fit">
+      <span class="w-2 h-2 rounded-full bg-primary animate-pulse shrink-0"></span>
+      <span class="truncate">Sepolia • ERC-1202 Standard</span>
+    </div>
+  </div>
+
+  <!-- Hero Banner Header -->
+  <section class="rounded-2xl sm:rounded-3xl bg-surface-container-lowest p-5 sm:p-10 border border-surface-container-high shadow-sm relative overflow-hidden">
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-6 sm:gap-10 items-center relative z-10">
+
+      <!-- Left Column -->
+      <div class="md:col-span-8 space-y-3 sm:space-y-4">
+        <div class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-primary-fixed text-on-primary-fixed font-label-tag text-[10px] sm:text-xs uppercase tracking-wider font-bold">
+          <span class="material-symbols-outlined text-[14px] sm:text-[16px]">how_to_vote</span>
+          Tạo cuộc bỏ phiếu phi tập trung
+        </div>
+        <h1 class="font-headline-xl text-3xl sm:text-4xl lg:text-[2.25rem] text-on-surface font-extrabold tracking-tight leading-tight">
+          Thiết Lập Hòm Phiếu Bầu Mới
         </h1>
-        <p style="color: #64748b; font-size: 0.95rem; line-height: 1.6; margin: 0;">
-            Bạn sẽ là <b>chủ sở hữu</b> của hòm phiếu: chỉ ví của bạn mới có quyền cấp phép cử tri, dời lịch hoặc đóng sớm.<br>
-            <span style="color: #d97706; font-weight: 600;">Các lựa chọn không thể sửa sau khi tạo để đảm bảo công bằng.</span>
+        <p class="font-body-md text-sm sm:text-base text-on-surface-variant leading-relaxed max-w-xl">
+          Triển khai hợp đồng bầu cử an toàn, bất biến trên Blockchain với dữ liệu minh bạch hoàn toàn. Mỗi lá phiếu
+          được bảo chứng bằng chữ ký mật mã cá nhân.
         </p>
+      </div>
+
+      <!-- Right Column: Contract Owner Badge -->
+      <div class="md:col-span-4">
+        <div class="p-4 sm:p-5 rounded-2xl bg-surface-container-low border border-surface-container-high/60 space-y-2 shadow-sm">
+          <div class="flex items-center justify-between text-outline font-label-tag text-[10px] sm:text-xs uppercase tracking-wider">
+            <span>Chủ sở hữu hợp đồng</span>
+            <span class="material-symbols-outlined text-[16px] text-primary cursor-pointer hover:opacity-80" id="btnCopyOwner" title="Sao chép địa chỉ">content_copy</span>
+          </div>
+          <div class="flex items-center gap-1.5 font-label-code text-sm sm:text-base font-bold text-on-surface break-all">
+            <span class="w-2 h-2 rounded-full bg-tertiary-container shrink-0"></span>
+            <span id="ownerAddress">0x... (Chưa kết nối ví)</span>
+          </div>
+          <div class="font-body-sm text-[11px] sm:text-xs text-on-surface-variant pt-2 border-t border-surface-container-high">
+            Quyền: Quản lý Whitelist / Lịch trình
+          </div>
+        </div>
+      </div>
+
     </div>
+  </section>
 
-    <div id="needWallet" class="notice info hidden" style="margin-bottom: 24px; background: #eff6ff; border-left: 4px solid #3b82f6; padding: 16px; border-radius: 8px;">
-        <i class="fa-solid fa-wallet"></i> Bạn cần kết nối ví MetaMask để tạo hòm phiếu. Phí gas do ví của bạn chi trả.
+  <!-- Cảnh báo khi chưa kết nối ví -->
+  <div id="needWallet" class="hidden p-4 sm:p-5 rounded-2xl bg-[#FFFBEB] border border-[#FDE68A] text-[#92400E] flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-6 shadow-sm">
+    <div class="flex items-start sm:items-center gap-3">
+      <span class="material-symbols-outlined text-[24px] text-[#D97706] shrink-0 mt-0.5 sm:mt-0">wallet</span>
+      <span class="text-sm sm:text-base leading-relaxed">Bạn cần kết nối ví MetaMask để tạo hòm phiếu. Phí gas triển khai do ví của bạn chi trả trên Sepolia.</span>
     </div>
-
-    <!-- Khối 1: Thông tin chung -->
-    <div style="margin-bottom: 24px; padding: 32px; border-radius: 12px; background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-        
-        <div class="field" style="margin-bottom: 24px;">
-            <label style="font-weight: 600; margin-bottom: 12px; display: block; color: #334155; font-size: 0.95rem;">Loại hòm phiếu</label>
-            <div class="seg" id="kindSeg" style="display: flex; gap: 24px;">
-                <label style="cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: 500; font-size: 0.95rem;">
-                    <input type="radio" name="kind" value="0" checked> Bầu chọn ứng viên
-                </label>
-                <label style="cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: 500; font-size: 0.95rem;">
-                    <input type="radio" name="kind" value="1"> Bỏ phiếu một vấn đề
-                </label>
-            </div>
-        </div>
-
-        <div class="field" style="margin-bottom: 24px;">
-            <label for="name" id="nameLabel" style="font-weight: 600; margin-bottom: 8px; display: block; color: #334155; font-size: 0.95rem;">Tên cuộc bầu cử <span style="color: #ef4444;">*</span></label>
-            <input id="name" type="text" maxlength="200" placeholder="VD: Bầu Chủ nhiệm Câu lạc bộ nhiệm kỳ 2026" style="width: 100%; padding: 12px 16px; border: 1px solid #cbd5e1; border-radius: 6px; background: #f8fafc; font-size: 0.95rem;">
-        </div>
-
-        <div class="field">
-            <label for="desc" style="font-weight: 600; margin-bottom: 8px; display: block; color: #334155; font-size: 0.95rem;">Mô tả (không bắt buộc)</label>
-            <textarea id="desc" maxlength="2000" placeholder="Bối cảnh, quy tắc, thông tin cần cử tri biết..." style="width: 100%; padding: 12px 16px; border: 1px solid #cbd5e1; border-radius: 6px; background: #f8fafc; min-height: 100px; font-family: inherit; font-size: 0.95rem; resize: vertical;"></textarea>
-            <div class="hint" style="font-size: 0.8rem; color: #94a3b8; margin-top: 8px;">Mô tả và ảnh được lưu trên IPFS, liên kết bất biến với hòm phiếu.</div>
-        </div>
-    </div>
-
-    <!-- Khối 2: Danh sách lựa chọn -->
-    <div style="margin-bottom: 24px; padding: 32px; border-radius: 12px; background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; border-bottom: 1px solid #f1f5f9; padding-bottom: 16px;">
-            <h2 id="optTitle" style="margin: 0; font-size: 1.15rem; color: #1e293b; display: flex; align-items: center; gap: 8px;">
-                <i class="fa-solid fa-list-check" style="color: #64748b;"></i> Danh sách Ứng viên
-            </h2>
-            <span id="optCount" style="font-size: 0.85rem; font-weight: 600; color: #64748b;"></span>
-        </div>
-        
-        <div id="options" id="optionsContainer" style="display: flex; flex-direction: column; gap: 16px;"></div>
-        
-        <div style="margin-top: 24px;">
-            <!-- Nút thêm ứng viên (Sẽ tự ẩn khi chọn Bỏ phiếu vấn đề) -->
-            <button type="button" id="addOpt" style="width: 100%; padding: 14px; border: 2px dashed #3b82f6; border-radius: 8px; background: #ffffff; color: #3b82f6; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; justify-content: center; align-items: center; gap: 8px;">
-                <i class="fa-solid fa-plus"></i> Thêm lựa chọn
-            </button>
-            
-            <!-- Nút điền mẫu tự động (Sẽ hiện ra khi chọn Bỏ phiếu vấn đề) -->
-            <button type="button" id="tplYesNo" class="hidden" style="width: 100%; padding: 14px; border: 1px solid #3b82f6; border-radius: 8px; background: #eff6ff; color: #1d4ed8; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; justify-content: center; align-items: center; gap: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
-                <i class="fa-solid fa-wand-magic-sparkles" style="color: #f59e0b;"></i> Điền mẫu tự động: Đồng ý / Phản đối / Phiếu trắng
-            </button>
-        </div>
-    </div>
-
-    <!-- Khối 3: Quy tắc -->
-    <div style="margin-bottom: 32px; padding: 32px; border-radius: 12px; background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-        <h2 style="margin: 0 0 24px 0; font-size: 1.15rem; color: #1e293b;">Quy tắc bỏ phiếu</h2>
-        
-        <div class="field" style="margin-bottom: 24px;">
-            <label for="maxChoices" style="font-weight: 600; margin-bottom: 8px; display: block; color: #334155; font-size: 0.95rem;">Số lựa chọn tối đa mỗi cử tri được chọn</label>
-            <input id="maxChoices" type="number" min="1" value="1" style="width: 100px; padding: 10px 16px; border: 1px solid #cbd5e1; border-radius: 6px; text-align: center; font-weight: 600; font-size: 1rem;">
-            <div id="maxHint" style="font-size: 0.85rem; color: #3b82f6; margin-top: 8px;"></div>
-        </div>
-
-        <div class="field" style="margin-bottom: 24px;">
-            <label style="font-weight: 600; margin-bottom: 12px; display: block; color: #334155; font-size: 0.95rem;">Ai được bỏ phiếu?</label>
-            <div class="seg" style="display: flex; gap: 32px;">
-                <label style="cursor: pointer; font-size: 0.95rem; font-weight: 500;"><input type="radio" name="priv" value="0" checked> Công khai (ai có ví cũng bỏ được)</label>
-                <label style="cursor: pointer; font-size: 0.95rem; font-weight: 600; color: #1e293b;"><input type="radio" name="priv" value="1"> Riêng tư (chỉ ví trong danh sách)</label>
-            </div>
-            <div style="font-size: 0.85rem; color: #64748b; margin-top: 8px;">Hòm phiếu riêng tư: bạn thêm danh sách ví cử tri ở trang hòm phiếu sau khi tạo.</div>
-        </div>
-
-        <div class="row" style="display: flex; gap: 32px; flex-wrap: wrap;">
-            <div class="field" style="flex: 1; min-width: 250px;">
-                <label style="font-weight: 600; margin-bottom: 12px; display: block; color: #334155; font-size: 0.95rem;">Thời điểm bắt đầu</label>
-                <div class="seg" style="display: flex; gap: 24px; margin-bottom: 12px;">
-                    <label style="cursor: pointer; font-size: 0.95rem;"><input type="radio" name="startMode" value="now" checked> Mở ngay</label>
-                    <label style="cursor: pointer; font-size: 0.95rem;"><input type="radio" name="startMode" value="at"> Hẹn giờ</label>
-                </div>
-                <input id="startAt" type="datetime-local" class="hidden" style="width: 100%; padding: 10px 16px; border: 1px solid #cbd5e1; border-radius: 6px;">
-            </div>
-            
-            <div class="field" style="flex: 1; min-width: 250px;">
-                <label style="font-weight: 600; margin-bottom: 12px; display: block; color: #334155; font-size: 0.95rem;">Thời điểm kết thúc</label>
-                <div class="seg" style="display: flex; gap: 24px; margin-bottom: 12px;">
-                    <label style="cursor: pointer; font-size: 0.95rem;"><input type="radio" name="endMode" value="none" checked> Tôi tự đóng</label>
-                    <label style="cursor: pointer; font-size: 0.95rem;"><input type="radio" name="endMode" value="at"> Hẹn giờ</label>
-                </div>
-                <input id="endAt" type="datetime-local" class="hidden" style="width: 100%; padding: 10px 16px; border: 1px solid #cbd5e1; border-radius: 6px;">
-            </div>
-        </div>
-    </div>
-
-    <!-- Errors & Submit -->
-    <div id="errors" class="notice error hidden" style="margin-bottom: 24px; padding: 16px; background: #fef2f2; border: 1px solid #fecaca; color: #b91c1c; border-radius: 8px; font-weight: 500;"></div>
-    <div id="progress" class="card hidden"></div>
-    
-    <button id="submit" class="btn btn-primary" type="button" style="width: 100%; padding: 16px; font-size: 1.1rem; font-weight: 600; background: #3b82f6; color: #fff; border: none; border-radius: 8px; cursor: pointer; transition: 0.2s;">
-        Tạo hòm phiếu
+    <button id="btnConnectAlert" type="button" class="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-[#D97706] text-white font-headline-sm text-sm sm:text-base font-semibold hover:opacity-90 shrink-0 border-0 cursor-pointer text-center">
+      Kết nối ví ngay
     </button>
+  </div>
+
+  <!-- SECTION 01: THÔNG TIN TỔNG QUAN -->
+  <section class="rounded-2xl sm:rounded-3xl bg-surface-container-lowest p-5 sm:p-10 border border-surface-container-high shadow-sm space-y-6 sm:space-y-8">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 sm:pb-5 border-b border-surface-container-high">
+      <div class="flex items-center gap-4">
+        <div class="w-10 h-10 rounded-xl bg-primary text-on-primary font-headline-sm text-lg font-bold flex items-center justify-center shrink-0">
+          01
+        </div>
+        <div>
+          <h2 class="font-headline-md text-xl sm:text-2xl text-on-surface font-bold">
+            Thông tin tổng quan
+          </h2>
+          <p class="font-body-sm text-sm text-on-surface-variant mt-0.5">
+            Thiết lập tiêu đề, mô tả và lịch trình
+          </p>
+        </div>
+      </div>
+      <span class="px-3 py-1 rounded-full bg-surface-container-low text-primary font-label-tag text-[10px] sm:text-xs uppercase font-bold tracking-wider w-fit">
+        Bắt buộc
+      </span>
+    </div>
+
+    <div class="space-y-5 sm:space-y-6">
+      <!-- Kind -->
+      <div class="space-y-2">
+        <label class="font-headline-sm text-sm sm:text-base text-on-surface font-semibold">Hình thức bỏ phiếu</label>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+          <label class="flex items-start sm:items-center gap-3 p-3 sm:p-4 rounded-2xl border border-surface-container-high bg-surface-container-low cursor-pointer hover:border-primary/50 transition-all">
+            <input type="radio" name="kind" value="0" checked class="w-4 h-4 text-primary mt-1 sm:mt-0 shrink-0">
+            <div>
+              <div class="font-headline-sm text-sm sm:text-base text-on-surface font-bold">Bầu cử ứng viên</div>
+              <div class="font-body-sm text-xs sm:text-sm text-on-surface-variant mt-0.5">Cử tri bỏ phiếu chọn đại biểu, ban cán sự, hội đồng</div>
+            </div>
+          </label>
+          <label class="flex items-start sm:items-center gap-3 p-3 sm:p-4 rounded-2xl border border-surface-container-high bg-surface-container-low cursor-pointer hover:border-primary/50 transition-all">
+            <input type="radio" name="kind" value="1" class="w-4 h-4 text-primary mt-1 sm:mt-0 shrink-0">
+            <div>
+              <div class="font-headline-sm text-sm sm:text-base text-on-surface font-bold">Lấy ý kiến cộng đồng</div>
+              <div class="font-body-sm text-xs sm:text-sm text-on-surface-variant mt-0.5">Biểu quyết đề án, trưng cầu ý kiến (Đồng/Phản đối)</div>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <!-- Tiêu đề -->
+      <div class="space-y-2">
+        <div class="flex items-center justify-between font-headline-sm text-sm sm:text-base text-on-surface font-semibold">
+          <label for="name" id="nameLabel">Tiêu đề cuộc bầu cử <span class="text-error">*</span></label>
+          <span class="font-label-code text-outline text-[10px] sm:text-xs" id="title-counter">Tối đa 90 ký tự</span>
+        </div>
+        <input id="name" type="text" maxlength="90" class="w-full bg-surface-container-low border border-transparent focus:border-primary focus:bg-surface-container-lowest px-4 py-3 rounded-xl font-body-md text-sm sm:text-base text-on-surface outline-none transition-all" placeholder="VD: Bầu ban cán sự đại diện nhiệm kỳ 2026">
+      </div>
+
+      <!-- Mô tả -->
+      <div class="space-y-2">
+        <div class="flex items-center justify-between font-headline-sm text-sm sm:text-base text-on-surface font-semibold">
+          <label for="desc">Mô tả mục đích &amp; thể lệ</label>
+          <span class="font-label-code text-outline text-[10px] sm:text-xs" id="desc-counter">0 / 500</span>
+        </div>
+        <textarea id="desc" rows="4" maxlength="500" class="w-full bg-surface-container-low border border-transparent focus:border-primary focus:bg-surface-container-lowest p-4 rounded-xl font-body-md text-sm sm:text-base text-on-surface outline-none transition-all resize-y" placeholder="Bối cảnh, thể lệ, quyền hạn và cam kết của cuộc bỏ phiếu..."></textarea>
+      </div>
+
+      <!-- Lịch trình -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 pt-2">
+        <!-- Bắt đầu -->
+        <div class="p-4 sm:p-5 rounded-2xl bg-surface-container-low/70 border border-surface-container-high space-y-3 sm:space-y-4">
+          <div class="flex items-center justify-between">
+            <span class="font-headline-sm text-sm sm:text-base text-on-surface font-semibold flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-[18px] text-primary">schedule</span> Bắt đầu
+            </span>
+            <span class="px-2.5 py-0.5 rounded-full bg-[#ECFDF5] text-[#065F46] font-label-tag text-[9px] sm:text-[10px] font-bold">GMT+7</span>
+          </div>
+          <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 text-sm font-medium">
+            <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="startMode" value="now" checked class="text-primary w-4 h-4 shrink-0"><span>Mở ngay khi tạo</span></label>
+            <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="startMode" value="at" class="text-primary w-4 h-4 shrink-0"><span>Hẹn giờ</span></label>
+          </div>
+          <div id="startAtBox" class="hidden">
+            <input id="startAt" type="datetime-local" class="w-full bg-surface-container-lowest border border-outline-variant/50 focus:border-primary px-3 py-2 rounded-xl font-label-code text-sm text-on-surface outline-none">
+          </div>
+        </div>
+
+        <!-- Kết thúc -->
+        <div class="p-4 sm:p-5 rounded-2xl bg-surface-container-low/70 border border-surface-container-high space-y-3 sm:space-y-4">
+          <div class="flex items-center justify-between">
+            <span class="font-headline-sm text-sm sm:text-base text-on-surface font-semibold flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-[18px] text-error">event_busy</span> Kết thúc
+            </span>
+            <span class="px-2.5 py-0.5 rounded-full bg-[#FEF2F2] text-[#991B1B] font-label-tag text-[9px] sm:text-[10px] font-bold">Khóa hòm phiếu</span>
+          </div>
+          <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 text-sm font-medium">
+            <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="endMode" value="none" checked class="text-primary w-4 h-4 shrink-0"><span>Đóng thủ công</span></label>
+            <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="endMode" value="at" class="text-primary w-4 h-4 shrink-0"><span>Hẹn giờ</span></label>
+          </div>
+          <div id="endAtBox" class="hidden">
+            <input id="endAt" type="datetime-local" class="w-full bg-surface-container-lowest border border-outline-variant/50 focus:border-primary px-3 py-2 rounded-xl font-label-code text-sm text-on-surface outline-none">
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 02: ỨNG VIÊN & LỰA CHỌN -->
+  <section class="rounded-2xl sm:rounded-3xl bg-surface-container-lowest p-5 sm:p-10 border border-surface-container-high shadow-sm space-y-6 sm:space-y-8">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 sm:pb-5 border-b border-surface-container-high">
+      <div class="flex items-start sm:items-center gap-4">
+        <div class="w-10 h-10 rounded-xl bg-primary text-on-primary font-headline-sm text-lg font-bold flex items-center justify-center shrink-0">
+          02
+        </div>
+        <div>
+          <div class="flex flex-col sm:flex-row sm:items-center gap-2">
+            <h2 id="optTitle" class="font-headline-md text-xl sm:text-2xl text-on-surface font-bold">
+              Danh sách lựa chọn
+            </h2>
+            <span id="optCount" class="px-2.5 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed font-label-tag text-[10px] sm:text-[11px] font-semibold w-fit">2 lựa chọn</span>
+          </div>
+          <p class="font-body-sm text-xs sm:text-sm text-on-surface-variant mt-0.5">Định danh an toàn qua mã Hash</p>
+        </div>
+      </div>
+      <button id="addOpt" type="button" class="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-surface-container-low text-primary hover:bg-surface-container-high font-headline-sm text-sm sm:text-base font-semibold flex items-center justify-center gap-1.5 transition-colors shadow-sm cursor-pointer border-0">
+        <span class="material-symbols-outlined text-[18px]">person_add</span> Thêm ứng viên mới
+      </button>
+    </div>
+
+    <!-- Số lựa chọn tối đa -->
+    <div class="p-4 sm:p-5 rounded-2xl bg-surface-container-low flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border border-surface-container-high/60">
+      <div>
+        <label for="maxChoices" class="font-headline-sm text-sm sm:text-base text-on-surface font-bold block">Số lựa chọn tối đa cho mỗi cử tri</label>
+        <span id="maxHint" class="font-body-sm text-xs sm:text-sm text-on-surface-variant mt-1 block">Mỗi cử tri chỉ chọn đúng 1 trong 2 lựa chọn.</span>
+      </div>
+      <input id="maxChoices" type="number" min="1" value="1" class="w-full sm:w-24 bg-surface-container-lowest border border-outline-variant/60 focus:border-primary px-3 py-2 rounded-xl font-label-code text-center font-bold text-on-surface outline-none shadow-sm">
+    </div>
+
+    <!-- Options Container -->
+    <div id="optionsContainer" class="space-y-4 sm:space-y-5"></div>
+
+    <!-- Nút thêm lựa chọn đáy -->
+    <div class="space-y-3">
+      <button id="addOptBottom" type="button" class="w-full py-3.5 rounded-2xl border-2 border-dashed border-primary/30 hover:border-primary hover:bg-primary/5 text-primary font-headline-sm text-sm sm:text-base font-bold flex items-center justify-center gap-2 transition-all cursor-pointer">
+        <span class="material-symbols-outlined text-[20px]">add_circle</span> Thêm lựa chọn khác vào danh sách
+      </button>
+
+      <button id="tplYesNo" type="button" class="hidden w-full py-3.5 rounded-2xl bg-secondary-fixed/50 hover:bg-secondary-fixed text-on-secondary-fixed font-headline-sm text-sm sm:text-base font-bold flex items-center justify-center gap-2 transition-all cursor-pointer border-0">
+        <span class="material-symbols-outlined text-[20px] text-secondary">auto_fix_high</span> Điền mẫu: Đồng ý / Phản đối
+      </button>
+    </div>
+  </section>
+
+  <!-- SECTION 03: WHITELIST -->
+  <section class="rounded-2xl sm:rounded-3xl bg-surface-container-lowest p-5 sm:p-10 border border-surface-container-high shadow-sm space-y-6 sm:space-y-8">
+    <div class="flex items-center gap-4 pb-4 sm:pb-5 border-b border-surface-container-high">
+      <div class="w-10 h-10 rounded-xl bg-primary text-on-primary font-headline-sm text-lg font-bold flex items-center justify-center shrink-0">
+        03
+      </div>
+      <div>
+        <h2 class="font-headline-md text-xl sm:text-2xl text-on-surface font-bold">Quyền tham gia</h2>
+        <p class="font-body-sm text-xs sm:text-sm text-on-surface-variant mt-0.5">Giới hạn người được phép bỏ phiếu</p>
+      </div>
+    </div>
+
+    <!-- Toggle Box -->
+    <div class="p-4 sm:p-5 rounded-2xl bg-surface-container-low border border-surface-container-high flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div class="flex items-start gap-4">
+        <div class="w-10 h-10 rounded-xl bg-primary-container text-on-primary flex items-center justify-center shrink-0 shadow-sm mt-1 sm:mt-0">
+          <span class="material-symbols-outlined text-[22px]">badge</span>
+        </div>
+        <div class="space-y-1">
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="font-headline-sm text-sm sm:text-base text-on-surface font-bold">Giới hạn danh sách (Whitelist)</span>
+            <span class="px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant font-label-tag text-[9px] sm:text-[10px] uppercase">Tùy chọn</span>
+          </div>
+          <p class="font-body-sm text-xs sm:text-sm text-on-surface-variant">Chỉ những ví có tên trong danh sách mới có thể bỏ phiếu on-chain.</p>
+        </div>
+      </div>
+      <label class="relative inline-flex items-center cursor-pointer shrink-0 self-end sm:self-auto">
+        <input type="checkbox" id="whitelist-toggle" class="sr-only peer">
+        <div class="w-11 h-6 bg-outline-variant/50 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-container">
+        </div>
+      </label>
+    </div>
+
+    <!-- Whitelist Input -->
+    <div id="whitelist-box" class="space-y-3 sm:space-y-4 hidden">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 font-headline-sm text-sm sm:text-base">
+        <span class="text-on-surface font-semibold flex items-center gap-1.5 flex-wrap">
+          Danh sách địa chỉ ví hợp lệ
+          <span id="wlCounter" class="text-outline font-normal text-xs">(0 ví)</span>
+        </span>
+        <div class="flex items-center gap-4 text-xs font-semibold text-primary">
+          <label class="hover:underline flex items-center gap-1 cursor-pointer">
+            <span class="material-symbols-outlined text-[16px]">upload_file</span> Tải file CSV
+            <input type="file" id="wlCsvFile" accept=".csv,.txt" class="sr-only">
+          </label>
+          <button type="button" id="btnWlChecksum" class="hover:underline flex items-center gap-1 bg-transparent border-0 text-primary cursor-pointer font-semibold">
+            <span class="material-symbols-outlined text-[16px]">check_circle</span> Kiểm tra Checksum
+          </button>
+        </div>
+      </div>
+
+      <textarea id="wlInput" rows="5" class="w-full bg-surface-container-low border border-surface-container-high focus:border-primary focus:bg-surface-container-lowest p-4 rounded-2xl font-label-code text-xs sm:text-sm text-on-surface outline-none leading-relaxed transition-all" placeholder="0x95FA6763890F7cD9C985D3aA8961725cb060A4Bc&#10;(Mỗi địa chỉ 1 dòng, ngăn cách bằng phẩy hoặc xuống dòng)"></textarea>
+
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs font-body-sm pt-1">
+        <span id="wlSummary" class="text-tertiary flex items-center gap-1 font-semibold">
+          <span class="material-symbols-outlined text-[15px]">verified</span> Chưa nhập địa chỉ nào
+        </span>
+        <span class="text-outline font-label-code">Định dạng tiêu chuẩn: Ethereum EIP-55</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lỗi -->
+  <div id="errors" class="hidden p-4 sm:p-5 rounded-2xl bg-[#FEF2F2] border border-[#FCA5A5] text-[#991B1B] space-y-1 font-medium text-sm shadow-sm">
+  </div>
+
+  <!-- Nút Submit -->
+  <section class="rounded-2xl sm:rounded-3xl bg-surface-container-lowest p-4 sm:p-6 border border-surface-container-high shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+    <div class="flex items-center gap-2 text-on-surface-variant font-body-sm text-xs sm:text-sm justify-center text-center sm:text-left w-full sm:w-auto">
+      <span class="material-symbols-outlined text-primary text-[20px] hidden sm:block">smart_toy</span>
+      <span>Hệ thống tự động kích hoạt hòm phiếu đúng thời gian.</span>
+    </div>
+
+    <div class="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 w-full sm:w-auto justify-end">
+      <a href="/" class="w-full sm:w-auto px-6 py-3 rounded-xl bg-surface-container-low hover:bg-surface-container-high text-on-surface font-headline-sm text-sm sm:text-base font-semibold transition-colors text-center text-decoration-none border border-transparent">
+        Hủy bỏ
+      </a>
+      <button id="submit" type="button" class="w-full sm:w-auto px-8 py-3 rounded-xl bg-primary-container text-on-primary font-headline-sm text-sm sm:text-base font-bold flex items-center justify-center gap-2 shadow-[0_4px_16px_rgba(37,99,235,0.3)] hover:bg-primary transition-all cursor-pointer border-0">
+        <span class="material-symbols-outlined text-[20px]">send</span> Tạo Cuộc Bầu Cử
+      </button>
+    </div>
+  </section>
+
 </div>
 {% endblock %}
 
