@@ -102,18 +102,21 @@ if USE_SQLITE:
     }
 else:
     import dj_database_url
+    from django.core.exceptions import ImproperlyConfigured
+    db_url = os.environ.get('DATABASE_URL')
+    if not db_url:
+        raise ImproperlyConfigured("Cần khai báo DATABASE_URL trong .env khi USE_SQLITE=False")
     DATABASES = {
         'default': dj_database_url.config(
-            default=os.environ.get('DATABASE_URL'),
+            default=db_url,
             conn_max_age=0,
             conn_health_checks=True,
         )
     }
     DATABASES['default']['DISABLE_SERVER_SIDE_CURSORS'] = True
-
+    
 SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
 SESSION_COOKIE_AGE = int(os.environ.get('SESSION_COOKIE_AGE', 86400))
-
 
 # Redis / Channel Layer / Cache
 
