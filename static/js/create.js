@@ -1,70 +1,126 @@
 (async () => {
   await App.init();
   const cfg = App.cfg, L = cfg.limits;
-  const $ = (id) => document.getElementById(id);
+  const $ = App.$;
   const bytes = (s) => new TextEncoder().encode(s).length;
   const radio = (name) => document.querySelector(`input[name=${name}]:checked`)?.value;
   let rowSeq = 0;
 
-  function addRow(label = '') {
-    const id = ++rowSeq;
-    const div = document.createElement('div');
-    div.className = 'option-row';
-    div.dataset.id = id;
+  // 1. Cập nhật thông tin chủ sở hữu (Owner Address)
+  function updateOwnerUI() {
+    const addr = App.state.address;
+    if ($('ownerAddress')) {
+      $('ownerAddress').textContent = addr ? App.short(addr) : '0x... (Chưa kết nối ví)';
+      $('ownerAddress').title = addr || '';
+    }
+    if ($('needWallet')) {
+      $('needWallet').classList.toggle('hidden', !!addr);
+    }
+  }
 
-    div.style.cssText = 'border: 1px solid #e2e8f0; border-radius: 8px; background: #ffffff; overflow: hidden;';
+  // Nút sao chép địa chỉ ví Owner
+  if ($('btnCopyOwner')) {
+    $('btnCopyOwner').addEventListener('click', () => {
+      if (App.state.address) {
+        navigator.clipboard.writeText(App.state.address);
+        App.toast('Đã sao chép địa chỉ ví của bạn!', 'ok', 2000);
+      } else {
+        App.toast('Vui lòng kết nối ví trước.', 'warn');
+      }
+    });
+  }
 
-    div.innerHTML = `
-      <div style="display: flex; padding: 12px 16px; gap: 12px; align-items: center; border-bottom: 1px solid #f1f5f9;">
-          <div style="color: #64748b;"><i class="fa-solid fa-user-tie"></i></div>
-          <input type="text" class="o-label" maxlength="100" placeholder="Nhập họ và tên ứng viên..." value="${App.esc(label)}" style="flex: 1; border: none; outline: none; font-weight: 600; color: #334155; font-size: 0.95rem; background: transparent;">
-          <button type="button" class="o-del" style="background: #fee2e2; color: #ef4444; border: none; width: 32px; height: 32px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s;" title="Xóa dòng này">
-              <i class="fa-solid fa-trash-can"></i>
-          </button>
+  if ($('btnConnectAlert')) {
+    $('btnConnectAlert').addEventListener('click', () => App.connect().then(updateOwnerUI));
+  }
+
+  // 2. Mẫu HTML hàng ứng viên / lựa chọn (Material 3 Card)
+  function candidateRowHtml(id, label, role, desc) {
+    const idStr = String(id).padStart(3, '0');
+    return `
+      <!-- Left: Avatar Upload Box -->
+      <div class="flex flex-col items-center gap-1.5 shrink-0 mx-auto md:mx-0">
+        <label class="w-20 h-20 rounded-2xl overflow-hidden bg-surface-container-high border border-outline-variant/40 shadow-sm relative group cursor-pointer flex items-center justify-center text-outline">
+          <input type="file" class="o-file sr-only" accept="image/png,image/jpeg,image/webp">
+          <img class="thumb w-full h-full object-cover hidden" alt="Ảnh ứng viên">
+          <span class="placeholder-icon material-symbols-outlined text-[32px] group-hover:scale-110 transition-transform">account_circle</span>
+          <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-semibold">
+            <span class="material-symbols-outlined text-[20px]">photo_camera</span>
+          </div>
+        </label>
+        <span class="font-label-tag text-label-tag text-outline text-[10px] uppercase font-bold tracking-wider">
+          Ảnh đại diện
+        </span>
       </div>
-      
-      <div style="padding: 16px; background: #f8fafc;">
-          <div style="margin-bottom: 8px; font-size: 0.85rem; font-weight: 600; color: #3b82f6; display: flex; align-items: center; gap: 8px;">
-              <i class="fa-solid fa-image"></i> Thêm Hình ảnh & Mô tả (Tùy chọn)
-          </div>
-          
-          <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px;">
-              <textarea class="o-desc" maxlength="500" placeholder="Mô tả chi tiết về ứng viên hoặc lựa chọn này (tối đa 500 ký tự)" style="width: 100%; border: none; outline: none; resize: vertical; min-height: 60px; font-family: inherit; font-size: 0.9rem; color: #475569; margin-bottom: 12px;"></textarea>
-              <div style="display: flex; justify-content: flex-end; color: #94a3b8;"><i class="fa-solid fa-pen-clip"></i></div>
+
+      <!-- Right: Candidate Fields -->
+      <div class="flex-1 w-full space-y-space-xs">
+        <div class="flex items-center justify-between gap-space-sm">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-space-sm flex-1">
+            <div class="space-y-1">
+              <label class="o-label-title font-headline-sm text-headline-sm text-on-surface font-semibold text-xs">Tên ứng viên #${id}</label>
+              <input type="text" class="o-label w-full bg-surface-container-lowest border border-outline-variant/50 focus:border-primary px-3 py-2 rounded-xl font-headline-sm text-headline-sm text-on-surface outline-none font-semibold text-sm transition-all" placeholder="Nhập họ và tên ứng viên..." value="${App.esc(label)}">
+            </div>
+            <div class="space-y-1">
+              <label class="o-role-title font-headline-sm text-headline-sm text-on-surface font-semibold text-xs">Chức vụ / Đơn vị đề cử</label>
+              <input type="text" class="o-role w-full bg-surface-container-lowest border border-outline-variant/50 focus:border-primary px-3 py-2 rounded-xl font-body-md text-body-md text-on-surface outline-none text-sm transition-all" placeholder="VD: Lớp trưởng, Trưởng ban..." value="${App.esc(role)}">
+            </div>
           </div>
 
-          <div style="margin-top: 16px; display: flex; gap: 16px; align-items: flex-start;">
-              <div style="flex: 1;">
-                  <div style="font-size: 0.85rem; font-weight: 600; color: #334155; margin-bottom: 8px;">Tải ảnh đại diện:</div>
-                  <div style="display: flex; align-items: center; gap: 8px;">
-                      <input type="file" class="o-file" accept="image/png,image/jpeg,image/webp" style="flex: 1; padding: 6px; border: 1px dashed #94a3b8; border-radius: 4px; font-size: 0.85rem; background: #ffffff; color: #64748b; cursor: pointer;">
-                  </div>
-                  <div style="font-size: 0.75rem; color: #64748b; margin-top: 6px;">
-                      <i class="fa-solid fa-circle-info"></i> Hỗ trợ PNG, JPG, WEBP. Ảnh sẽ được lưu trữ phi tập trung trên IPFS.
-                  </div>
-              </div>
-              <img class="thumb hidden" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 1px solid #e2e8f0;">
+          <div class="flex items-center gap-1.5 self-start pt-5">
+            <span class="o-id-badge px-2 py-0.5 rounded-md bg-surface-container-high text-primary font-label-code text-label-code font-bold text-xs">
+              ID: #${idStr}
+            </span>
+            <button type="button" class="o-del text-outline hover:text-error transition-colors p-1 cursor-pointer" title="Xóa dòng này">
+              <span class="material-symbols-outlined text-[20px]">delete</span>
+            </button>
           </div>
+        </div>
+
+        <div class="space-y-1 pt-1">
+          <label class="font-headline-sm text-headline-sm text-on-surface-variant font-medium text-xs">Cương lĩnh hành động tóm tắt</label>
+          <input type="text" class="o-desc w-full bg-surface-container-lowest border border-outline-variant/50 focus:border-primary px-3 py-2 rounded-xl font-body-sm text-body-sm text-on-surface outline-none transition-all" placeholder="Nêu các cam kết hoặc mục tiêu chính..." value="${App.esc(desc)}">
+        </div>
       </div>
     `;
+  }
 
-    div.querySelector('.o-del').addEventListener('click', () => { div.remove(); refresh(); });
-    
+  // 3. Thêm một hàng ứng viên / lựa chọn
+  function addRow(label = '', role = '', desc = '') {
+    const id = ++rowSeq;
+    const div = document.createElement('div');
+    div.className = 'candidate-row rounded-2xl p-space-md bg-surface-container-low/50 border border-surface-container-high hover:border-primary/40 transition-all flex flex-col md:flex-row items-start gap-space-md relative';
+    div.dataset.id = id;
+    div.innerHTML = candidateRowHtml(id, label, role, desc);
+
+    // Bắt sự kiện xóa
+    div.querySelector('.o-del').addEventListener('click', () => {
+      div.remove();
+      renumberRows();
+      refresh();
+    });
+
+    // Bắt sự kiện chọn ảnh đại diện & xem trước
     const fileInput = div.querySelector('.o-file');
     const imgThumb = div.querySelector('.thumb');
-    
+    const placeholderIcon = div.querySelector('.placeholder-icon');
+
     fileInput.addEventListener('change', (e) => {
       const f = e.target.files[0];
       if (f && f.size > L.max_image_bytes) {
-          App.toast(`Ảnh quá lớn (tối đa ${L.max_image_bytes / 1048576} MB).`, 'error');
-          e.target.value = '';
+        App.toast(`Ảnh quá lớn (tối đa ${L.max_image_bytes / 1048576} MB).`, 'error');
+        e.target.value = '';
+        imgThumb.classList.add('hidden');
+        placeholderIcon.classList.remove('hidden');
+        return;
       }
-      const ok = e.target.files[0];
-      if (ok) {
-          imgThumb.src = URL.createObjectURL(ok);
-          imgThumb.classList.remove('hidden');
+      if (f) {
+        imgThumb.src = URL.createObjectURL(f);
+        imgThumb.classList.remove('hidden');
+        placeholderIcon.classList.add('hidden');
       } else {
-          imgThumb.classList.add('hidden');
+        imgThumb.classList.add('hidden');
+        placeholderIcon.classList.remove('hidden');
       }
     });
 
@@ -73,14 +129,27 @@
     const container = $('optionsContainer') || $('options');
     if (container) container.appendChild(div);
 
+    renumberRows();
     refresh();
-    applyKind(); 
+    applyKind();
     return div;
   }
 
   function rows() {
     const container = $('optionsContainer') || $('options');
-    return container ? [...container.querySelectorAll('.option-row')] : [];
+    return container ? [...container.querySelectorAll('.candidate-row')] : [];
+  }
+
+  function renumberRows() {
+    rows().forEach((r, idx) => {
+      const num = idx + 1;
+      const idStr = String(num).padStart(3, '0');
+      const badge = r.querySelector('.o-id-badge');
+      if (badge) badge.textContent = `ID: #${idStr}`;
+      const labelTitle = r.querySelector('.o-label-title');
+      const isProposal = radio('kind') === '1';
+      if (labelTitle) labelTitle.textContent = isProposal ? `Đáp án #${num}` : `Tên ứng viên #${num}`;
+    });
   }
 
   function refresh() {
@@ -88,232 +157,382 @@
     const n = rws.length;
     if ($('optCount')) $('optCount').textContent = `${n}/${L.max_options} lựa chọn`;
 
-    const addBtn = $('addOpt') || $('btnAddOption');
-    if (addBtn) addBtn.disabled = n >= L.max_options;
+    const addTop = $('addOpt');
+    const addBtm = $('addOptBottom');
+    if (addTop) addTop.disabled = n >= L.max_options;
+    if (addBtm) addBtm.disabled = n >= L.max_options;
+
     document.querySelectorAll('.o-del').forEach((b) => (b.disabled = n <= L.min_options));
-    
+
     const mc = $('maxChoices');
     if (mc) {
-        mc.max = n;
-        if (+mc.value > n) mc.value = n;
-        if (+mc.value < 1) mc.value = 1;
-        const k = +mc.value || 1;
-        if ($('maxHint')) {
-            $('maxHint').textContent = k === 1
-              ? `Mỗi cử tri chỉ chọn đúng 1 trong ${n} lựa chọn.`
-              : `Được chọn từ 1 đến ${k} trong ${n} lựa chọn.`;
-        }
+      mc.max = n;
+      if (+mc.value > n) mc.value = n;
+      if (+mc.value < 1) mc.value = 1;
+      const k = +mc.value || 1;
+      if ($('maxHint')) {
+        $('maxHint').textContent = k === 1
+          ? `Mỗi cử tri chỉ chọn đúng 1 trong ${n} lựa chọn.`
+          : `Được chọn từ 1 đến ${k} trong ${n} lựa chọn.`;
+      }
     }
   }
 
   function applyKind() {
-    const kindEl = document.querySelector('input[name=kind]:checked');
-    if (!kindEl) return;
-    const proposal = kindEl.value === '1';
-    
-    if ($('nameLabel')) $('nameLabel').innerHTML = proposal ? 'Câu hỏi / vấn đề cần lấy ý kiến <span style="color: #ef4444;">*</span>' : 'Tên cuộc bầu cử <span style="color: #ef4444;">*</span>';
-    if ($('name')) $('name').placeholder = proposal ? 'VD: Có nên đổi giờ sinh hoạt sang buổi tối?' : 'VD: Bầu Chủ nhiệm Câu lạc bộ nhiệm kỳ 2026';
-    if ($('optTitle')) $('optTitle').innerHTML = proposal ? '<i class="fa-solid fa-list-check" style="color: #64748b;"></i> Các đáp án' : '<i class="fa-solid fa-list-check" style="color: #64748b;"></i> Danh sách Ứng viên';
+    const isProposal = radio('kind') === '1';
 
-    document.querySelectorAll('.option-row').forEach((r) => {
-        const icon = r.querySelector('.fa-user-tie, .fa-users');
-        if (icon) {
-            icon.className = proposal ? 'fa-solid fa-users' : 'fa-solid fa-user-tie';
-        }
-        
-        const inputLabel = r.querySelector('.o-label');
-        if (inputLabel) {
-            inputLabel.placeholder = proposal ? 'Ví dụ: Đồng ý / Phản đối' : 'Nhập họ và tên ứng viên...';
-        }
+    if ($('nameLabel')) $('nameLabel').innerHTML = isProposal ? 'Câu hỏi / Vấn đề cần lấy ý kiến <span class="text-error">*</span>' : 'Tiêu đề cuộc bầu cử <span class="text-error">*</span>';
+    if ($('name')) $('name').placeholder = isProposal ? 'VD: Có nên ứng dụng hệ thống biểu quyết Blockchain trong học kỳ mới?' : 'VD: Bầu ban cán sự đại diện nhiệm kỳ 2026 - Khoa Công Nghệ Thông Tin';
+    if ($('optTitle')) $('optTitle').textContent = isProposal ? 'Danh sách các đáp án biểu quyết' : 'Danh sách ứng viên & Lựa chọn';
+
+    rows().forEach((r, idx) => {
+      const num = idx + 1;
+      const labelTitle = r.querySelector('.o-label-title');
+      const roleBox = r.querySelector('.o-role')?.closest('.space-y-1');
+      const inputLabel = r.querySelector('.o-label');
+
+      if (labelTitle) labelTitle.textContent = isProposal ? `Đáp án #${num}` : `Tên ứng viên #${num}`;
+      if (inputLabel) inputLabel.placeholder = isProposal ? 'Ví dụ: Đồng ý / Phản đối...' : 'Nhập họ và tên ứng viên...';
+      if (roleBox) roleBox.style.display = isProposal ? 'none' : 'block';
     });
-    
-    // Tự động hoán đổi 2 nút theo loại hòm phiếu
-    if ($('addOpt')) $('addOpt').classList.toggle('hidden', proposal);
-    if ($('tplYesNo')) $('tplYesNo').classList.toggle('hidden', !proposal);
+
+    if ($('tplYesNo')) $('tplYesNo').classList.toggle('hidden', !isProposal);
   }
 
+  // 3. Xử lý Whitelist (Danh sách địa chỉ cử tri)
+  const parseAddresses = App.parseAddresses;
+
+  function refreshWhitelistUI() {
+    const val = $('wlInput') ? $('wlInput').value : '';
+    const { valid, invalid } = parseAddresses(val);
+
+    if ($('wlCounter')) {
+      $('wlCounter').textContent = `(${valid.length} ví hợp lệ${invalid.length ? `, ${invalid.length} lỗi` : ''})`;
+    }
+    if ($('wlSummary')) {
+      if (!valid.length && !invalid.length) {
+        $('wlSummary').innerHTML = '<span class="material-symbols-outlined text-[15px]">verified</span> <span>Chưa nhập địa chỉ nào</span>';
+        $('wlSummary').className = 'text-outline flex items-center gap-1 font-semibold';
+      } else if (invalid.length) {
+        $('wlSummary').innerHTML = `<span class="material-symbols-outlined text-[15px] text-error">error</span> <span class="text-error">${valid.length} ví hợp lệ, có ${invalid.length} địa chỉ sai định dạng</span>`;
+      } else {
+        $('wlSummary').innerHTML = `<span class="material-symbols-outlined text-[15px] text-tertiary">verified</span> <span class="text-tertiary">Đã xác minh ${valid.length} địa chỉ hợp lệ (0 trùng lặp)</span>`;
+      }
+    }
+  }
+
+  if ($('wlInput')) $('wlInput').addEventListener('input', refreshWhitelistUI);
+
+  // Đọc file CSV
+  if ($('wlCsvFile')) {
+    $('wlCsvFile').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        const text = evt.target.result;
+        const current = $('wlInput').value.trim();
+        $('wlInput').value = current ? current + '\n' + text : text;
+        refreshWhitelistUI();
+        App.toast('Đã nạp danh sách địa chỉ từ file!', 'ok');
+      };
+      reader.readAsText(file);
+    });
+  }
+
+  // Kiểm tra & chuẩn hoá Checksum EIP-55
+  if ($('btnWlChecksum')) {
+    $('btnWlChecksum').addEventListener('click', () => {
+      const { valid, invalid } = parseAddresses($('wlInput').value);
+      if (!valid.length) return App.toast('Chưa có địa chỉ hợp lệ nào để chuẩn hoá.', 'warn');
+      $('wlInput').value = valid.join('\n');
+      refreshWhitelistUI();
+      App.toast(`Đã chuẩn hoá ${valid.length} địa chỉ theo tiêu chuẩn EIP-55!`, 'ok');
+    });
+  }
+
+  // Bật/tắt công tắc Whitelist
+  if ($('whitelist-toggle')) {
+    $('whitelist-toggle').addEventListener('change', (e) => {
+      if ($('whitelist-box')) $('whitelist-box').classList.toggle('hidden', !e.target.checked);
+    });
+  }
+
+  // 5. Bộ đếm ký tự thời gian thực
+  if ($('name') && $('title-counter')) {
+    $('name').addEventListener('input', () => {
+      $('title-counter').textContent = `${$('name').value.length} / 90 ký tự`;
+    });
+  }
+
+  if ($('desc') && $('desc-counter')) {
+    $('desc').addEventListener('input', () => {
+      $('desc-counter').textContent = `${$('desc').value.length} / 500`;
+    });
+  }
+
+  // 6. Thu thập dữ liệu Form
   function collect() {
-    const kindEl = document.querySelector('input[name=kind]:checked');
-    const privEl = document.querySelector('input[name=priv]:checked');
-    const startEl = document.querySelector('input[name=startMode]:checked');
-    const endEl = document.querySelector('input[name=endMode]:checked');
-    
+    const isPrivate = $('whitelist-toggle') ? $('whitelist-toggle').checked : false;
+    const { valid: whitelist } = parseAddresses($('wlInput') ? $('wlInput').value : '');
+
     return {
-      kind: kindEl ? +kindEl.value : 0, 
-      name: ($('name') || $('title')).value.trim(), 
+      kind: +radio('kind') || 0,
+      name: ($('name') ? $('name').value.trim() : ''),
       description: $('desc') ? $('desc').value.trim() : '',
-      isPrivate: privEl ? privEl.value === '1' : false, 
+      isPrivate,
+      whitelist,
       maxChoices: $('maxChoices') ? +$('maxChoices').value : 1,
-      startMode: startEl ? startEl.value : 'now', 
-      endMode: endEl ? endEl.value : 'at',
+      startMode: radio('startMode') || 'now',
+      endMode: radio('endMode') || 'none',
       options: rows().map((r) => ({
-          label: r.querySelector('.o-label').value.trim(),
-          description: r.querySelector('.o-desc').value.trim(),
-          file: r.querySelector('.o-file').files[0] || null,
+        label: r.querySelector('.o-label').value.trim(),
+        role: r.querySelector('.o-role') ? r.querySelector('.o-role').value.trim() : '',
+        description: r.querySelector('.o-desc').value.trim(),
+        file: r.querySelector('.o-file').files[0] || null,
       })),
     };
   }
 
+  // 7. Xác thực nghiệp vụ
   function validate(f) {
     const errs = [];
-    if (!f.name) errs.push('Hãy nhập tên/câu hỏi.');
-    if (bytes(f.name) > L.max_name_bytes) errs.push(`Tên quá dài (tối đa ${L.max_name_bytes} byte).`);
+    if (!f.name) errs.push('Hãy nhập tiêu đề cuộc bầu cử hoặc câu hỏi lấy ý kiến.');
+    if (bytes(f.name) > L.max_name_bytes) errs.push(`Tiêu đề quá dài (tối đa ${L.max_name_bytes} byte).`);
     if (f.options.length < L.min_options) errs.push(`Cần ít nhất ${L.min_options} lựa chọn.`);
+
     const seen = new Set();
     f.options.forEach((o, i) => {
-      if (!o.label) errs.push(`Lựa chọn #${i + 1} đang để trống.`);
-      else if (bytes(o.label) > L.max_label_bytes) errs.push(`Lựa chọn #${i + 1} quá dài.`);
+      if (!o.label) errs.push(`Lựa chọn #${i + 1} đang để trống tên.`);
+      else if (bytes(o.label) > L.max_label_bytes) errs.push(`Lựa chọn #${i + 1} quá dài (tối đa ${L.max_label_bytes} byte).`);
       const key = o.label.toLowerCase();
-      if (o.label && seen.has(key)) errs.push(`Lựa chọn "${o.label}" bị trùng.`);
+      if (o.label && seen.has(key)) errs.push(`Lựa chọn "${o.label}" bị trùng lặp.`);
       seen.add(key);
     });
+
     if (!(f.maxChoices >= 1 && f.maxChoices <= f.options.length)) errs.push('Số lựa chọn tối đa không hợp lệ.');
+
     const now = Date.now() / 1000;
     let start = 0, end = 0;
-    
+
     if (f.startMode === 'at' && $('startAt')) {
       start = App.toUnix($('startAt').value);
       if (!start) errs.push('Hãy chọn thời điểm bắt đầu.');
       else if (start < now - 60) errs.push('Thời điểm bắt đầu đang ở quá khứ.');
     }
-    
-    const endTimeInput = $('endAt') || $('endTime');
-    if (f.endMode === 'at' && endTimeInput) {
-      end = App.toUnix(endTimeInput.value);
+
+    if (f.endMode === 'at' && $('endAt')) {
+      end = App.toUnix($('endAt').value);
       if (!end) errs.push('Hãy chọn thời điểm kết thúc.');
       else if (end <= Math.max(start, now + 60)) errs.push('Thời điểm kết thúc phải sau thời điểm bắt đầu.');
     }
+
     return { errs, start, end };
   }
 
+  // 8. Hộp thoại tiến trình Modal (Material 3)
   const steps = [];
   function showModal() {
     let m = $('progressModal');
     if (!m) {
       m = document.createElement('div');
       m.id = 'progressModal';
-      m.className = 'modal-overlay';
-      m.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 9999; display: flex; align-items: center; justify-content: center;';
+      m.className = 'fixed inset-0 bg-black/60 backdrop-blur-sm z-[9999] flex items-center justify-center p-4';
       m.innerHTML = `
-        <div class="modal-content" style="background: #ffffff; padding: 32px; border-radius: 12px; width: 100%; max-width: 420px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
-            <div style="text-align: center; margin-bottom: 24px;">
-                <h3 style="margin: 0; color: #1e293b; font-size: 1.25rem;">Khởi tạo Hòm phiếu</h3>
-                <p style="margin: 8px 0 0 0; font-size: 0.9rem; color: #64748b;">Vui lòng không đóng trình duyệt lúc này</p>
+        <div class="bg-surface-container-lowest rounded-3xl p-space-xl w-full max-w-md shadow-2xl border border-surface-container-high space-y-space-md">
+          <div class="text-center space-y-1">
+            <div class="w-12 h-12 rounded-2xl bg-primary-container text-on-primary flex items-center justify-center mx-auto shadow-md">
+              <span class="material-symbols-outlined text-[24px]">token</span>
             </div>
-            <div id="modalSteps" class="progress-steps" style="display: flex; flex-direction: column; gap: 16px;"></div>
+            <h3 class="font-headline-md text-headline-md font-bold text-on-surface">Khởi tạo Hòm phiếu</h3>
+            <p class="font-body-sm text-body-sm text-on-surface-variant">Vui lòng không đóng trình duyệt trong quá trình này</p>
+          </div>
+          <div id="modalSteps" class="space-y-3 pt-2"></div>
         </div>`;
       document.body.appendChild(m);
     }
   }
-  
-  function hideModal() { const m = $('progressModal'); if (m) m.remove(); }
-  
+
+  function hideModal() {
+    const m = $('progressModal');
+    if (m) m.remove();
+  }
+
   function step(text) {
     steps.push(text);
     showModal();
-    $('modalSteps').innerHTML = steps.map((s, i) => {
+    const c = $('modalSteps');
+    if (!c) return;
+
+    c.innerHTML = steps.map((s, i) => {
       const isLast = i === steps.length - 1;
-      const icon = isLast 
-          ? '<i class="fa-solid fa-circle-notch fa-spin" style="color: #3b82f6;"></i>' 
-          : '<i class="fa-solid fa-circle-check" style="color: #10b981;"></i>';
-      const color = isLast ? '#1e293b' : '#64748b';
-      
+      const icon = isLast
+        ? '<span class="material-symbols-outlined text-[20px] text-primary animate-spin">progress_activity</span>'
+        : '<span class="material-symbols-outlined text-[20px] text-tertiary">check_circle</span>';
+      const textClass = isLast ? 'font-bold text-on-surface' : 'font-medium text-on-surface-variant';
+
       return `
-        <div style="display: flex; align-items: center; gap: 12px; color: ${color}; font-size: 0.95rem;">
-            <div style="width: 24px; display: flex; justify-content: center;">${icon}</div>
-            <span style="flex: 1;">${App.esc(s)}</span>
+        <div class="flex items-center gap-3 text-sm">
+          <div class="w-6 flex items-center justify-center shrink-0">${icon}</div>
+          <span class="${textClass} flex-1 leading-snug">${App.esc(s)}</span>
         </div>`;
     }).join('');
   }
 
+  // 9. Thực thi gửi giao dịch & Triển khai Contract
   async function submit() {
     const f = collect();
     const { errs, start, end } = validate(f);
-    
+
     if ($('errors')) {
-        $('errors').classList.toggle('hidden', !errs.length);
-        $('errors').innerHTML = errs.map((e) => '• ' + App.esc(e)).join('<br>');
+      $('errors').classList.toggle('hidden', !errs.length);
+      $('errors').innerHTML = errs.map((e) => `<div class="flex items-center gap-2"><span class="material-symbols-outlined text-[16px] text-error shrink-0">error</span><span>${App.esc(e)}</span></div>`).join('');
     }
-    
-    if (errs.length) return window.scrollTo(0, 0);
+
+    if (errs.length) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+
     if (!cfg.factory_address) return App.toast('Nền tảng chưa cấu hình Factory Address.', 'error');
 
     const submitBtn = $('submit');
-    if (submitBtn) submitBtn.disabled = true; 
+    if (submitBtn) submitBtn.disabled = true;
     steps.length = 0;
-    
+
     try {
       step('Kết nối ví MetaMask…');
       await App.connect();
+      updateOwnerUI();
 
-      const needMeta = f.description || f.options.some((o) => o.description || o.file);
+      const needMeta = f.description || f.options.some((o) => o.description || o.role || o.file);
       let metadataURI = '';
-      
+
       if (needMeta) {
         if (!cfg.ipfs_enabled) throw new Error('Máy chủ chưa bật IPFS: hãy bỏ mô tả/ảnh hoặc liên hệ quản trị.');
-        step('Xác nhận chủ ví (ký tin nhắn, không tốn gas)…');
+        step('Xác nhận chủ ví (ký tin nhắn SIWE, hoàn toàn miễn phí gas)…');
         await App.ensureLogin();
-        
+
         const metaOptions = [];
         for (let i = 0; i < f.options.length; i++) {
           const o = f.options[i];
           let image = '';
           if (o.file) {
-            step(`Tải ảnh ${i + 1}/${f.options.length} lên IPFS…`);
+            step(`Tải ảnh đại diện ${i + 1}/${f.options.length} lên Pinata IPFS…`);
             const form = new FormData(); form.append('image', o.file);
             image = (await App.api('/api/ipfs/image/', { method: 'POST', form })).cid;
           }
-          metaOptions.push({ label: o.label, description: o.description, image });
+          // Kết hợp chức vụ và cương lĩnh vào mô tả IPFS
+          const fullDesc = o.role ? (o.description ? `${o.role} • ${o.description}` : o.role) : o.description;
+          metaOptions.push({ label: o.label, description: fullDesc, image });
         }
-        step('Ghim dữ liệu lên IPFS…');
-        metadataURI = (await App.api('/api/ipfs/metadata/', { method: 'POST', json: { description: f.description, options: metaOptions } })).cid;
+
+        step('Đóng gói & ghim Metadata lên IPFS…');
+        metadataURI = (await App.api('/api/ipfs/metadata/', {
+          method: 'POST',
+          json: { description: f.description, options: metaOptions }
+        })).cid;
       }
 
-      step('Gửi giao dịch tạo hòm phiếu — xác nhận trong MetaMask…');
+      step('Gửi giao dịch tạo hòm phiếu — Vui lòng ký trên ví MetaMask…');
       const factory = App.factoryContract(App.state.signer);
-      const params = { name: f.name, metadataURI, kind: f.kind, isPrivate: f.isPrivate, maxChoices: f.maxChoices,
-                       startTime: start, endTime: end, options: f.options.map((o) => o.label) };
+      const params = {
+        name: f.name,
+        metadataURI,
+        kind: f.kind,
+        isPrivate: f.isPrivate,
+        maxChoices: f.maxChoices,
+        startTime: start,
+        endTime: end,
+        options: f.options.map((o) => o.label)
+      };
+
       const tx = await factory.createElection(params);
-      
-      step('Đang chờ Blockchain xác nhận…');
+
+      step('Đang đợi mạng Sepolia xác nhận khối (khoảng 12s)…');
       const receipt = await tx.wait();
-      const ev = receipt.logs.map((l) => { try { return factory.interface.parseLog(l); } catch (_) { return null; } })
-                              .find((e) => e && e.name === 'ElectionCreated');
-      if (!ev) throw new Error('Thành công nhưng không lấy được địa chỉ. Xem ở "Của tôi".');
-      
-      step('Hoàn tất! Đang chuyển hướng…');
-      location.href = `/election/${ev.args.election}/?new=1`;
+
+      const ev = receipt.logs
+        .map((l) => { try { return factory.interface.parseLog(l); } catch (_) { return null; } })
+        .find((e) => e && e.name === 'ElectionCreated');
+
+      if (!ev) throw new Error('Thành công nhưng không đọc được địa chỉ hòm phiếu. Vui lòng xem ở mục "Của tôi".');
+
+      const electionAddr = ev.args.election;
+
+      // Nếu là hòm phiếu riêng tư và có sẵn danh sách ví, tự động nạp Whitelist luôn
+      if (f.isPrivate && f.whitelist.length > 0) {
+        step(`Đang thêm ${f.whitelist.length} ví vào danh sách Whitelist…`);
+        try {
+          const electionContract = App.electionContract(electionAddr, App.state.signer);
+          const WL_CHUNK = 100;
+          const n = Math.ceil(f.whitelist.length / WL_CHUNK);
+          for (let i = 0; i < n; i++) {
+            const chunk = f.whitelist.slice(i * WL_CHUNK, (i + 1) * WL_CHUNK);
+            step(`Nạp cử tri vào Whitelist (${i + 1}/${n})…`);
+            const wtx = await electionContract.addToWhitelist(chunk);
+            await wtx.wait();
+          }
+        } catch (wErr) {
+          console.warn('Lỗi thêm whitelist tự động:', wErr);
+          App.toast('Hòm phiếu đã tạo! Bạn có thể thêm tiếp Whitelist ở trang quản lý.', 'warn', 6000);
+        }
+      }
+
+      step('Khởi tạo thành công! Đang chuyển hướng…');
+      setTimeout(() => {
+        location.href = `/election/${electionAddr}/?new=1`;
+      }, 1500);
+
     } catch (e) {
       hideModal();
       if (e.message !== 'NO_WALLET') {
         if ($('errors')) {
-            $('errors').classList.remove('hidden');
-            $('errors').textContent = App.errMsg(e);
+          $('errors').classList.remove('hidden');
+          $('errors').innerHTML = `<div class="flex items-center gap-2"><span class="material-symbols-outlined text-[16px] text-error shrink-0">error</span><span>${App.esc(App.errMsg(e))}</span></div>`;
         }
       }
       if (submitBtn) submitBtn.disabled = false;
     }
   }
 
-  // Khởi tạo
+  // 10. Khởi tạo các sự kiện & giao diện ban đầu
   document.querySelectorAll('input[name=kind]').forEach((r) => r.addEventListener('change', applyKind));
-  document.querySelectorAll('input[name=startMode]').forEach((r) => r.addEventListener('change', () => { if ($('startAt')) $('startAt').classList.toggle('hidden', radio('startMode') !== 'at'); }));
-  document.querySelectorAll('input[name=endMode]').forEach((r) => r.addEventListener('change', () => { if ($('endAt')) $('endAt').classList.toggle('hidden', radio('endMode') !== 'at'); }));
-  
+
+  document.querySelectorAll('input[name=startMode]').forEach((r) => r.addEventListener('change', () => {
+    if ($('startAtBox')) $('startAtBox').classList.toggle('hidden', radio('startMode') !== 'at');
+  }));
+
+  document.querySelectorAll('input[name=endMode]').forEach((r) => r.addEventListener('change', () => {
+    if ($('endAtBox')) $('endAtBox').classList.toggle('hidden', radio('endMode') !== 'at');
+  }));
+
   if ($('maxChoices')) $('maxChoices').addEventListener('input', refresh);
+
   if ($('addOpt')) $('addOpt').addEventListener('click', () => addRow());
-  
-  if ($('tplYesNo')) $('tplYesNo').addEventListener('click', () => {
-    const container = $('optionsContainer') || $('options');
-    if (container) container.innerHTML = ''; 
-    addRow('Đồng ý'); addRow('Phản đối'); addRow('Phiếu trắng / Không ý kiến'); refresh();
-  });
-  
+  if ($('addOptBottom')) $('addOptBottom').addEventListener('click', () => addRow());
+
+  if ($('tplYesNo')) {
+    $('tplYesNo').addEventListener('click', () => {
+      const container = $('optionsContainer') || $('options');
+      if (container) container.innerHTML = '';
+      rowSeq = 0;
+      addRow('Đồng ý', '', 'Tán thành với đề xuất');
+      addRow('Phản đối', '', 'Không đồng ý với đề xuất');
+      addRow('Phiếu trắng', '', 'Không có ý kiến hoặc giữ vị trí trung lập');
+      refresh();
+    });
+  }
+
   if ($('submit')) $('submit').addEventListener('click', submit);
-  if ($('needWallet')) $('needWallet').classList.toggle('hidden', !!App.state.address);
-  
+
+  // Thêm 2 hàng lựa chọn ban đầu
   const container = $('optionsContainer') || $('options');
   if (container) container.innerHTML = '';
-  
-  addRow(); addRow(); applyKind();
+  rowSeq = 0;
+  addRow('', '', '');
+  addRow('', '', '');
+  applyKind();
+
+  updateOwnerUI();
 })();
