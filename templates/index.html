@@ -249,27 +249,6 @@
   }
 </style>
 
-<!-- Tạm thời tắt index.js gọi API để bảo toàn HTML tĩnh trên màn hình -->
-<script src="{% static 'js/index.js' %}"></script> 
-
-<!-- Script bổ trợ để nút Kết nối ví hoạt động trên trang chủ -->
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const btnWallet = document.getElementById('btnWallet');
-    if (btnWallet) {
-      btnWallet.addEventListener('click', async () => {
-        try {
-          if (window.ethereum) {
-            await window.ethereum.request({ method: 'eth_requestAccounts' });
-            window.location.reload(); 
-          } else {
-            alert('Vui lòng cài đặt tiện ích ví MetaMask trên trình duyệt!');
-          }
-        } catch (error) {
-          console.error('Lỗi kết nối ví:', error);
-        }
-      });
-    }
-  });
-</script>
+<script src="{% static 'js/cards.js' %}"></script>
+<script src="{% static 'js/index.js' %}"></script>
 {% endblock %}
