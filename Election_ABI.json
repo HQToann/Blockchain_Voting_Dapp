@@ -15,7 +15,7 @@
           },
           {
             "internalType": "string",
-            "name": "metadataURL",
+            "name": "metadataURI",
             "type": "string"
           },
           {
@@ -337,7 +337,7 @@
   },
   {
     "inputs": [],
-    "name": "metadataURL",
+    "name": "metadataURI",
     "outputs": [
       {
         "internalType": "string",
