@@ -53,7 +53,7 @@
       {
         "indexed": false,
         "internalType": "string",
-        "name": "metadataURL",
+        "name": "metadataURI",
         "type": "string"
       }
     ],
@@ -71,7 +71,7 @@
           },
           {
             "internalType": "string",
-            "name": "metadataURL",
+            "name": "metadataURI",
             "type": "string"
           },
           {
