@@ -1,126 +1,714 @@
-{% extends 'base.html' %}
-{% load static %}
-{% block title %}Tạo hòm phiếu — VoteChain{% endblock %}
-{% block nav_create %}active{% endblock %}
+{% load static %}<!DOCTYPE html>
+<html class="h-full" lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>VoteChain - Thiết Lập Hòm Phiếu Bầu Mới</title>
+  <link rel="icon" type="image/x-icon" href="{% static 'img/favicon.ico' %}">
+  
+  <!-- Google Fonts: Plus Jakarta Sans, JetBrains Mono, Material Symbols Outlined -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
 
-{% block content %}
-<div style="max-width: 800px; margin: 0 auto; padding-bottom: 60px;">
-    <!-- Header -->
-    <div style="text-align: center; margin-bottom: 32px; margin-top: 20px;">
-        <h1 style="color: #1e3a8a; display: flex; justify-content: center; align-items: center; gap: 12px; margin-bottom: 12px; font-size: 1.75rem;">
-            <i class="fa-solid fa-square-plus" style="color: #3b82f6;"></i> Tạo hòm phiếu mới
-        </h1>
-        <p style="color: #64748b; font-size: 0.95rem; line-height: 1.6; margin: 0;">
-            Bạn sẽ là <b>chủ sở hữu</b> của hòm phiếu: chỉ ví của bạn mới có quyền cấp phép cử tri, dời lịch hoặc đóng sớm.<br>
-            <span style="color: #d97706; font-weight: 600;">Các lựa chọn không thể sửa sau khi tạo để đảm bảo công bằng.</span>
-        </p>
-    </div>
+  <!-- Tailwind CDN & Exact Design System Config -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-tertiary-container": "#bdffdb",
+            "primary-fixed-dim": "#b4c5ff",
+            "on-secondary-fixed-variant": "#2f2ebe",
+            "on-error-container": "#93000a",
+            "background": "#faf8ff",
+            "on-tertiary-fixed-variant": "#005236",
+            "on-primary-container": "#eeefff",
+            "on-secondary-container": "#fffbff",
+            "on-primary-fixed": "#00174b",
+            "error": "#ba1a1a",
+            "surface-container-highest": "#dae2fd",
+            "surface-container-low": "#f2f3ff",
+            "on-secondary": "#ffffff",
+            "primary-fixed": "#dbe1ff",
+            "on-tertiary": "#ffffff",
+            "primary": "#004ac6",
+            "surface-container-high": "#e2e7ff",
+            "on-surface": "#131b2e",
+            "on-surface-variant": "#434655",
+            "on-tertiary-fixed": "#002113",
+            "tertiary-fixed-dim": "#4edea3",
+            "primary-container": "#2563eb",
+            "on-error": "#ffffff",
+            "error-container": "#ffdad6",
+            "inverse-surface": "#283044",
+            "on-primary": "#ffffff",
+            "surface-bright": "#faf8ff",
+            "surface-dim": "#d2d9f4",
+            "on-background": "#131b2e",
+            "surface": "#faf8ff",
+            "outline": "#737686",
+            "outline-variant": "#c3c6d7",
+            "secondary-fixed": "#e1e0ff",
+            "secondary-container": "#6063ee",
+            "on-primary-fixed-variant": "#003ea8",
+            "secondary-fixed-dim": "#c0c1ff",
+            "inverse-primary": "#b4c5ff",
+            "secondary": "#4648d4",
+            "inverse-on-surface": "#eef0ff",
+            "surface-variant": "#dae2fd",
+            "on-secondary-fixed": "#07006c",
+            "tertiary-fixed": "#6ffbbe",
+            "surface-container-lowest": "#ffffff",
+            "surface-container": "#eaedff",
+            "tertiary": "#006242",
+            "surface-tint": "#0053db",
+            "tertiary-container": "#007d55"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "2xl": "1rem",
+            "3xl": "1.5rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-sm": "0.5rem",
+            "margin": "2rem",
+            "space-xl": "2.25rem",
+            "gutter": "1rem",
+            "space-xs": "0.25rem",
+            "gutter-mobile": "0.75rem",
+            "space-md": "1rem",
+            "space-lg": "1.5rem",
+            "margin-mobile": "1rem"
+          },
+          "fontFamily": {
+            "headline-md": ["Plus Jakarta Sans", "sans-serif"],
+            "headline-xl-mobile": ["Plus Jakarta Sans", "sans-serif"],
+            "label-tag": ["Plus Jakarta Sans", "sans-serif"],
+            "body-md": ["Plus Jakarta Sans", "sans-serif"],
+            "body-sm": ["Plus Jakarta Sans", "sans-serif"],
+            "headline-lg-mobile": ["Plus Jakarta Sans", "sans-serif"],
+            "headline-xl": ["Plus Jakarta Sans", "sans-serif"],
+            "label-code": ["JetBrains Mono", "monospace"],
+            "headline-sm": ["Plus Jakarta Sans", "sans-serif"],
+            "headline-lg": ["Plus Jakarta Sans", "sans-serif"],
+            "body-lg": ["Plus Jakarta Sans", "sans-serif"]
+          },
+          "fontSize": {
+            "headline-md": ["1.25rem", { "lineHeight": "1.75rem", "fontWeight": "600" }],
+            "headline-xl-mobile": ["1.625rem", { "lineHeight": "2.125rem", "fontWeight": "700" }],
+            "label-tag": ["0.6875rem", { "lineHeight": "1rem", "fontWeight": "700" }],
+            "body-md": ["0.875rem", { "lineHeight": "1.375rem", "fontWeight": "400" }],
+            "body-sm": ["0.75rem", { "lineHeight": "1.125rem", "fontWeight": "400" }],
+            "headline-lg-mobile": ["1.375rem", { "lineHeight": "1.875rem", "fontWeight": "700" }],
+            "headline-xl": ["2.25rem", { "lineHeight": "2.75rem", "fontWeight": "800" }],
+            "label-code": ["0.8125rem", { "lineHeight": "1.125rem", "fontWeight": "500" }],
+            "headline-sm": ["1rem", { "lineHeight": "1.5rem", "fontWeight": "600" }],
+            "headline-lg": ["1.75rem", { "lineHeight": "2.25rem", "fontWeight": "700" }],
+            "body-lg": ["1rem", { "lineHeight": "1.625rem", "fontWeight": "400" }]
+          }
+        }
+      }
+    };
+  </script>
 
-    <div id="needWallet" class="notice info hidden" style="margin-bottom: 24px; background: #eff6ff; border-left: 4px solid #3b82f6; padding: 16px; border-radius: 8px;">
-        <i class="fa-solid fa-wallet"></i> Bạn cần kết nối ví MetaMask để tạo hòm phiếu. Phí gas do ví của bạn chi trả.
-    </div>
+  <style>
+    @layer base {
+      html, body {
+        margin: 0;
+        padding: 0;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+      }
+      body {
+        overscroll-behavior: none;
+      }
+      main > :first-child {
+        margin-top: 0 !important;
+      }
+      main > :last-child {
+        margin-bottom: 0 !important;
+      }
+    }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    .material-symbols-outlined.fill-current {
+      font-variation-settings: 'FILL' 1;
+    }
+  </style>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
 
-    <!-- Khối 1: Thông tin chung -->
-    <div style="margin-bottom: 24px; padding: 32px; border-radius: 12px; background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-        
-        <div class="field" style="margin-bottom: 24px;">
-            <label style="font-weight: 600; margin-bottom: 12px; display: block; color: #334155; font-size: 0.95rem;">Loại hòm phiếu</label>
-            <div class="seg" id="kindSeg" style="display: flex; gap: 24px;">
-                <label style="cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: 500; font-size: 0.95rem;">
-                    <input type="radio" name="kind" value="0" checked> Bầu chọn ứng viên
-                </label>
-                <label style="cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: 500; font-size: 0.95rem;">
-                    <input type="radio" name="kind" value="1"> Bỏ phiếu một vấn đề
-                </label>
+<body class="bg-surface font-body-md text-body-md text-on-surface antialiased min-h-screen flex flex-col">
+
+  <!-- ========================================================================= -->
+  <!-- TOP NAVIGATION HEADER                                                     -->
+  <!-- ========================================================================= -->
+  <header class="fixed top-0 left-0 right-0 z-50 bg-surface-container-lowest/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] border-b border-surface-container-high/60">
+    <div class="h-20 max-w-7xl mx-auto px-margin flex items-center justify-between gap-space-md">
+      
+      <!-- Brand Logo & Network Status -->
+      <div class="flex items-center gap-space-md shrink-0">
+        <a class="flex items-center gap-space-xs group" href="/">
+          <div class="w-10 h-10 rounded-xl bg-primary-container flex items-center justify-center shadow-[0_4px_12px_rgba(37,99,235,0.25)] group-hover:scale-105 transition-transform">
+            <span class="material-symbols-outlined text-on-primary text-[24px]">how_to_vote</span>
+          </div>
+          <div class="flex flex-col">
+            <div class="flex items-center gap-space-xs">
+              <span class="font-headline-sm text-headline-sm text-on-surface tracking-tight font-bold">VoteChain</span>
+              <span class="material-symbols-outlined text-primary text-[18px]">verified</span>
             </div>
+            <span class="font-label-tag text-label-tag text-on-surface-variant uppercase tracking-wider hidden sm:block">Decentralized Governance</span>
+          </div>
+        </a>
+        <div class="hidden xl:flex items-center gap-space-xs px-space-sm py-1 rounded-full bg-surface-container-low">
+          <span class="w-2 h-2 rounded-full bg-tertiary-container animate-pulse"></span>
+          <span class="font-label-code text-label-code text-tertiary font-medium">Sepolia Testnet</span>
         </div>
+      </div>
 
-        <div class="field" style="margin-bottom: 24px;">
-            <label for="name" id="nameLabel" style="font-weight: 600; margin-bottom: 8px; display: block; color: #334155; font-size: 0.95rem;">Tên cuộc bầu cử <span style="color: #ef4444;">*</span></label>
-            <input id="name" type="text" maxlength="200" placeholder="VD: Bầu Chủ nhiệm Câu lạc bộ nhiệm kỳ 2026" style="width: 100%; padding: 12px 16px; border: 1px solid #cbd5e1; border-radius: 6px; background: #f8fafc; font-size: 0.95rem;">
-        </div>
+      <!-- Desktop Navigation Menu -->
+      <nav class="hidden md:flex items-center gap-space-xs bg-surface-container-lowest px-space-xs py-1.5 rounded-2xl shadow-[0_2px_12px_rgba(0,0,0,0.03)] border border-surface-container-high">
+        <a class="text-on-surface-variant font-headline-sm text-headline-sm px-space-md py-space-sm rounded-xl hover:bg-surface-container-high hover:text-on-surface transition-colors" href="/">
+          Khám phá
+        </a>
+        <a class="text-primary font-headline-sm text-headline-sm px-space-md py-space-sm rounded-xl bg-surface-container-low font-bold transition-colors" href="/create/">
+          Tạo hòm phiếu
+        </a>
+        <a class="text-on-surface-variant font-headline-sm text-headline-sm px-space-md py-space-sm rounded-xl hover:bg-surface-container-high hover:text-on-surface transition-colors" href="/my/">
+          Hòm phiếu của tôi
+        </a>
+        <a class="text-on-surface-variant font-headline-sm text-headline-sm px-space-md py-space-sm rounded-xl hover:bg-surface-container-high hover:text-on-surface transition-colors" href="/verify/">
+          Xác minh phiếu
+        </a>
+      </nav>
 
-        <div class="field">
-            <label for="desc" style="font-weight: 600; margin-bottom: 8px; display: block; color: #334155; font-size: 0.95rem;">Mô tả (không bắt buộc)</label>
-            <textarea id="desc" maxlength="2000" placeholder="Bối cảnh, quy tắc, thông tin cần cử tri biết..." style="width: 100%; padding: 12px 16px; border: 1px solid #cbd5e1; border-radius: 6px; background: #f8fafc; min-height: 100px; font-family: inherit; font-size: 0.95rem; resize: vertical;"></textarea>
-            <div class="hint" style="font-size: 0.8rem; color: #94a3b8; margin-top: 8px;">Mô tả và ảnh được lưu trên IPFS, liên kết bất biến với hòm phiếu.</div>
+      <!-- Gas & Wallet Info -->
+      <div class="flex items-center gap-space-sm shrink-0">
+        <div class="hidden sm:flex items-center gap-space-xs px-space-sm py-space-xs rounded-xl bg-surface-container-low">
+          <span class="material-symbols-outlined text-outline text-[18px]">local_gas_station</span>
+          <span id="gasPrice" class="font-label-code text-label-code text-on-surface-variant font-medium">15 Gwei</span>
         </div>
+        <button id="btnWallet" type="button" class="flex items-center gap-space-xs px-space-sm py-space-xs rounded-xl bg-surface-container-lowest shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:bg-surface-container-low transition-all cursor-pointer border border-outline-variant/30">
+          <span id="walletDot" class="w-2.5 h-2.5 rounded-full bg-outline"></span>
+          <span id="walletAddress" class="font-label-code text-label-code text-on-surface font-semibold">Kết nối ví</span>
+          <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0 text-on-primary">
+            <span class="material-symbols-outlined text-[18px]">account_balance_wallet</span>
+          </div>
+        </button>
+
+        <!-- Mobile Menu Toggle Button -->
+        <button id="btnMobileNav" type="button" class="md:hidden flex items-center justify-center w-10 h-10 rounded-xl bg-surface-container-low text-on-surface hover:bg-surface-container-high transition-colors cursor-pointer border border-surface-container-high" aria-label="Toggle Menu">
+          <span class="material-symbols-outlined text-[24px]">menu</span>
+        </button>
+      </div>
+
     </div>
 
-    <!-- Khối 2: Danh sách lựa chọn -->
-    <div style="margin-bottom: 24px; padding: 32px; border-radius: 12px; background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; border-bottom: 1px solid #f1f5f9; padding-bottom: 16px;">
-            <h2 id="optTitle" style="margin: 0; font-size: 1.15rem; color: #1e293b; display: flex; align-items: center; gap: 8px;">
-                <i class="fa-solid fa-list-check" style="color: #64748b;"></i> Danh sách Ứng viên
-            </h2>
-            <span id="optCount" style="font-size: 0.85rem; font-weight: 600; color: #64748b;"></span>
-        </div>
-        
-        <div id="options" id="optionsContainer" style="display: flex; flex-direction: column; gap: 16px;"></div>
-        
-        <div style="margin-top: 24px;">
-            <!-- Nút thêm ứng viên (Sẽ tự ẩn khi chọn Bỏ phiếu vấn đề) -->
-            <button type="button" id="addOpt" style="width: 100%; padding: 14px; border: 2px dashed #3b82f6; border-radius: 8px; background: #ffffff; color: #3b82f6; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; justify-content: center; align-items: center; gap: 8px;">
-                <i class="fa-solid fa-plus"></i> Thêm lựa chọn
-            </button>
-            
-            <!-- Nút điền mẫu tự động (Sẽ hiện ra khi chọn Bỏ phiếu vấn đề) -->
-            <button type="button" id="tplYesNo" class="hidden" style="width: 100%; padding: 14px; border: 1px solid #3b82f6; border-radius: 8px; background: #eff6ff; color: #1d4ed8; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; justify-content: center; align-items: center; gap: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
-                <i class="fa-solid fa-wand-magic-sparkles" style="color: #f59e0b;"></i> Điền mẫu tự động: Đồng ý / Phản đối / Phiếu trắng
-            </button>
-        </div>
-    </div>
-
-    <!-- Khối 3: Quy tắc -->
-    <div style="margin-bottom: 32px; padding: 32px; border-radius: 12px; background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-        <h2 style="margin: 0 0 24px 0; font-size: 1.15rem; color: #1e293b;">Quy tắc bỏ phiếu</h2>
-        
-        <div class="field" style="margin-bottom: 24px;">
-            <label for="maxChoices" style="font-weight: 600; margin-bottom: 8px; display: block; color: #334155; font-size: 0.95rem;">Số lựa chọn tối đa mỗi cử tri được chọn</label>
-            <input id="maxChoices" type="number" min="1" value="1" style="width: 100px; padding: 10px 16px; border: 1px solid #cbd5e1; border-radius: 6px; text-align: center; font-weight: 600; font-size: 1rem;">
-            <div id="maxHint" style="font-size: 0.85rem; color: #3b82f6; margin-top: 8px;"></div>
-        </div>
-
-        <div class="field" style="margin-bottom: 24px;">
-            <label style="font-weight: 600; margin-bottom: 12px; display: block; color: #334155; font-size: 0.95rem;">Ai được bỏ phiếu?</label>
-            <div class="seg" style="display: flex; gap: 32px;">
-                <label style="cursor: pointer; font-size: 0.95rem; font-weight: 500;"><input type="radio" name="priv" value="0" checked> Công khai (ai có ví cũng bỏ được)</label>
-                <label style="cursor: pointer; font-size: 0.95rem; font-weight: 600; color: #1e293b;"><input type="radio" name="priv" value="1"> Riêng tư (chỉ ví trong danh sách)</label>
-            </div>
-            <div style="font-size: 0.85rem; color: #64748b; margin-top: 8px;">Hòm phiếu riêng tư: bạn thêm danh sách ví cử tri ở trang hòm phiếu sau khi tạo.</div>
-        </div>
-
-        <div class="row" style="display: flex; gap: 32px; flex-wrap: wrap;">
-            <div class="field" style="flex: 1; min-width: 250px;">
-                <label style="font-weight: 600; margin-bottom: 12px; display: block; color: #334155; font-size: 0.95rem;">Thời điểm bắt đầu</label>
-                <div class="seg" style="display: flex; gap: 24px; margin-bottom: 12px;">
-                    <label style="cursor: pointer; font-size: 0.95rem;"><input type="radio" name="startMode" value="now" checked> Mở ngay</label>
-                    <label style="cursor: pointer; font-size: 0.95rem;"><input type="radio" name="startMode" value="at"> Hẹn giờ</label>
-                </div>
-                <input id="startAt" type="datetime-local" class="hidden" style="width: 100%; padding: 10px 16px; border: 1px solid #cbd5e1; border-radius: 6px;">
-            </div>
-            
-            <div class="field" style="flex: 1; min-width: 250px;">
-                <label style="font-weight: 600; margin-bottom: 12px; display: block; color: #334155; font-size: 0.95rem;">Thời điểm kết thúc</label>
-                <div class="seg" style="display: flex; gap: 24px; margin-bottom: 12px;">
-                    <label style="cursor: pointer; font-size: 0.95rem;"><input type="radio" name="endMode" value="none" checked> Tôi tự đóng</label>
-                    <label style="cursor: pointer; font-size: 0.95rem;"><input type="radio" name="endMode" value="at"> Hẹn giờ</label>
-                </div>
-                <input id="endAt" type="datetime-local" class="hidden" style="width: 100%; padding: 10px 16px; border: 1px solid #cbd5e1; border-radius: 6px;">
-            </div>
-        </div>
-    </div>
-
-    <!-- Errors & Submit -->
-    <div id="errors" class="notice error hidden" style="margin-bottom: 24px; padding: 16px; background: #fef2f2; border: 1px solid #fecaca; color: #b91c1c; border-radius: 8px; font-weight: 500;"></div>
-    <div id="progress" class="card hidden"></div>
-    
-    <button id="submit" class="btn btn-primary" type="button" style="width: 100%; padding: 16px; font-size: 1.1rem; font-weight: 600; background: #3b82f6; color: #fff; border: none; border-radius: 8px; cursor: pointer; transition: 0.2s;">
+    <!-- Mobile Navigation Dropdown -->
+    <div id="mobileNavMenu" class="hidden md:hidden border-t border-surface-container-high bg-surface-container-lowest/95 backdrop-blur-xl px-margin py-space-md shadow-lg flex flex-col gap-space-xs">
+      <a class="px-space-md py-space-sm rounded-xl font-headline-sm text-headline-sm flex items-center gap-2 text-on-surface-variant hover:bg-surface-container-high transition-colors" href="/">
+        <span class="material-symbols-outlined text-[20px]">explore</span>
+        Khám phá
+      </a>
+      <a class="px-space-md py-space-sm rounded-xl font-headline-sm text-headline-sm flex items-center gap-2 bg-surface-container-low text-primary font-bold transition-colors" href="/create/">
+        <span class="material-symbols-outlined text-[20px]">add_box</span>
         Tạo hòm phiếu
-    </button>
-</div>
-{% endblock %}
+      </a>
+      <a class="px-space-md py-space-sm rounded-xl font-headline-sm text-headline-sm flex items-center gap-2 text-on-surface-variant hover:bg-surface-container-high transition-colors" href="/my/">
+        <span class="material-symbols-outlined text-[20px]">inventory_2</span>
+        Hòm phiếu của tôi
+      </a>
+      <a class="px-space-md py-space-sm rounded-xl font-headline-sm text-headline-sm flex items-center gap-2 text-on-surface-variant hover:bg-surface-container-high transition-colors" href="/verify/">
+        <span class="material-symbols-outlined text-[20px]">verified</span>
+        Xác minh phiếu
+      </a>
+    </div>
+  </header>
 
-{% block scripts %}
-<script src="{% static 'js/create.js' %}"></script>
-{% endblock %}
+  <!-- ========================================================================= -->
+  <!-- MAIN CONTENT AREA                                                         -->
+  <!-- ========================================================================= -->
+  <main class="w-full pt-20 bg-surface flex-1">
+    
+    <!-- Banner Lỗi kết nối máy chủ nếu có -->
+    <div id="banner" class="max-w-5xl mx-auto px-margin pt-4 w-full"></div>
+
+    <div class="max-w-5xl mx-auto w-full px-margin py-space-lg space-y-space-lg">
+
+      <!-- Breadcrumbs & Standard Tag -->
+      <div class="flex flex-wrap items-center justify-between gap-space-sm text-on-surface-variant text-body-sm">
+        <nav class="flex items-center gap-1.5 font-medium">
+          <a class="hover:text-primary transition-colors flex items-center gap-1" href="/">
+            <span class="material-symbols-outlined text-[16px]">arrow_back</span>
+            Khám phá hòm phiếu
+          </a>
+          <span class="text-outline">/</span>
+          <span class="text-on-surface font-semibold">Khởi tạo hợp đồng mới</span>
+        </nav>
+
+        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container-high text-primary font-label-code text-label-code font-semibold">
+          <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+          Hợp đồng thông minh Sepolia • ERC-1202 Standard
+        </div>
+      </div>
+
+      <!-- Hero Banner Header -->
+      <section class="rounded-3xl bg-surface-container-lowest p-space-xl border border-surface-container-high shadow-sm relative overflow-hidden">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-space-lg items-center relative z-10">
+          
+          <!-- Left Column -->
+          <div class="md:col-span-8 space-y-space-xs">
+            <div class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-primary-fixed text-on-primary-fixed font-label-tag text-label-tag uppercase tracking-wider font-bold">
+              <span class="material-symbols-outlined text-[16px]">how_to_vote</span>
+              Tạo cuộc bỏ phiếu phi tập trung
+            </div>
+            <h1 class="font-headline-xl text-headline-xl text-on-surface font-extrabold tracking-tight">
+              Thiết Lập Hòm Phiếu Bầu Mới
+            </h1>
+            <p class="font-body-md text-body-md text-on-surface-variant leading-relaxed max-w-xl">
+              Triển khai hợp đồng bầu cử an toàn, bất biến trên Blockchain với dữ liệu minh bạch hoàn toàn. Mỗi lá phiếu được bảo chứng bằng chữ ký mật mã cá nhân.
+            </p>
+          </div>
+
+          <!-- Right Column: Contract Owner Badge -->
+          <div class="md:col-span-4">
+            <div class="p-space-md rounded-2xl bg-surface-container-low border border-surface-container-high/60 space-y-1.5 shadow-sm">
+              <div class="flex items-center justify-between text-outline font-label-tag text-label-tag uppercase tracking-wider">
+                <span>Chủ sở hữu hợp đồng</span>
+                <span class="material-symbols-outlined text-[16px] text-primary cursor-pointer hover:opacity-80" id="btnCopyOwner" title="Sao chép địa chỉ">content_copy</span>
+              </div>
+              <div class="flex items-center gap-1.5 font-label-code text-label-code font-bold text-on-surface">
+                <span class="w-2 h-2 rounded-full bg-tertiary-container"></span>
+                <span id="ownerAddress">0x... (Chưa kết nối ví)</span>
+              </div>
+              <div class="font-body-sm text-body-sm text-on-surface-variant text-xs pt-1 border-t border-surface-container-high">
+                Quyền: Quản lý Whitelist / Lịch trình
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Cảnh báo khi chưa kết nối ví -->
+      <div id="needWallet" class="hidden p-space-md rounded-2xl bg-[#FFFBEB] border border-[#FDE68A] text-[#92400E] flex items-center justify-between gap-space-md shadow-sm">
+        <div class="flex items-center gap-space-sm">
+          <span class="material-symbols-outlined text-[24px] text-[#D97706]">wallet</span>
+          <span>Bạn cần kết nối ví MetaMask để tạo hòm phiếu. Phí gas triển khai do ví của bạn chi trả trên Sepolia.</span>
+        </div>
+        <button id="btnConnectAlert" type="button" class="px-space-md py-2 rounded-xl bg-[#D97706] text-white font-headline-sm text-headline-sm font-semibold hover:opacity-90 shrink-0">
+          Kết nối ví ngay
+        </button>
+      </div>
+
+      <!-- ===================================================================== -->
+      <!-- SECTION 01: THÔNG TIN TỔNG QUAN CUỘC BẦU CỬ                           -->
+      <!-- ===================================================================== -->
+      <section class="rounded-3xl bg-surface-container-lowest p-space-xl border border-surface-container-high shadow-sm space-y-space-lg">
+        
+        <!-- Section Header -->
+        <div class="flex items-start justify-between gap-space-md pb-space-sm border-b border-surface-container-high">
+          <div class="flex items-center gap-space-md">
+            <div class="w-9 h-9 rounded-xl bg-primary text-on-primary font-headline-sm text-headline-sm font-bold flex items-center justify-center shrink-0">
+              01
+            </div>
+            <div>
+              <h2 class="font-headline-md text-headline-md text-on-surface font-bold">
+                Thông tin tổng quan cuộc bầu cử
+              </h2>
+              <p class="font-body-sm text-body-sm text-on-surface-variant">
+                Thiết lập tiêu đề, thông điệp cử tri và mốc thời gian ghi nhận
+              </p>
+            </div>
+          </div>
+          <span class="px-3 py-1 rounded-full bg-surface-container-low text-primary font-label-tag text-label-tag uppercase font-bold tracking-wider">
+            Bắt buộc
+          </span>
+        </div>
+
+        <!-- Form Fields -->
+        <div class="space-y-space-md">
+          
+          <!-- Field: Loại hòm phiếu (Kind) -->
+          <div class="space-y-1.5">
+            <label class="font-headline-sm text-headline-sm text-on-surface font-semibold text-sm">Hình thức bỏ phiếu</label>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-space-sm">
+              <label class="flex items-center gap-space-sm p-space-sm rounded-2xl border border-surface-container-high bg-surface-container-low cursor-pointer hover:border-primary/50 transition-all">
+                <input type="radio" name="kind" value="0" checked class="w-4 h-4 text-primary focus:ring-primary">
+                <div>
+                  <div class="font-headline-sm text-headline-sm text-on-surface font-bold text-sm">Bầu cử ứng viên</div>
+                  <div class="font-body-sm text-body-sm text-on-surface-variant text-xs">Cử tri bỏ phiếu chọn đại biểu, ban cán sự, hội đồng</div>
+                </div>
+              </label>
+
+              <label class="flex items-center gap-space-sm p-space-sm rounded-2xl border border-surface-container-high bg-surface-container-low cursor-pointer hover:border-primary/50 transition-all">
+                <input type="radio" name="kind" value="1" class="w-4 h-4 text-primary focus:ring-primary">
+                <div>
+                  <div class="font-headline-sm text-headline-sm text-on-surface font-bold text-sm">Lấy ý kiến cộng đồng</div>
+                  <div class="font-body-sm text-body-sm text-on-surface-variant text-xs">Biểu quyết đề án, trưng cầu ý kiến (Đồng ý / Phản đối)</div>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <!-- Field: Tiêu đề -->
+          <div class="space-y-1.5">
+            <div class="flex items-center justify-between font-headline-sm text-headline-sm text-on-surface font-semibold text-sm">
+              <label for="name" id="nameLabel">Tiêu đề cuộc bầu cử <span class="text-error">*</span></label>
+              <span class="font-label-code text-label-code text-outline text-xs" id="title-counter">Tối đa 90 ký tự</span>
+            </div>
+            <input 
+              id="name" 
+              type="text" 
+              maxlength="90" 
+              class="w-full bg-surface-container-low border border-transparent focus:border-primary focus:bg-surface-container-lowest px-space-md py-3 rounded-xl font-body-md text-body-md text-on-surface outline-none transition-all"
+              placeholder="VD: Bầu ban cán sự đại diện nhiệm kỳ 2026 - Khoa Công Nghệ Thông Tin"
+            >
+          </div>
+
+          <!-- Field: Mô tả mục đích -->
+          <div class="space-y-1.5">
+            <div class="flex items-center justify-between font-headline-sm text-headline-sm text-on-surface font-semibold text-sm">
+              <label for="desc">Mô tả mục đích &amp; thể lệ bầu cử</label>
+              <span class="font-label-code text-label-code text-outline text-xs" id="desc-counter">0 / 500</span>
+            </div>
+            <textarea 
+              id="desc" 
+              rows="3" 
+              maxlength="500" 
+              class="w-full bg-surface-container-low border border-transparent focus:border-primary focus:bg-surface-container-lowest p-space-md rounded-xl font-body-md text-body-md text-on-surface outline-none transition-all resize-y"
+              placeholder="Bối cảnh, thể lệ, quyền hạn và cam kết của cuộc bỏ phiếu (lưu trữ bất biến trên IPFS)..."
+            ></textarea>
+          </div>
+
+          <!-- Date & Time Row (Grid 2 cols) -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-space-md pt-space-xs">
+            
+            <!-- Col 1: Thời gian bắt đầu -->
+            <div class="p-space-md rounded-2xl bg-surface-container-low/70 border border-surface-container-high space-y-space-sm">
+              <div class="flex items-center justify-between">
+                <span class="font-headline-sm text-headline-sm text-on-surface font-semibold text-sm flex items-center gap-1.5">
+                  <span class="material-symbols-outlined text-[18px] text-primary">schedule</span>
+                  Thời gian bắt đầu
+                </span>
+                <span class="px-2.5 py-0.5 rounded-full bg-[#ECFDF5] text-[#065F46] font-label-tag text-label-tag font-bold text-[10px]">
+                  Định chuẩn GMT+7
+                </span>
+              </div>
+
+              <!-- Start Mode Radios -->
+              <div class="flex items-center gap-space-md text-xs font-medium">
+                <label class="flex items-center gap-1.5 cursor-pointer">
+                  <input type="radio" name="startMode" value="now" checked class="text-primary">
+                  <span>Mở ngay khi tạo</span>
+                </label>
+                <label class="flex items-center gap-1.5 cursor-pointer">
+                  <input type="radio" name="startMode" value="at" class="text-primary">
+                  <span>Hẹn giờ mở</span>
+                </label>
+              </div>
+
+              <div id="startAtBox" class="hidden">
+                <input 
+                  id="startAt" 
+                  type="datetime-local" 
+                  class="w-full bg-surface-container-lowest border border-outline-variant/50 focus:border-primary px-3 py-2 rounded-xl font-label-code text-label-code text-on-surface outline-none"
+                >
+              </div>
+
+              <p class="font-body-sm text-body-sm text-on-surface-variant text-xs flex items-center gap-1">
+                <span class="material-symbols-outlined text-[14px] text-tertiary">check_circle</span>
+                Smart Contract tự động mở hòm phiếu từ giờ này.
+              </p>
+            </div>
+
+            <!-- Col 2: Thời gian kết thúc -->
+            <div class="p-space-md rounded-2xl bg-surface-container-low/70 border border-surface-container-high space-y-space-sm">
+              <div class="flex items-center justify-between">
+                <span class="font-headline-sm text-headline-sm text-on-surface font-semibold text-sm flex items-center gap-1.5">
+                  <span class="material-symbols-outlined text-[18px] text-error">event_busy</span>
+                  Thời gian kết thúc
+                </span>
+                <span class="px-2.5 py-0.5 rounded-full bg-[#FEF2F2] text-[#991B1B] font-label-tag text-label-tag font-bold text-[10px]">
+                  Khóa hòm phiếu
+                </span>
+              </div>
+
+              <!-- End Mode Radios -->
+              <div class="flex items-center gap-space-md text-xs font-medium">
+                <label class="flex items-center gap-1.5 cursor-pointer">
+                  <input type="radio" name="endMode" value="none" checked class="text-primary">
+                  <span>Tôi tự đóng thủ công</span>
+                </label>
+                <label class="flex items-center gap-1.5 cursor-pointer">
+                  <input type="radio" name="endMode" value="at" class="text-primary">
+                  <span>Hẹn giờ kết thúc</span>
+                </label>
+              </div>
+
+              <div id="endAtBox" class="hidden">
+                <input 
+                  id="endAt" 
+                  type="datetime-local" 
+                  class="w-full bg-surface-container-lowest border border-outline-variant/50 focus:border-primary px-3 py-2 rounded-xl font-label-code text-label-code text-on-surface outline-none"
+                >
+              </div>
+
+              <p class="font-body-sm text-body-sm text-on-surface-variant text-xs flex items-center gap-1">
+                <span class="material-symbols-outlined text-[14px] text-error">lock_clock</span>
+                Sau mốc này, hợp đồng từ chối mọi giao dịch bỏ phiếu.
+              </p>
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- ===================================================================== -->
+      <!-- SECTION 02: DANH SÁCH ỨNG VIÊN & LỰA CHỌN                             -->
+      <!-- ===================================================================== -->
+      <section class="rounded-3xl bg-surface-container-lowest p-space-xl border border-surface-container-high shadow-sm space-y-space-lg">
+        
+        <!-- Section Header -->
+        <div class="flex flex-wrap items-center justify-between gap-space-sm pb-space-sm border-b border-surface-container-high">
+          <div class="flex items-center gap-space-md">
+            <div class="w-9 h-9 rounded-xl bg-primary text-on-primary font-headline-sm text-headline-sm font-bold flex items-center justify-center shrink-0">
+              02
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <h2 id="optTitle" class="font-headline-md text-headline-md text-on-surface font-bold">
+                  Danh sách ứng viên &amp; Lựa chọn
+                </h2>
+                <span id="optCount" class="px-2.5 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed font-label-tag text-label-tag font-semibold">
+                  2 lựa chọn
+                </span>
+              </div>
+              <p class="font-body-sm text-body-sm text-on-surface-variant">
+                Mỗi ứng viên sẽ được định danh theo mã Hash và gán vị trí bỏ phiếu trên Blockchain
+              </p>
+            </div>
+          </div>
+
+          <!-- Add Candidate Button -->
+          <button id="addOpt" type="button" class="px-space-md py-2 rounded-xl bg-surface-container-low text-primary hover:bg-surface-container-high font-headline-sm text-headline-sm font-semibold flex items-center gap-1.5 transition-colors shadow-sm">
+            <span class="material-symbols-outlined text-[18px]">person_add</span>
+            + Thêm ứng viên mới
+          </button>
+        </div>
+
+        <!-- Quy tắc số lượng lựa chọn (Max Choices) -->
+        <div class="p-space-md rounded-2xl bg-surface-container-low flex flex-col sm:flex-row items-start sm:items-center justify-between gap-space-sm">
+          <div>
+            <label for="maxChoices" class="font-headline-sm text-headline-sm text-on-surface font-bold text-sm block">
+              Số lựa chọn tối đa mỗi cử tri được chọn
+            </label>
+            <span id="maxHint" class="font-body-sm text-body-sm text-on-surface-variant text-xs">
+              Mỗi cử tri chỉ chọn đúng 1 trong số các lựa chọn.
+            </span>
+          </div>
+          <input 
+            id="maxChoices" 
+            type="number" 
+            min="1" 
+            value="1" 
+            class="w-20 bg-surface-container-lowest border border-outline-variant/60 focus:border-primary px-3 py-2 rounded-xl font-label-code text-center font-bold text-on-surface outline-none"
+          >
+        </div>
+
+        <!-- Candidate Cards Container (Populated by create.js) -->
+        <div id="optionsContainer" class="space-y-space-md"></div>
+
+        <!-- Add Option Buttons & Template -->
+        <div class="space-y-space-xs">
+          <button id="addOptBottom" type="button" class="w-full py-3 rounded-2xl border-2 border-dashed border-primary/30 hover:border-primary hover:bg-primary/5 text-primary font-headline-sm text-headline-sm font-bold flex items-center justify-center gap-2 transition-all">
+            <span class="material-symbols-outlined text-[20px]">add_circle</span>
+            + Thêm lựa chọn khác vào danh sách
+          </button>
+
+          <!-- Nút điền mẫu tự động khi chọn Bỏ phiếu vấn đề -->
+          <button id="tplYesNo" type="button" class="hidden w-full py-3 rounded-2xl bg-secondary-fixed/50 hover:bg-secondary-fixed text-on-secondary-fixed font-headline-sm text-headline-sm font-bold flex items-center justify-center gap-2 transition-all">
+            <span class="material-symbols-outlined text-[20px] text-secondary">auto_fix_high</span>
+            Điền mẫu tự động: Đồng ý / Phản đối / Phiếu trắng
+          </button>
+        </div>
+
+      </section>
+
+      <!-- ===================================================================== -->
+      <!-- SECTION 03: QUYỀN THAM GIA BÌNH CHỌN (WHITELIST)                      -->
+      <!-- ===================================================================== -->
+      <section class="rounded-3xl bg-surface-container-lowest p-space-xl border border-surface-container-high shadow-sm space-y-space-lg">
+        
+        <!-- Section Header -->
+        <div class="flex items-start justify-between gap-space-md pb-space-sm border-b border-surface-container-high">
+          <div class="flex items-center gap-space-md">
+            <div class="w-9 h-9 rounded-xl bg-primary text-on-primary font-headline-sm text-headline-sm font-bold flex items-center justify-center shrink-0">
+              03
+            </div>
+            <div>
+              <h2 class="font-headline-md text-headline-md text-on-surface font-bold">
+                Quyền tham gia bình chọn
+              </h2>
+              <p class="font-body-sm text-body-sm text-on-surface-variant">
+                Tùy chọn công khai cho mọi người hoặc giới hạn theo danh sách chỉ định
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Whitelist Toggle Banner -->
+        <div class="p-space-md rounded-2xl bg-surface-container-low border border-surface-container-high flex items-center justify-between gap-space-md">
+          <div class="flex items-center gap-space-md">
+            <div class="w-10 h-10 rounded-xl bg-primary-container text-on-primary flex items-center justify-center shrink-0 shadow-sm">
+              <span class="material-symbols-outlined text-[22px]">badge</span>
+            </div>
+            <div class="space-y-0.5">
+              <div class="flex items-center gap-2">
+                <span class="font-headline-sm text-headline-sm text-on-surface font-bold text-sm">
+                  Giới hạn danh sách người tham gia (Whitelist)
+                </span>
+                <span class="px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant font-label-tag text-label-tag text-[10px]">
+                  Tùy chọn
+                </span>
+              </div>
+              <p class="font-body-sm text-body-sm text-on-surface-variant text-xs">
+                Chỉ những địa chỉ ví có tên trong danh sách mới có thể bỏ phiếu on-chain.
+              </p>
+            </div>
+          </div>
+
+          <!-- Toggle Switch -->
+          <label class="relative inline-flex items-center cursor-pointer shrink-0">
+            <input type="checkbox" id="whitelist-toggle" class="sr-only peer">
+            <div class="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-container"></div>
+          </label>
+        </div>
+
+        <!-- Whitelist Address Box (Shown only when toggle is active) -->
+        <div id="whitelist-box" class="space-y-space-xs hidden">
+          
+          <div class="flex flex-wrap items-center justify-between gap-space-sm font-headline-sm text-headline-sm text-sm">
+            <span class="text-on-surface font-semibold flex items-center gap-1.5">
+              Danh sách địa chỉ ví Web3 hợp lệ 
+              <span id="wlCounter" class="text-outline font-normal text-xs">(0 ví hợp lệ)</span>
+            </span>
+
+            <div class="flex items-center gap-space-md text-xs font-semibold text-primary">
+              <label class="hover:underline flex items-center gap-1 cursor-pointer">
+                <span class="material-symbols-outlined text-[16px]">upload_file</span>
+                <span>Tải file CSV (DS Cử tri)</span>
+                <input type="file" id="wlCsvFile" accept=".csv,.txt" class="sr-only">
+              </label>
+              <button type="button" id="btnWlChecksum" class="hover:underline flex items-center gap-1">
+                <span class="material-symbols-outlined text-[16px]">check_circle</span>
+                <span>Kiểm tra Checksum</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Textarea for addresses -->
+          <textarea 
+            id="wlInput" 
+            rows="5" 
+            class="w-full bg-surface-container-low border border-surface-container-high focus:border-primary focus:bg-surface-container-lowest p-space-md rounded-2xl font-label-code text-label-code text-on-surface outline-none leading-relaxed transition-all"
+            placeholder="0x95FA6763890F7cD9C985D3aA8961725cb060A4Bc&#10;0x48D897b0513fdC7C54186d9D7E929D4e5364D2d9&#10;(Mỗi địa chỉ 1 dòng, ngăn cách bằng dấu phẩy hoặc xuống dòng)"
+          ></textarea>
+
+          <div class="flex flex-wrap items-center justify-between gap-space-sm text-xs font-body-sm text-body-sm pt-1">
+            <span id="wlSummary" class="text-tertiary flex items-center gap-1 font-semibold">
+              <span class="material-symbols-outlined text-[15px]">verified</span>
+              <span>Chưa nhập địa chỉ nào</span>
+            </span>
+            <span class="text-outline font-label-code">
+              Định dạng tiêu chuẩn: Ethereum EIP-55
+            </span>
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- Khung hiển thị lỗi xác thực nếu có -->
+      <div id="errors" class="hidden p-space-md rounded-2xl bg-[#FEF2F2] border border-[#FCA5A5] text-[#991B1B] space-y-1 font-medium shadow-sm"></div>
+
+      <!-- ===================================================================== -->
+      <!-- BOTTOM ACTION BAR                                                     -->
+      <!-- ===================================================================== -->
+      <section class="rounded-3xl bg-surface-container-lowest p-space-md border border-surface-container-high shadow-sm flex flex-col sm:flex-row items-center justify-between gap-space-md">
+        
+        <div class="flex items-center gap-2 text-on-surface-variant font-body-sm text-body-sm">
+          <span class="material-symbols-outlined text-primary text-[20px]">update</span>
+          <span>Hệ thống tự động kích hoạt hòm phiếu đúng thời gian đã thiết lập.</span>
+        </div>
+
+        <div class="flex items-center gap-space-sm w-full sm:w-auto justify-end">
+          <a href="/" class="px-space-lg py-2.5 rounded-xl bg-surface-container-low hover:bg-surface-container-high text-on-surface font-headline-sm text-headline-sm font-semibold transition-colors">
+            Hủy bỏ
+          </a>
+
+          <button id="submit" type="button" class="px-space-xl py-2.5 rounded-xl bg-primary-container text-on-primary font-headline-sm text-headline-sm font-bold flex items-center gap-2 shadow-[0_4px_16px_rgba(37,99,235,0.3)] hover:bg-primary transition-all cursor-pointer">
+            <span class="material-symbols-outlined text-[20px]">how_to_vote</span>
+            Tạo Cuộc Bầu Cử
+          </button>
+        </div>
+
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ========================================================================= -->
+  <!-- FOOTER                                                                    -->
+  <!-- ========================================================================= -->
+  <footer class="w-full bg-surface-container-low mt-space-xl">
+    <div class="max-w-7xl mx-auto px-margin py-space-xl flex flex-col md:flex-row items-center justify-between gap-space-lg">
+      <div class="flex flex-col items-center md:items-start gap-space-xs">
+        <div class="flex items-center gap-space-xs">
+          <div class="w-6 h-6 rounded-lg bg-primary-container flex items-center justify-center">
+            <span class="material-symbols-outlined text-on-primary text-[14px]">how_to_vote</span>
+          </div>
+          <span class="font-headline-sm text-headline-sm text-on-surface font-bold">VoteChain Protocol</span>
+        </div>
+        <p class="font-body-sm text-body-sm text-on-surface-variant text-center md:text-left">
+          Bảo đảm tính toàn vẹn và bất biến của từng phiếu bầu bằng hợp đồng thông minh blockchain.
+        </p>
+      </div>
+
+      <div class="flex flex-wrap items-center justify-center gap-space-lg">
+        <div class="flex items-center gap-space-xs px-space-sm py-1 rounded-full bg-surface-container-high">
+          <span class="w-2 h-2 rounded-full bg-tertiary-container"></span>
+          <span id="footerContract" class="font-label-code text-label-code text-on-surface-variant">Contract: Đang tải...</span>
+        </div>
+        <a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" href="/verify/">Xác minh phiếu bầu</a>
+        <a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" href="/create/">Khởi tạo hòm phiếu</a>
+      </div>
+
+      <div class="font-label-code text-label-code text-outline">
+        © 2026 VoteChain DAO. Powered by Ethereum Sepolia.
+      </div>
+    </div>
+  </footer>
+
+  <!-- Toasts Notification Container -->
+  <div id="toasts" class="toasts-container"></div>
+
+  <!-- Real System Scripts -->
+  <script src="{% static 'vendor/ethers.umd.min.js' %}"></script>
+  <script src="{% static 'js/abi.js' %}"></script>
+  <script src="{% static 'js/common.js' %}"></script>
+  <script src="{% static 'js/create.js' %}"></script>
+
+</body>
+</html>

@@ -17,7 +17,7 @@ channels-redis>=4.2.0
 redis>=5.0.0
 
 # [4] Web3 & Blockchain Interaction
-web3>=7.0.0
+web3>=7.0.0,<8.0.0
 eth-account>=0.13.0
 
 # [5] HTTP & IPFS Integration (Pinata)

@@ -47,7 +47,7 @@ def cid_from_uri(uri):
         return None
     u = uri.strip()
 
-    if u.startswitch('ipfs://'):
+    if u.startswith('ipfs://'):
         u = u[len('ipfs://'):]
     u = u.split('/')[0]
     return u if CID_RE.match(u) else None

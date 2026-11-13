@@ -1,67 +1,528 @@
-{% extends 'base.html' %}
-{% load static %}
+{% load static %}<!DOCTYPE html>
+<html class="h-full" lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>VoteChain - Nền Tảng Bỏ Phiếu Phi Tập Trung Web3</title>
+  <link rel="icon" type="image/x-icon" href="{% static 'img/favicon.ico' %}">
+  
+  <!-- Google Fonts: Plus Jakarta Sans, JetBrains Mono, Material Symbols Outlined -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
 
-{% block nav_home %}active{% endblock %}
-{% block title %}Khám phá - VoteChain{% endblock %}
+  <!-- Tailwind CDN & Exact Design System Config -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-tertiary-container": "#bdffdb",
+            "primary-fixed-dim": "#b4c5ff",
+            "on-secondary-fixed-variant": "#2f2ebe",
+            "on-error-container": "#93000a",
+            "background": "#faf8ff",
+            "on-tertiary-fixed-variant": "#005236",
+            "on-primary-container": "#eeefff",
+            "on-secondary-container": "#fffbff",
+            "on-primary-fixed": "#00174b",
+            "error": "#ba1a1a",
+            "surface-container-highest": "#dae2fd",
+            "surface-container-low": "#f2f3ff",
+            "on-secondary": "#ffffff",
+            "primary-fixed": "#dbe1ff",
+            "on-tertiary": "#ffffff",
+            "primary": "#004ac6",
+            "surface-container-high": "#e2e7ff",
+            "on-surface": "#131b2e",
+            "on-surface-variant": "#434655",
+            "on-tertiary-fixed": "#002113",
+            "tertiary-fixed-dim": "#4edea3",
+            "primary-container": "#2563eb",
+            "on-error": "#ffffff",
+            "error-container": "#ffdad6",
+            "inverse-surface": "#283044",
+            "on-primary": "#ffffff",
+            "surface-bright": "#faf8ff",
+            "surface-dim": "#d2d9f4",
+            "on-background": "#131b2e",
+            "surface": "#faf8ff",
+            "outline": "#737686",
+            "outline-variant": "#c3c6d7",
+            "secondary-fixed": "#e1e0ff",
+            "secondary-container": "#6063ee",
+            "on-primary-fixed-variant": "#003ea8",
+            "secondary-fixed-dim": "#c0c1ff",
+            "inverse-primary": "#b4c5ff",
+            "secondary": "#4648d4",
+            "inverse-on-surface": "#eef0ff",
+            "surface-variant": "#dae2fd",
+            "on-secondary-fixed": "#07006c",
+            "tertiary-fixed": "#6ffbbe",
+            "surface-container-lowest": "#ffffff",
+            "surface-container": "#eaedff",
+            "tertiary": "#006242",
+            "surface-tint": "#0053db",
+            "tertiary-container": "#007d55"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "2xl": "1rem",
+            "3xl": "1.5rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-sm": "0.5rem",
+            "margin": "2rem",
+            "space-xl": "2.25rem",
+            "gutter": "1rem",
+            "space-xs": "0.25rem",
+            "gutter-mobile": "0.75rem",
+            "space-md": "1rem",
+            "space-lg": "1.5rem",
+            "margin-mobile": "1rem"
+          },
+          "fontFamily": {
+            "headline-md": ["Plus Jakarta Sans", "sans-serif"],
+            "headline-xl-mobile": ["Plus Jakarta Sans", "sans-serif"],
+            "label-tag": ["Plus Jakarta Sans", "sans-serif"],
+            "body-md": ["Plus Jakarta Sans", "sans-serif"],
+            "body-sm": ["Plus Jakarta Sans", "sans-serif"],
+            "headline-lg-mobile": ["Plus Jakarta Sans", "sans-serif"],
+            "headline-xl": ["Plus Jakarta Sans", "sans-serif"],
+            "label-code": ["JetBrains Mono", "monospace"],
+            "headline-sm": ["Plus Jakarta Sans", "sans-serif"],
+            "headline-lg": ["Plus Jakarta Sans", "sans-serif"],
+            "body-lg": ["Plus Jakarta Sans", "sans-serif"]
+          },
+          "fontSize": {
+            "headline-md": ["1.25rem", { "lineHeight": "1.75rem", "fontWeight": "600" }],
+            "headline-xl-mobile": ["1.625rem", { "lineHeight": "2.125rem", "fontWeight": "700" }],
+            "label-tag": ["0.6875rem", { "lineHeight": "1rem", "fontWeight": "700" }],
+            "body-md": ["0.875rem", { "lineHeight": "1.375rem", "fontWeight": "400" }],
+            "body-sm": ["0.75rem", { "lineHeight": "1.125rem", "fontWeight": "400" }],
+            "headline-lg-mobile": ["1.375rem", { "lineHeight": "1.875rem", "fontWeight": "700" }],
+            "headline-xl": ["2.25rem", { "lineHeight": "2.75rem", "fontWeight": "800" }],
+            "label-code": ["0.8125rem", { "lineHeight": "1.125rem", "fontWeight": "500" }],
+            "headline-sm": ["1rem", { "lineHeight": "1.5rem", "fontWeight": "600" }],
+            "headline-lg": ["1.75rem", { "lineHeight": "2.25rem", "fontWeight": "700" }],
+            "body-lg": ["1rem", { "lineHeight": "1.625rem", "fontWeight": "400" }]
+          }
+        }
+      }
+    };
+  </script>
 
-{% block content %}
-<!-- Cụm giới thiệu trung tâm (Hero Section) -->
-<div style="text-align: center; margin: 40px 0 48px 0;">
-    <h1 style="font-size: 2.5rem; background: linear-gradient(to right, #60a5fa, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-        Khám Phá Các Cuộc Bầu Cử
-    </h1>
-    <p style="max-width: 600px; margin: 16px auto 24px auto; font-size: 1.05rem;">
-        Tham gia bỏ phiếu minh bạch và an toàn. Mọi quyết định đều được xác thực và lưu trữ vĩnh viễn trên mạng lưới blockchain.
-    </p>
-    <a href="/create/" class="btn btn-primary" style="padding: 12px 28px; font-size: 1.05rem;">
-        <i class="fa-solid fa-plus"></i> Tạo hòm phiếu mới
-    </a>
-</div>
+  <style>
+    @layer base {
+      html, body {
+        margin: 0;
+        padding: 0;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+      }
+      body {
+        overscroll-behavior: none;
+      }
+      main > :first-child {
+        margin-top: 0 !important;
+      }
+      main > :last-child {
+        margin-bottom: 0 !important;
+      }
+    }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    .material-symbols-outlined.fill-current {
+      font-variation-settings: 'FILL' 1;
+    }
+  </style>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
 
-<!-- Cảnh báo đồng bộ mềm mỏng hơn -->
-<div id="syncWarning" class="notice warn hidden" style="border-radius: 12px; margin-bottom: 24px; background: var(--warn-soft); border-left: 4px solid var(--warn); padding: 16px;">
-    <i class="fa-solid fa-rotate" style="animation: spin 2s linear infinite;"></i> 
-    Hệ thống đang đồng bộ dữ liệu từ blockchain. Kết quả có thể mất vài giây để cập nhật toàn diện.
-</div>
+<body class="bg-surface text-on-surface antialiased flex flex-col min-h-screen">
 
-<!-- Thanh công cụ (Bộ lọc & Tìm kiếm) -->
-<div class="glass-panel" style="padding: 16px 20px; border-radius: 16px; margin-bottom: 32px; display: flex; flex-wrap: wrap; gap: 16px; justify-content: space-between; align-items: center;">
-    
-    <!-- Cụm Tabs -->
-    <div class="filter-tabs" style="display: flex; gap: 8px;">
-        <button class="tab-btn active" data-status="all">Tất cả</button>
-        <button class="tab-btn" data-status="open">Đang mở</button>
-        <button class="tab-btn" data-status="upcoming">Sắp diễn ra</button>
-        <button class="tab-btn" data-status="closed">Đã kết thúc</button>
-    </div>
-    
- <!-- Cụm Tìm kiếm -->
-    <div style="display: flex; gap: 12px; flex: 1; min-width: 300px; justify-content: flex-end;">
-        <select id="typeFilter" style="width: 180px;">
-            <option value="all">Mọi thể loại</option>
-            <option value="candidate">Bầu ứng viên</option>
-        </select>
-        
-        <div style="position: relative; width: 100%; max-width: 320px;">
-            <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 14px; top: 14px; color: var(--text-muted);"></i>
-            <input type="text" id="searchInput" placeholder="Tìm tên hoặc địa chỉ..." style="padding-left: 40px;">
+  <!-- ========================================================================= -->
+  <!-- TOP NAVIGATION HEADER                                                     -->
+  <!-- ========================================================================= -->
+  <header class="fixed top-0 left-0 right-0 z-50 bg-surface-container-lowest/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] border-b border-surface-container-high/60">
+    <div class="h-20 max-w-7xl mx-auto px-margin flex items-center justify-between gap-space-md">
+      
+      <!-- Brand Logo & Network Status -->
+      <div class="flex items-center gap-space-md shrink-0">
+        <a class="flex items-center gap-space-xs group" href="/">
+          <div class="w-10 h-10 rounded-xl bg-primary-container flex items-center justify-center shadow-[0_4px_12px_rgba(37,99,235,0.25)] group-hover:scale-105 transition-transform">
+            <span class="material-symbols-outlined text-on-primary text-[24px]">how_to_vote</span>
+          </div>
+          <div class="flex flex-col">
+            <div class="flex items-center gap-space-xs">
+              <span class="font-headline-sm text-headline-sm text-on-surface tracking-tight font-bold">VoteChain</span>
+              <span class="material-symbols-outlined text-primary text-[18px]">verified</span>
+            </div>
+            <span class="font-label-tag text-label-tag text-on-surface-variant uppercase tracking-wider hidden sm:block">Decentralized Governance</span>
+          </div>
+        </a>
+        <div class="hidden xl:flex items-center gap-space-xs px-space-sm py-1 rounded-full bg-surface-container-low">
+          <span class="w-2 h-2 rounded-full bg-tertiary-container animate-pulse"></span>
+          <span class="font-label-code text-label-code text-tertiary font-medium">Sepolia Testnet</span>
         </div>
+      </div>
+
+      <!-- Desktop Navigation Menu -->
+      <nav class="hidden md:flex items-center gap-space-xs bg-surface-container-lowest px-space-xs py-1.5 rounded-2xl shadow-[0_2px_12px_rgba(0,0,0,0.03)] border border-surface-container-high">
+        <a class="text-primary font-headline-sm text-headline-sm px-space-md py-space-sm rounded-xl bg-surface-container-low font-bold transition-colors" href="/">
+          Khám phá
+        </a>
+        <a class="text-on-surface-variant font-headline-sm text-headline-sm px-space-md py-space-sm rounded-xl hover:bg-surface-container-high hover:text-on-surface transition-colors" href="/create/">
+          Tạo hòm phiếu
+        </a>
+        <a class="text-on-surface-variant font-headline-sm text-headline-sm px-space-md py-space-sm rounded-xl hover:bg-surface-container-high hover:text-on-surface transition-colors" href="/my/">
+          Hòm phiếu của tôi
+        </a>
+        <a class="text-on-surface-variant font-headline-sm text-headline-sm px-space-md py-space-sm rounded-xl hover:bg-surface-container-high hover:text-on-surface transition-colors" href="/verify/">
+          Xác minh phiếu
+        </a>
+      </nav>
+
+      <!-- Gas & Wallet Info -->
+      <div class="flex items-center gap-space-sm shrink-0">
+        <!-- Gas Indicator (Sepolia) -->
+        <div class="hidden sm:flex items-center gap-space-xs px-space-sm py-space-xs rounded-xl bg-surface-container-low">
+          <span class="material-symbols-outlined text-outline text-[18px]">local_gas_station</span>
+          <span id="gasPrice" class="font-label-code text-label-code text-on-surface-variant">15 Gwei</span>
+        </div>
+
+        <!-- Wallet Connect Button -->
+        <button id="btnWallet" type="button" class="flex items-center gap-space-xs px-space-sm py-space-xs rounded-xl bg-surface-container-lowest shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:bg-surface-container-low transition-all cursor-pointer border border-outline-variant/30">
+          <span id="walletDot" class="w-2.5 h-2.5 rounded-full bg-outline"></span>
+          <span id="walletAddress" class="font-label-code text-label-code text-on-surface font-semibold">Kết nối ví</span>
+          <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0 text-on-primary">
+            <span class="material-symbols-outlined text-[18px]">account_balance_wallet</span>
+          </div>
+        </button>
+
+        <!-- Mobile Menu Toggle Button -->
+        <button id="btnMobileNav" type="button" class="md:hidden flex items-center justify-center w-10 h-10 rounded-xl bg-surface-container-low text-on-surface hover:bg-surface-container-high transition-colors cursor-pointer border border-surface-container-high" aria-label="Toggle Menu">
+          <span class="material-symbols-outlined text-[24px]">menu</span>
+        </button>
+      </div>
+
     </div>
 
-<!-- Danh sách hòm phiếu render từ JS -->
-<div id="electionGrid" class="grid"></div>
-
-<!-- Trạng thái trống (Empty State) -->
-<div id="emptyState" class="empty hidden" style="padding: 60px 20px; text-align: center;">
-    <div style="width: 80px; height: 80px; background: rgba(255,255,255,0.05); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto;">
-        <i class="fa-solid fa-box-open" style="font-size: 2rem; color: var(--text-muted);"></i>
+    <!-- Mobile Navigation Dropdown -->
+    <div id="mobileNavMenu" class="hidden md:hidden border-t border-surface-container-high bg-surface-container-lowest/95 backdrop-blur-xl px-margin py-space-md shadow-lg flex flex-col gap-space-xs">
+      <a class="px-space-md py-space-sm rounded-xl font-headline-sm text-headline-sm flex items-center gap-2 bg-surface-container-low text-primary font-bold transition-colors" href="/">
+        <span class="material-symbols-outlined text-[20px]">explore</span>
+        Khám phá
+      </a>
+      <a class="px-space-md py-space-sm rounded-xl font-headline-sm text-headline-sm flex items-center gap-2 text-on-surface-variant hover:bg-surface-container-high transition-colors" href="/create/">
+        <span class="material-symbols-outlined text-[20px]">add_box</span>
+        Tạo hòm phiếu
+      </a>
+      <a class="px-space-md py-space-sm rounded-xl font-headline-sm text-headline-sm flex items-center gap-2 text-on-surface-variant hover:bg-surface-container-high transition-colors" href="/my/">
+        <span class="material-symbols-outlined text-[20px]">inventory_2</span>
+        Hòm phiếu của tôi
+      </a>
+      <a class="px-space-md py-space-sm rounded-xl font-headline-sm text-headline-sm flex items-center gap-2 text-on-surface-variant hover:bg-surface-container-high transition-colors" href="/verify/">
+        <span class="material-symbols-outlined text-[20px]">verified</span>
+        Xác minh phiếu
+      </a>
     </div>
-    <h3 style="color: var(--text-main);">Chưa có cuộc bầu cử nào</h3>
-    <p>Hãy là người đầu tiên khởi tạo phong trào tại đây!</p>
-</div>
-{% endblock %}
+  </header>
 
-{% block scripts %}
-<script src="{% static 'js/cards.js' %}"></script>
-<script src="{% static 'js/index.js' %}"></script>
-{% endblock %}
+  <!-- ========================================================================= -->
+  <!-- MAIN CONTENT AREA                                                         -->
+  <!-- ========================================================================= -->
+  <main class="w-full pt-20 bg-surface flex-1">
+    <div class="flex flex-col w-full">
+
+      <!-- Thông báo hệ thống (nếu có lỗi kết nối backend) -->
+      <div id="banner" class="max-w-7xl mx-auto px-margin pt-4 w-full"></div>
+
+      <!-- Ambient Glow Background Decoration -->
+      <div class="relative w-full overflow-hidden bg-surface pb-space-xl">
+        <div class="pointer-events-none absolute -top-40 right-10 w-[550px] h-[550px] bg-primary/5 rounded-full blur-3xl"></div>
+        <div class="pointer-events-none absolute top-96 -left-32 w-[480px] h-[480px] bg-secondary/5 rounded-full blur-3xl"></div>
+
+        <div class="max-w-7xl mx-auto px-margin space-y-space-xl pt-space-lg">
+
+          <!-- 1. Hero Header Section -->
+          <section class="relative rounded-3xl bg-surface-container-low p-space-xl overflow-hidden shadow-sm">
+            <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-space-xl items-center">
+              
+              <!-- Left Column: Copy & Actions -->
+              <div class="lg:col-span-8 space-y-space-md">
+                <div class="inline-flex items-center gap-space-xs px-space-md py-1 rounded-full bg-primary-fixed text-on-primary-fixed font-label-tag text-label-tag uppercase tracking-wider">
+                  <span class="material-symbols-outlined text-[16px]">security</span>
+                  Giao thức Bầu cử Mật mã Web3
+                </div>
+
+                <h1 class="font-headline-xl text-headline-xl text-on-surface font-extrabold tracking-tight max-w-3xl">
+                  Khám Phá Các Cuộc Bầu Cử Trên Blockchain
+                </h1>
+
+                <p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl leading-relaxed">
+                  Tham gia bỏ phiếu minh bạch, bất biến và an toàn tuyệt đối. Mọi lá phiếu được bảo chứng bằng chữ ký số phi tập trung (ECDSA) và lưu trữ vĩnh viễn trên sổ cái Ethereum Sepolia.
+                </p>
+
+                <div class="flex flex-wrap items-center gap-space-md pt-space-xs">
+                  <a class="px-space-xl py-3.5 rounded-xl bg-primary-container text-on-primary font-headline-sm text-headline-sm flex items-center gap-space-xs shadow-[0_10px_25px_-5px_rgba(37,99,235,0.3)] hover:opacity-95 transition-all" href="/create/">
+                    <span class="material-symbols-outlined text-[20px]">add_box</span>
+                    + Tạo hòm phiếu mới
+                  </a>
+                  <a class="px-space-lg py-3.5 rounded-xl bg-surface-container-lowest text-on-surface font-headline-sm text-headline-sm flex items-center gap-space-xs hover:bg-surface-container-high transition-colors" href="#rules-section">
+                    <span class="material-symbols-outlined text-primary text-[20px]">policy</span>
+                    Xem quy tắc bầu cử
+                  </a>
+                </div>
+
+                <!-- Sync Warning Alert Box -->
+                <div id="syncWarning" class="flex items-start gap-space-sm p-space-md rounded-2xl bg-[#FFFBEB] text-[#92400E] shadow-sm max-w-2xl hidden">
+                  <span class="material-symbols-outlined text-[22px] text-[#D97706] shrink-0 mt-0.5 animate-spin" style="animation-duration: 4s;">sync</span>
+                  <div class="font-body-md text-body-md">
+                    <span class="font-bold">Đồng bộ hoá mạng lưới:</span> Hệ thống đang truyền dữ liệu trực tiếp từ các hợp đồng Sepolia. Mọi xác nhận thay đổi được chốt sau khi khối xác thực.
+                  </div>
+                </div>
+              </div>
+
+              <!-- Right Column: Live Metric Showcase -->
+              <div class="lg:col-span-4 flex flex-col gap-space-md">
+                
+                <div class="p-space-lg rounded-2xl bg-surface-container-lowest shadow-sm space-y-space-sm">
+                  <div class="flex items-center justify-between text-on-surface-variant font-body-sm text-body-sm">
+                    <span>Tổng phiếu bầu đã đúc</span>
+                    <span class="font-label-code text-label-code text-tertiary font-bold">On-chain Sepolia</span>
+                  </div>
+                  <div id="statTotalVotes" class="font-headline-xl text-headline-xl text-on-surface font-black">
+                    0
+                  </div>
+                  <div class="w-full bg-surface-container h-2 rounded-full overflow-hidden">
+                    <div class="bg-primary h-full rounded-full w-[100%]"></div>
+                  </div>
+                  <div class="flex justify-between font-label-code text-label-code text-outline text-xs pt-1">
+                    <span>Phiếu xác thực chữ ký ví</span>
+                    <span>100% Minh bạch</span>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-space-sm">
+                  <div class="p-space-md rounded-2xl bg-surface-container-lowest shadow-sm flex flex-col">
+                    <span class="font-body-sm text-body-sm text-on-surface-variant">Hòm phiếu hoạt động</span>
+                    <span id="statTotalElections" class="font-headline-lg text-headline-lg text-primary font-bold mt-1">0 hòm</span>
+                    <span id="statOpenElections" class="font-label-code text-label-code text-outline text-xs mt-auto">0 đang mở</span>
+                  </div>
+                  <div class="p-space-md rounded-2xl bg-surface-container-lowest shadow-sm flex flex-col">
+                    <span class="font-body-sm text-body-sm text-on-surface-variant">Cử tri đã tham gia</span>
+                    <span id="statTotalVoters" class="font-headline-lg text-headline-lg text-secondary font-bold mt-1">0</span>
+                    <span class="font-label-code text-label-code text-outline text-xs mt-auto">Lượt bỏ phiếu</span>
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+          </section>
+
+          <!-- 2. Core Principles & Rules -->
+          <section class="space-y-space-md" id="rules-section">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-space-sm">
+              <div class="space-y-1">
+                <div class="font-label-tag text-label-tag text-primary uppercase tracking-widest font-bold">Nguyên tắc cốt lõi</div>
+                <h2 class="font-headline-lg text-headline-lg text-on-surface font-bold tracking-tight">Quy Tắc &amp; Bảo Mật Bỏ Phiếu</h2>
+              </div>
+              <p class="font-body-md text-body-md text-on-surface-variant max-w-md">Thiết kế minh bạch, bảo mật mật mã và tự động thực thi bởi hợp đồng thông minh.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-space-md">
+              
+              <!-- Rule 1 -->
+              <div class="p-space-lg rounded-2xl bg-surface-container-lowest shadow-sm flex flex-col justify-between space-y-space-md">
+                <div class="space-y-space-sm">
+                  <div class="w-12 h-12 rounded-xl bg-primary-fixed flex items-center justify-center text-primary">
+                    <span class="material-symbols-outlined text-[28px]">how_to_vote</span>
+                  </div>
+                  <h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">1 Ví Web3 = 1 Lá phiếu</h3>
+                  <p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">Hợp đồng thông minh ngăn ngừa tuyệt đối tình trạng bầu lặp lại. Lá phiếu chỉ có thể bỏ một lần duy nhất.</p>
+                </div>
+                <div class="flex items-center gap-1 font-label-code text-label-code text-tertiary font-semibold">
+                  <span class="material-symbols-outlined text-[16px]">verified</span>
+                  Kháng lặp phiếu 100%
+                </div>
+              </div>
+
+              <!-- Rule 2 -->
+              <div class="p-space-lg rounded-2xl bg-surface-container-lowest shadow-sm flex flex-col justify-between space-y-space-md">
+                <div class="space-y-space-sm">
+                  <div class="w-12 h-12 rounded-xl bg-secondary-fixed flex items-center justify-center text-secondary">
+                    <span class="material-symbols-outlined text-[28px]">lock</span>
+                  </div>
+                  <h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Bảo Mật Quyền Cử Tri</h3>
+                  <p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">Hỗ trợ danh sách Whitelist quản lý trên Smart Contract, phân quyền cử tri nghiêm ngặt và bất biến.</p>
+                </div>
+                <div class="flex items-center gap-1 font-label-code text-label-code text-secondary font-semibold">
+                  <span class="material-symbols-outlined text-[16px]">security</span>
+                  Xác thực danh sách kín
+                </div>
+              </div>
+
+              <!-- Rule 3 -->
+              <div class="p-space-lg rounded-2xl bg-surface-container-lowest shadow-sm flex flex-col justify-between space-y-space-md">
+                <div class="space-y-space-sm">
+                  <div class="w-12 h-12 rounded-xl bg-tertiary-fixed flex items-center justify-center text-tertiary">
+                    <span class="material-symbols-outlined text-[28px]">receipt_long</span>
+                  </div>
+                  <h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Biên Lai Minh Bạch</h3>
+                  <p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">Mỗi lượt bầu cấp lập tức mã giao dịch (TxHash) công khai, cho phép đối soát độc lập trực tiếp trên sổ cái chuỗi.</p>
+                </div>
+                <div class="flex items-center gap-1 font-label-code text-label-code text-primary font-semibold">
+                  <span class="material-symbols-outlined text-[16px]">search_check</span>
+                  Đối soát tức thì
+                </div>
+              </div>
+
+            </div>
+          </section>
+
+          <!-- 3. Ballots Directory, Filter & Sorting Bar -->
+          <section class="space-y-space-md pt-space-sm" id="explore-ballots">
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-space-md p-space-md rounded-2xl bg-surface-container-lowest shadow-sm">
+              
+              <!-- Status Tabs -->
+              <div class="flex flex-wrap items-center gap-space-xs">
+                <button class="filter-tab-btn px-space-md py-2.5 rounded-xl bg-primary-container text-on-primary font-headline-sm text-headline-sm transition-all shadow-sm" data-status="all">
+                  Tất cả <span id="tabCountAll"></span>
+                </button>
+                <button class="filter-tab-btn px-space-md py-2.5 rounded-xl bg-surface-container-low text-on-surface hover:bg-surface-container-high font-headline-sm text-headline-sm transition-colors flex items-center gap-1.5" data-status="open">
+                  <span class="w-2 h-2 rounded-full bg-tertiary-container animate-pulse"></span>
+                  Đang mở <span id="tabCountOpen"></span>
+                </button>
+                <button class="filter-tab-btn px-space-md py-2.5 rounded-xl bg-surface-container-low text-on-surface hover:bg-surface-container-high font-headline-sm text-headline-sm transition-colors" data-status="upcoming">
+                  Sắp diễn ra
+                </button>
+                <button class="filter-tab-btn px-space-md py-2.5 rounded-xl bg-surface-container-low text-on-surface hover:bg-surface-container-high font-headline-sm text-headline-sm transition-colors" data-status="closed">
+                  Đã kết thúc
+                </button>
+              </div>
+
+              <!-- Controls: Category, Search & Sort -->
+              <div class="flex flex-wrap items-center gap-space-sm">
+                <!-- Category Dropdown -->
+                <div class="relative">
+                  <select id="typeFilter" class="appearance-none bg-surface-container-low text-on-surface font-body-md text-body-md pl-space-md pr-space-xl py-2.5 rounded-xl outline-none hover:bg-surface-container-high cursor-pointer transition-colors">
+                    <option value="all">Mọi thể loại</option>
+                    <option value="0">Bầu cử ứng viên</option>
+                    <option value="1">Lấy ý kiến cộng đồng</option>
+                  </select>
+                  <span class="material-symbols-outlined absolute right-2.5 top-1/2 -translate-y-1/2 text-outline pointer-events-none text-[20px]">expand_more</span>
+                </div>
+
+                <!-- Search Field -->
+                <div class="relative min-w-[280px] flex-1 sm:flex-initial">
+                  <span class="material-symbols-outlined absolute left-space-md top-1/2 -translate-y-1/2 text-outline text-[20px]">search</span>
+                  <input id="searchInput" class="w-full bg-surface-container-low text-on-surface pl-10 pr-space-md py-2.5 rounded-xl font-body-md text-body-md placeholder:text-outline outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary/20 transition-all" placeholder="Tìm kiếm hòm phiếu, smart contract, ứng viên..." type="text">
+                </div>
+
+                <!-- Sorting Dropdown -->
+                <div class="relative">
+                  <select id="sortFilter" class="appearance-none bg-surface-container-low text-on-surface font-body-md text-body-md pl-space-md pr-space-xl py-2.5 rounded-xl outline-none hover:bg-surface-container-high cursor-pointer transition-colors">
+                    <option value="newest">Mới nhất</option>
+                    <option value="most_votes">Nhiều lượt bầu nhất</option>
+                    <option value="closing_soon">Sắp kết thúc</option>
+                  </select>
+                  <span class="material-symbols-outlined absolute right-2.5 top-1/2 -translate-y-1/2 text-outline pointer-events-none text-[20px]">swap_vert</span>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Ballots Grid Section (3-column layout) -->
+            <div id="electionGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-space-md">
+              <div class="col-span-full py-16 text-center text-on-surface-variant font-medium">
+                <span class="material-symbols-outlined text-[32px] animate-spin text-primary mb-2">progress_activity</span>
+                <div>Đang kết nối Blockchain và tải danh sách hòm phiếu...</div>
+              </div>
+            </div>
+
+            <!-- Pagination Controls -->
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-space-md pt-space-lg">
+              <div id="paginationSummary" class="font-body-sm text-body-sm text-on-surface-variant">
+                Đang tải dữ liệu...
+              </div>
+              <div id="pager"></div>
+            </div>
+
+          </section>
+
+          <!-- 4. Trust Bar & Protocol Endorsement -->
+          <section class="rounded-2xl bg-surface-container-low p-space-md flex flex-wrap items-center justify-between gap-space-md">
+            <div class="flex items-center gap-space-md">
+              <span class="material-symbols-outlined text-primary text-[28px]">verified</span>
+              <div class="flex flex-col">
+                <span class="font-headline-sm text-headline-sm text-on-surface font-bold">Chuẩn Bảo Mật VoteChain Certified</span>
+                <span class="font-body-sm text-body-sm text-on-surface-variant">Hợp đồng thông minh Ethereum Sepolia • Phân quyền bất biến</span>
+              </div>
+            </div>
+            <div class="flex items-center gap-space-lg font-label-code text-label-code text-on-surface-variant">
+              <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-tertiary-container"></span> ECDSA Signatures</span>
+              <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-primary"></span> Smart Contract Verified</span>
+              <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-secondary"></span> Decentralized Storage IPFS</span>
+            </div>
+          </section>
+
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ========================================================================= -->
+  <!-- FOOTER                                                                    -->
+  <!-- ========================================================================= -->
+  <footer class="w-full bg-surface-container-low">
+    <div class="max-w-7xl mx-auto px-margin py-space-xl flex flex-col md:flex-row items-center justify-between gap-space-lg">
+      <div class="flex flex-col items-center md:items-start gap-space-xs">
+        <div class="flex items-center gap-space-xs">
+          <div class="w-6 h-6 rounded-lg bg-primary-container flex items-center justify-center">
+            <span class="material-symbols-outlined text-on-primary text-[14px]">how_to_vote</span>
+          </div>
+          <span class="font-headline-sm text-headline-sm text-on-surface font-bold">VoteChain Protocol</span>
+        </div>
+        <p class="font-body-sm text-body-sm text-on-surface-variant text-center md:text-left">
+          Bảo đảm tính toàn vẹn và bất biến của từng phiếu bầu bằng hợp đồng thông minh blockchain.
+        </p>
+      </div>
+
+      <div class="flex flex-wrap items-center justify-center gap-space-lg">
+        <div class="flex items-center gap-space-xs px-space-sm py-1 rounded-full bg-surface-container-high">
+          <span class="w-2 h-2 rounded-full bg-tertiary-container"></span>
+          <span id="footerContract" class="font-label-code text-label-code text-on-surface-variant">Contract: Đang tải...</span>
+        </div>
+        <a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" href="/verify/">Xác minh phiếu bầu</a>
+        <a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" href="/create/">Khởi tạo hòm phiếu</a>
+      </div>
+
+      <div class="font-label-code text-label-code text-outline">
+        © 2026 VoteChain DAO. Powered by Ethereum Sepolia.
+      </div>
+    </div>
+  </footer>
+
+  <!-- Toasts Notification Container -->
+  <div id="toasts" class="toasts-container"></div>
+
+  <!-- Real System Scripts -->
+  <script src="{% static 'vendor/ethers.umd.min.js' %}"></script>
+  <script src="{% static 'js/abi.js' %}"></script>
+  <script src="{% static 'js/common.js' %}"></script>
+  <script src="{% static 'js/cards.js' %}"></script>
+  <script src="{% static 'js/index.js' %}"></script>
+
+</body>
+</html>

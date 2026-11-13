@@ -1,31 +1,451 @@
-{% extends 'base.html' %}
-{% load static %}
-{% block title %}Xác minh phiếu - VoteChain{% endblock %}
-{% block nav_verify %}active{% endblock %}
+{% load static %}<!DOCTYPE html>
+<html class="h-full" lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>VoteChain - Xác Minh Phiếu Bầu Blockchain</title>
+  <link rel="icon" type="image/x-icon" href="{% static 'img/favicon.ico' %}">
 
-{% block content %}
-<div style="max-width: 700px; margin: 40px auto; text-align: center;">
-    <h1 style="background: linear-gradient(to right, #60a5fa, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-        <i class="fa-solid fa-shield-halved" style="color: #60a5fa; margin-right: 8px;"></i>Xác Minh Phiếu Bầu
-    </h1>
-    <p style="margin-bottom: 32px; color: var(--text-main);">Dán mã giao dịch (TxHash) để kiểm tra tính toàn vẹn và hợp lệ của phiếu bầu trên mạng lưới blockchain.</p>
-    
-    <!-- ĐÃ SỬA: Giao diện ô nhập liệu chuẩn Light Theme -->
-    <div class="glass-panel" style="padding: 24px; background: #ffffff; border: 1px solid var(--glass-border); border-radius: 12px; box-shadow: var(--shadow-sm); display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
-        <div style="position: relative; flex: 1; min-width: 280px;">
-            <i class="fa-solid fa-hashtag" style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
-            <input id="tx" type="text" placeholder="Dán mã 0x... (64 ký tự hex) vào đây" style="width: 100%; padding: 14px 16px 14px 44px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; color: var(--text-main); font-family: monospace; font-size: 1rem;" autocomplete="off" spellcheck="false">
+  <!-- Google Fonts: Plus Jakarta Sans, JetBrains Mono, Material Symbols Outlined -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+
+  <!-- Tailwind CDN & Exact Design System Config -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-tertiary-container": "#bdffdb",
+            "primary-fixed-dim": "#b4c5ff",
+            "on-secondary-fixed-variant": "#2f2ebe",
+            "on-error-container": "#93000a",
+            "background": "#faf8ff",
+            "on-tertiary-fixed-variant": "#005236",
+            "on-primary-container": "#eeefff",
+            "on-secondary-container": "#fffbff",
+            "on-primary-fixed": "#00174b",
+            "error": "#ba1a1a",
+            "surface-container-highest": "#dae2fd",
+            "surface-container-low": "#f2f3ff",
+            "on-secondary": "#ffffff",
+            "primary-fixed": "#dbe1ff",
+            "on-tertiary": "#ffffff",
+            "primary": "#004ac6",
+            "surface-container-high": "#e2e7ff",
+            "on-surface": "#131b2e",
+            "on-surface-variant": "#434655",
+            "on-tertiary-fixed": "#002113",
+            "tertiary-fixed-dim": "#4edea3",
+            "primary-container": "#2563eb",
+            "on-error": "#ffffff",
+            "error-container": "#ffdad6",
+            "inverse-surface": "#283044",
+            "on-primary": "#ffffff",
+            "surface-bright": "#faf8ff",
+            "surface-dim": "#d2d9f4",
+            "on-background": "#131b2e",
+            "surface": "#faf8ff",
+            "outline": "#737686",
+            "outline-variant": "#c3c6d7",
+            "secondary-fixed": "#e1e0ff",
+            "secondary-container": "#6063ee",
+            "on-primary-fixed-variant": "#003ea8",
+            "secondary-fixed-dim": "#c0c1ff",
+            "inverse-primary": "#b4c5ff",
+            "secondary": "#4648d4",
+            "inverse-on-surface": "#eef0ff",
+            "surface-variant": "#dae2fd",
+            "on-secondary-fixed": "#07006c",
+            "tertiary-fixed": "#6ffbbe",
+            "surface-container-lowest": "#ffffff",
+            "surface-container": "#eaedff",
+            "tertiary": "#006242",
+            "surface-tint": "#0053db",
+            "tertiary-container": "#007d55"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "2xl": "1rem",
+            "3xl": "1.5rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-sm": "0.5rem",
+            "margin": "2rem",
+            "space-xl": "2.25rem",
+            "gutter": "1rem",
+            "space-xs": "0.25rem",
+            "gutter-mobile": "0.75rem",
+            "space-md": "1rem",
+            "space-lg": "1.5rem",
+            "margin-mobile": "1rem"
+          },
+          "fontFamily": {
+            "headline-md": ["Plus Jakarta Sans", "sans-serif"],
+            "headline-xl-mobile": ["Plus Jakarta Sans", "sans-serif"],
+            "label-tag": ["Plus Jakarta Sans", "sans-serif"],
+            "body-md": ["Plus Jakarta Sans", "sans-serif"],
+            "body-sm": ["Plus Jakarta Sans", "sans-serif"],
+            "headline-lg-mobile": ["Plus Jakarta Sans", "sans-serif"],
+            "headline-xl": ["Plus Jakarta Sans", "sans-serif"],
+            "label-code": ["JetBrains Mono", "monospace"],
+            "headline-sm": ["Plus Jakarta Sans", "sans-serif"],
+            "headline-lg": ["Plus Jakarta Sans", "sans-serif"],
+            "body-lg": ["Plus Jakarta Sans", "sans-serif"]
+          },
+          "fontSize": {
+            "headline-md": ["1.25rem", { "lineHeight": "1.75rem", "fontWeight": "600" }],
+            "headline-xl-mobile": ["1.625rem", { "lineHeight": "2.125rem", "fontWeight": "700" }],
+            "label-tag": ["0.6875rem", { "lineHeight": "1rem", "fontWeight": "700" }],
+            "body-md": ["0.875rem", { "lineHeight": "1.375rem", "fontWeight": "400" }],
+            "body-sm": ["0.75rem", { "lineHeight": "1.125rem", "fontWeight": "400" }],
+            "headline-lg-mobile": ["1.375rem", { "lineHeight": "1.875rem", "fontWeight": "700" }],
+            "headline-xl": ["2.25rem", { "lineHeight": "2.75rem", "fontWeight": "800" }],
+            "label-code": ["0.8125rem", { "lineHeight": "1.125rem", "fontWeight": "500" }],
+            "headline-sm": ["1rem", { "lineHeight": "1.5rem", "fontWeight": "600" }],
+            "headline-lg": ["1.75rem", { "lineHeight": "2.25rem", "fontWeight": "700" }],
+            "body-lg": ["1rem", { "lineHeight": "1.625rem", "fontWeight": "400" }]
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    @layer base {
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        overscroll-behavior: none;
+      }
+      main > :first-child {
+        margin-top: 0 !important;
+      }
+      main > :last-child {
+        margin-bottom: 0 !important;
+      }
+    }
+    ::-webkit-scrollbar {
+      display: none;
+    }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    .material-symbols-outlined.fill-current {
+      font-variation-settings: 'FILL' 1;
+    }
+    @media print {
+      header, footer, #searchSection, #securityBanner, #actionFootnotes, #toasts, .no-print {
+        display: none !important;
+      }
+      main {
+        padding-top: 0 !important;
+      }
+      #result {
+        box-shadow: none !important;
+        border: 1px solid #000 !important;
+      }
+    }
+  </style>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<body class="bg-surface font-body-md text-body-md text-on-surface antialiased min-h-screen flex flex-col">
+
+  <!-- ========================================================================= -->
+  <!-- TOP NAVIGATION HEADER                                                     -->
+  <!-- ========================================================================= -->
+  <header class="fixed top-0 left-0 right-0 z-50 bg-surface-container-lowest/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] border-b border-surface-container-high/60 no-print">
+    <div class="h-20 max-w-7xl mx-auto px-margin flex items-center justify-between gap-space-md">
+      
+      <!-- Brand Logo & Network Status -->
+      <div class="flex items-center gap-space-md shrink-0">
+        <a class="flex items-center gap-space-xs group" href="/">
+          <div class="w-10 h-10 rounded-xl bg-primary-container flex items-center justify-center shadow-[0_4px_12px_rgba(37,99,235,0.25)] group-hover:scale-105 transition-transform">
+            <span class="material-symbols-outlined text-on-primary text-[24px]">how_to_vote</span>
+          </div>
+          <div class="flex flex-col">
+            <div class="flex items-center gap-space-xs">
+              <span class="font-headline-sm text-headline-sm text-on-surface tracking-tight font-bold">VoteChain</span>
+              <span class="material-symbols-outlined text-primary text-[18px]">verified</span>
+            </div>
+            <span class="font-label-tag text-label-tag text-on-surface-variant uppercase tracking-wider hidden sm:block">Decentralized Governance</span>
+          </div>
+        </a>
+        <div class="hidden xl:flex items-center gap-space-xs px-space-sm py-1 rounded-full bg-surface-container-low">
+          <span class="w-2 h-2 rounded-full bg-tertiary-container animate-pulse"></span>
+          <span class="font-label-code text-label-code text-tertiary font-medium">Sepolia Testnet</span>
         </div>
-        <button id="btnVerify" class="btn btn-primary" style="padding: 14px 28px; white-space: nowrap;">
-            <i class="fa-solid fa-magnifying-glass"></i> Kiểm tra
-        </button>
-    </div>
-    
-    <!-- Nơi hiển thị kết quả -->
-    <div id="result" style="margin-top: 32px; text-align: left;"></div>
-</div>
-{% endblock %}
+      </div>
 
-{% block scripts %}
-<script src="{% static 'js/verify.js' %}"></script>
-{% endblock %}
+      <!-- Desktop Navigation Menu -->
+      <nav class="hidden md:flex items-center gap-space-xs bg-surface-container-lowest px-space-xs py-1.5 rounded-2xl shadow-[0_2px_12px_rgba(0,0,0,0.03)] border border-surface-container-high">
+        <a class="text-on-surface-variant font-headline-sm text-headline-sm px-space-md py-space-sm rounded-xl hover:bg-surface-container-high hover:text-on-surface transition-colors" href="/">
+          Khám phá
+        </a>
+        <a class="text-on-surface-variant font-headline-sm text-headline-sm px-space-md py-space-sm rounded-xl hover:bg-surface-container-high hover:text-on-surface transition-colors" href="/create/">
+          Tạo hòm phiếu
+        </a>
+        <a class="text-on-surface-variant font-headline-sm text-headline-sm px-space-md py-space-sm rounded-xl hover:bg-surface-container-high hover:text-on-surface transition-colors" href="/my/">
+          Hòm phiếu của tôi
+        </a>
+        <a class="text-primary font-headline-sm text-headline-sm px-space-md py-space-sm rounded-xl bg-surface-container-low font-bold transition-colors" href="/verify/">
+          Xác minh phiếu
+        </a>
+      </nav>
+
+      <!-- Gas & Wallet Info -->
+      <div class="flex items-center gap-space-sm shrink-0">
+        <div class="hidden sm:flex items-center gap-space-xs px-space-sm py-space-xs rounded-xl bg-surface-container-low">
+          <span class="material-symbols-outlined text-outline text-[18px]">local_gas_station</span>
+          <span id="gasPrice" class="font-label-code text-label-code text-on-surface-variant font-medium">15 Gwei</span>
+        </div>
+        <button id="btnWallet" type="button" class="flex items-center gap-space-xs px-space-sm py-space-xs rounded-xl bg-surface-container-lowest shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:bg-surface-container-low transition-all cursor-pointer border border-outline-variant/30">
+          <span id="walletDot" class="w-2.5 h-2.5 rounded-full bg-outline"></span>
+          <span id="walletAddress" class="font-label-code text-label-code text-on-surface font-semibold">Kết nối ví</span>
+          <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0 text-on-primary">
+            <span class="material-symbols-outlined text-[18px]">account_balance_wallet</span>
+          </div>
+        </button>
+
+        <!-- Mobile Menu Toggle Button -->
+        <button id="btnMobileNav" type="button" class="md:hidden flex items-center justify-center w-10 h-10 rounded-xl bg-surface-container-low text-on-surface hover:bg-surface-container-high transition-colors cursor-pointer border border-surface-container-high" aria-label="Toggle Menu">
+          <span class="material-symbols-outlined text-[24px]">menu</span>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Mobile Navigation Dropdown -->
+    <div id="mobileNavMenu" class="hidden md:hidden border-t border-surface-container-high bg-surface-container-lowest/95 backdrop-blur-xl px-margin py-space-md shadow-lg flex flex-col gap-space-xs">
+      <a class="px-space-md py-space-sm rounded-xl font-headline-sm text-headline-sm flex items-center gap-2 text-on-surface-variant hover:bg-surface-container-high transition-colors" href="/">
+        <span class="material-symbols-outlined text-[20px]">explore</span>
+        Khám phá
+      </a>
+      <a class="px-space-md py-space-sm rounded-xl font-headline-sm text-headline-sm flex items-center gap-2 text-on-surface-variant hover:bg-surface-container-high transition-colors" href="/create/">
+        <span class="material-symbols-outlined text-[20px]">add_box</span>
+        Tạo hòm phiếu
+      </a>
+      <a class="px-space-md py-space-sm rounded-xl font-headline-sm text-headline-sm flex items-center gap-2 text-on-surface-variant hover:bg-surface-container-high transition-colors" href="/my/">
+        <span class="material-symbols-outlined text-[20px]">inventory_2</span>
+        Hòm phiếu của tôi
+      </a>
+      <a class="px-space-md py-space-sm rounded-xl font-headline-sm text-headline-sm flex items-center gap-2 bg-surface-container-low text-primary font-bold transition-colors" href="/verify/">
+        <span class="material-symbols-outlined text-[20px]">verified</span>
+        Xác minh phiếu
+      </a>
+    </div>
+  </header>
+
+  <!-- ========================================================================= -->
+  <!-- MAIN CONTENT AREA                                                         -->
+  <!-- ========================================================================= -->
+  <main class="w-full pt-28 pb-16 bg-surface flex-1">
+    <div class="relative w-full overflow-hidden">
+      
+      <!-- Ambient mesh background accents -->
+      <div class="absolute -top-32 left-1/2 -translate-x-1/2 w-[900px] h-[450px] bg-gradient-to-b from-primary/10 via-secondary-container/5 to-transparent blur-3xl pointer-events-none rounded-full"></div>
+      <div class="absolute top-96 -right-40 w-96 h-96 bg-tertiary-container/5 blur-3xl pointer-events-none rounded-full"></div>
+
+      <div class="max-w-5xl mx-auto px-margin flex flex-col gap-space-lg relative z-10">
+
+        <!-- Breadcrumbs & Live Node Ticker -->
+        <div class="flex flex-wrap items-center justify-between gap-space-sm no-print">
+          <div class="flex items-center gap-space-xs font-body-sm text-body-sm text-on-surface-variant">
+            <a class="hover:text-primary transition-colors flex items-center gap-1" href="/">
+              <span class="material-symbols-outlined text-[16px]">home</span>
+              <span>Trang chủ</span>
+            </a>
+            <span class="text-outline">/</span>
+            <span class="text-on-surface font-semibold">Xác minh phiếu bầu</span>
+          </div>
+
+          <div class="flex items-center gap-space-xs px-space-md py-1.5 rounded-full bg-surface-container-lowest shadow-sm border border-surface-container-high/60">
+            <span class="relative flex h-2.5 w-2.5">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-tertiary opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-tertiary-container"></span>
+            </span>
+            <span class="font-label-code text-label-code text-on-surface-variant font-medium">Node:</span>
+            <span id="nodeStatus" class="font-label-code text-label-code text-tertiary font-bold">Sepolia RPC</span>
+            <span class="font-label-code text-label-code text-outline-variant">•</span>
+            <span id="nodeBlock" class="font-label-code text-label-code text-on-surface-variant">Live Sync</span>
+          </div>
+        </div>
+
+        <!-- 1. Page Header -->
+        <div class="flex flex-col items-center text-center max-w-3xl mx-auto pt-space-xs pb-space-xs gap-space-xs no-print">
+          <div class="inline-flex items-center gap-space-xs px-space-md py-1 rounded-full bg-primary-fixed text-on-primary-fixed shadow-sm">
+            <span class="material-symbols-outlined text-[15px] text-primary">verified_user</span>
+            <span class="font-label-tag text-label-tag tracking-wider uppercase font-bold">MÃ HÓA BẤT BIẾN MERKLE TREE • EIP-712</span>
+          </div>
+          <h1 class="font-headline-xl text-headline-xl text-on-surface font-extrabold tracking-tight">
+            Xác Minh Phiếu Bầu Blockchain
+          </h1>
+          <p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">
+            Kiểm tra tính toàn vẹn và chứng thực mã hóa của lá phiếu trên sổ cái phi tập trung. Dán mã giao dịch (TxHash) để đối soát với smart contract theo thời gian thực.
+          </p>
+        </div>
+
+        <!-- 2. Search Card -->
+        <div id="searchSection" class="w-full bg-surface-container-lowest rounded-2xl shadow-xl p-space-lg flex flex-col gap-space-md border border-surface-container-high/60 no-print">
+          <div class="flex items-center justify-between">
+            <label class="font-headline-sm text-headline-sm text-on-surface font-bold flex items-center gap-space-xs" for="tx">
+              <span class="material-symbols-outlined text-primary text-[22px]">receipt_long</span>
+              <span>Mã phiếu bầu hoặc Transaction Hash (TxHash)</span>
+            </label>
+            <div class="flex items-center gap-space-sm">
+              <button id="btnSample" type="button" class="font-body-sm text-body-sm text-primary hover:text-primary/80 transition-colors flex items-center gap-1 font-semibold cursor-pointer">
+                <span class="material-symbols-outlined text-[16px]">history_edu</span>
+                <span>Dùng mã mẫu</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Search Bar Input Group -->
+          <div class="flex flex-col md:flex-row items-stretch gap-space-sm">
+            <div class="relative flex-1 flex items-center">
+              <div class="absolute left-space-md text-outline pointer-events-none flex items-center">
+                <span class="material-symbols-outlined text-[20px]">key</span>
+              </div>
+              <input id="tx" type="text" autocomplete="off" spellcheck="false" placeholder="Dán mã giao dịch 0x... (66 ký tự hex)" class="w-full pl-12 pr-28 py-3.5 bg-surface-container-low rounded-xl font-label-code text-label-code text-on-surface placeholder:text-outline focus:outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary shadow-inner border border-surface-container-high transition-all">
+              
+              <div class="absolute right-space-sm flex items-center gap-1">
+                <button id="btnPaste" type="button" title="Dán từ Clipboard" class="px-2.5 py-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface-variant transition-colors flex items-center gap-1 font-body-sm text-body-sm cursor-pointer">
+                  <span class="material-symbols-outlined text-[16px]">content_paste</span>
+                  <span class="hidden sm:inline">Dán</span>
+                </button>
+                <button id="btnScanQR" type="button" title="Quét mã QR" class="p-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface-variant transition-colors cursor-pointer">
+                  <span class="material-symbols-outlined text-[18px]">qr_code_scanner</span>
+                </button>
+              </div>
+            </div>
+
+            <button id="btnVerify" type="button" class="px-space-lg py-3.5 rounded-xl bg-primary-container hover:bg-primary text-on-primary font-headline-sm text-headline-sm font-bold flex items-center justify-center gap-space-xs shadow-md transition-all shrink-0 active:scale-[0.98] cursor-pointer">
+              <span class="material-symbols-outlined text-[20px]">search</span>
+              <span>Tra cứu phiếu</span>
+            </button>
+          </div>
+
+          <!-- Node & Network Sub-status strip -->
+          <div class="flex flex-wrap items-center justify-between gap-space-sm pt-space-xs font-body-sm text-body-sm text-on-surface-variant border-t border-surface-container-high/40">
+            <div class="flex items-center gap-space-xs">
+              <span class="material-symbols-outlined text-tertiary text-[18px]">verified</span>
+              <span>Hệ thống VoteChain:</span>
+              <span class="text-tertiary font-semibold">Hợp đồng thông minh đã xác thực trên Sepolia</span>
+            </div>
+            <div class="flex items-center gap-space-md">
+              <span class="flex items-center gap-1 text-on-surface-variant">
+                <span class="material-symbols-outlined text-[16px] text-tertiary">lock</span>
+                Dữ liệu mã hóa bất biến (Immutable Ledger)
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Verification Result Card (Inspection Panel) -->
+        <div id="result" class="w-full">
+          <!-- Khi chưa tra cứu: Hiển thị hướng dẫn mẫu -->
+          <div class="bg-surface-container-lowest rounded-2xl shadow-sm p-12 text-center border border-surface-container-high/60 flex flex-col items-center justify-center gap-3">
+            <div class="w-16 h-16 rounded-2xl bg-surface-container flex items-center justify-center text-primary">
+              <span class="material-symbols-outlined text-[36px]">fingerprint</span>
+            </div>
+            <h3 class="font-headline-md text-headline-md text-on-surface font-bold">Chưa có kết quả tra cứu</h3>
+            <p class="font-body-md text-on-surface-variant max-w-md">
+              Nhập hoặc dán mã băm giao dịch (TxHash) từ ví MetaMask của bạn vào khung tìm kiếm phía trên để xác minh biên lai bỏ phiếu trên sổ cái Ethereum Sepolia.
+            </p>
+          </div>
+        </div>
+
+        <!-- 4. Security & Cryptographic Guarantee Info Banner -->
+        <div id="securityBanner" class="w-full rounded-2xl bg-gradient-to-r from-primary/10 via-surface-container-high to-tertiary-container/10 p-space-lg flex flex-col sm:flex-row items-center gap-space-md shadow-sm border border-surface-container-high/60 no-print">
+          <div class="w-14 h-14 rounded-2xl bg-primary flex items-center justify-center text-on-primary shrink-0 shadow-md">
+            <span class="material-symbols-outlined text-[32px]">security</span>
+          </div>
+          <div class="flex flex-col gap-1 text-center sm:text-left">
+            <span class="font-headline-sm text-headline-sm text-on-surface font-bold">
+              Cơ Chế Bảo Mật Tuyệt Đối Của VoteChain
+            </span>
+            <p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+              Không ai kể cả quản trị viên máy chủ hay cơ quan tổ chức có thể can thiệp hoặc thay đổi kết quả sau khi đã ghi nhận vào blockchain. Mọi phiếu bầu tạo thành một mắt xích mã hóa Merkle Tree không thể đảo ngược, được giám sát độc lập bởi hàng ngàn node mạng phi tập trung.
+            </p>
+          </div>
+        </div>
+
+        <!-- Quick Action Footnote -->
+        <div id="actionFootnotes" class="flex flex-wrap items-center justify-between gap-space-md py-space-sm font-body-sm text-body-sm text-on-surface-variant no-print">
+          <div class="flex items-center gap-space-sm">
+            <span class="material-symbols-outlined text-outline text-[18px]">help</span>
+            <span>Không tìm thấy mã giao dịch của bạn? Vui lòng kiểm tra lại trong phần</span>
+            <a class="text-primary font-semibold hover:underline" href="/my/">Hòm phiếu của tôi</a>
+          </div>
+          <div class="flex items-center gap-space-sm">
+            <a class="text-on-surface-variant hover:text-primary transition-colors flex items-center gap-1" href="https://eips.ethereum.org/EIPS/eip-712" target="_blank" rel="noopener">
+              <span class="material-symbols-outlined text-[16px]">menu_book</span>
+              <span>Tài liệu đặc tả EIP-712</span>
+            </a>
+            <span class="text-outline-variant">•</span>
+            <a class="text-on-surface-variant hover:text-primary transition-colors flex items-center gap-1" href="/api/config/">
+              <span class="material-symbols-outlined text-[16px]">terminal</span>
+              <span>API đối soát tự động</span>
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ========================================================================= -->
+  <!-- FOOTER                                                                    -->
+  <!-- ========================================================================= -->
+  <footer class="w-full bg-surface-container-low border-t border-surface-container-high/60 mt-auto no-print">
+    <div class="max-w-7xl mx-auto px-margin py-space-xl flex flex-col md:flex-row items-center justify-between gap-space-lg">
+      <div class="flex flex-col items-center md:items-start gap-space-xs">
+        <div class="flex items-center gap-space-xs">
+          <div class="w-6 h-6 rounded-lg bg-primary-container flex items-center justify-center">
+            <span class="material-symbols-outlined text-on-primary text-[14px]">how_to_vote</span>
+          </div>
+          <span class="font-headline-sm text-headline-sm text-on-surface font-bold">VoteChain Protocol</span>
+        </div>
+        <p class="font-body-sm text-body-sm text-on-surface-variant text-center md:text-left">
+          Bảo đảm tính toàn vẹn và bất biến của từng phiếu bầu bằng hợp đồng thông minh blockchain.
+        </p>
+      </div>
+
+      <div class="flex flex-wrap items-center justify-center gap-space-lg">
+        <div class="flex items-center gap-space-xs px-space-sm py-1 rounded-full bg-surface-container-high">
+          <span class="w-2 h-2 rounded-full bg-tertiary-container"></span>
+          <span id="footerContract" class="font-label-code text-label-code text-on-surface-variant">Contract: Đang tải...</span>
+        </div>
+        <a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" href="/verify/">Xác minh phiếu bầu</a>
+        <a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" href="/create/">Khởi tạo hòm phiếu</a>
+      </div>
+
+      <div class="font-label-code text-label-code text-outline">
+        © 2026 VoteChain DAO. Powered by Ethereum Sepolia.
+      </div>
+    </div>
+  </footer>
+
+  <!-- Toasts Notification Container -->
+  <div id="toasts" class="toasts-container"></div>
+
+  <!-- Real System Scripts -->
+  <script src="{% static 'vendor/ethers.umd.min.js' %}"></script>
+  <script src="{% static 'js/abi.js' %}"></script>
+  <script src="{% static 'js/common.js' %}"></script>
+  <script src="{% static 'js/verify.js' %}"></script>
+
+</body>
+</html>
