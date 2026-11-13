@@ -160,10 +160,10 @@
           <!-- Status Tabs -->
           <div id="statusChips" class="flex items-center gap-1 sm:gap-space-xs p-1.5 bg-surface-container-low rounded-xl border border-surface-container-high/60 overflow-x-auto no-scrollbar w-full lg:w-auto">
             <button class="chip active px-3 sm:px-space-md py-2 sm:py-2.5 rounded-lg font-headline-sm text-xs sm:text-headline-sm font-semibold transition-all border-0 cursor-pointer text-on-surface-variant whitespace-nowrap" data-status="all" style="margin:0;">
-              Tất cả (5)
+              Tất cả <span id="tabCountAll"></span>
             </button>
             <button class="chip px-3 sm:px-space-md py-2 sm:py-2.5 rounded-lg font-headline-sm text-xs sm:text-headline-sm font-semibold transition-all border-0 cursor-pointer bg-transparent text-on-surface-variant hover:text-on-surface flex items-center gap-1.5 whitespace-nowrap" data-status="open" style="margin:0;">
-              <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-tertiary-container animate-pulse"></span> Đang mở (Live - 4)
+              <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-tertiary-container animate-pulse"></span> Đang mở <span id="tabCountOpen"></span>
             </button>
             <button class="chip px-3 sm:px-space-md py-2 sm:py-2.5 rounded-lg font-headline-sm text-xs sm:text-headline-sm font-semibold transition-all border-0 cursor-pointer bg-transparent text-on-surface-variant hover:text-on-surface whitespace-nowrap" data-status="upcoming" style="margin:0;">
               Sắp diễn ra
@@ -205,189 +205,13 @@
           </div>
         </div>
 
-        <!-- CÁC CARD TẠO BỞI JS SẼ HIỂN THỊ VÀO ĐÂY -->
-        <div id="electionGrid" class="hidden"></div>
-
-        <!-- HIỆN GRID TĨNH (MOCK) KHI ĐANG DEMO GIAO DIỆN -->
-        <div id="mockGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-space-md mt-6" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));">
-
-          <!-- Card 1 -->
-          <a href="/election/0x0000000000000000000000000000000000000000/" class="text-decoration-none rounded-2xl bg-surface-container-lowest p-5 shadow-sm border border-surface-container-high/60 hover:shadow-lg hover:-translate-y-1 hover:border-primary/50 transition-all flex flex-col justify-between space-y-4 h-full cursor-pointer group block">
-            <div class="space-y-3">
-              <div class="flex items-center justify-between text-xs">
-                <span class="px-2.5 py-1 rounded-full bg-surface-container-high text-on-surface font-semibold flex items-center gap-1.5">
-                  Đã kết thúc
-                </span>
-                <span class="font-label-code text-label-code text-outline group-hover:text-primary transition-colors">#A688-2689</span>
-              </div>
-              <div>
-                <div class="font-label-tag text-[10px] text-primary uppercase font-bold">Bầu cử ứng viên</div>
-                <h4 class="font-headline-sm text-base text-on-surface font-bold mt-1 line-clamp-1 group-hover:text-primary transition-colors">Test Bầu Chọn Ứng Viên</h4>
-                <p class="font-body-sm text-xs text-on-surface-variant line-clamp-2 mt-1">Gồm 3 lựa chọn (chọn 1). Tạo bởi ví 0xC1e8...08C2.</p>
-              </div>
-              <div class="space-y-1 pt-1 mt-auto">
-                <div class="flex items-center justify-between font-label-code text-[11px] text-xs">
-                  <span class="text-on-surface-variant">Tiến độ: <span class="font-bold text-on-surface">1</span> cử tri đã bỏ phiếu</span>
-                </div>
-                <div class="w-full h-2 bg-surface-container rounded-full overflow-hidden mb-2">
-                  <div class="h-full bg-primary rounded-full w-[33%]"></div>
-                </div>
-              </div>
-            </div>
-            <div class="pt-2 mt-auto">
-              <button class="w-full py-2.5 rounded-xl bg-primary-container/20 text-primary font-headline-sm text-sm flex items-center justify-center gap-2 group-hover:bg-primary group-hover:text-on-primary transition-colors border-0 cursor-pointer pointer-events-none">
-                <span class="material-symbols-outlined text-[16px]">visibility</span>Xem kết quả
-              </button>
-            </div>
-          </a>
-
-          <!-- Card 2 -->
-          <a href="/election/0x0000000000000000000000000000000000000000/" class="text-decoration-none rounded-2xl bg-surface-container-lowest p-5 shadow-sm border border-surface-container-high/60 hover:shadow-lg hover:-translate-y-1 hover:border-primary/50 transition-all flex flex-col justify-between space-y-4 h-full cursor-pointer group block">
-            <div class="space-y-3">
-              <div class="flex items-center justify-between text-xs">
-                <span class="px-2.5 py-1 rounded-full bg-[#ECFDF5] text-[#065F46] font-semibold flex items-center gap-1.5">
-                  <span class="w-1.5 h-1.5 rounded-full bg-[#10B981]"></span>Đang mở • Còn Không hẹn giờ
-                </span>
-                <span class="font-label-code text-label-code text-outline group-hover:text-primary transition-colors">#A0FF-347B</span>
-              </div>
-              <div>
-                <div class="font-label-tag text-[10px] text-secondary uppercase font-bold">Lấy ý kiến cộng đồng</div>
-                <h4 class="font-headline-sm text-base text-on-surface font-bold mt-1 line-clamp-1 group-hover:text-primary transition-colors">Test Bỏ Phiếu Một Vấn Đề</h4>
-                <p class="font-body-sm text-xs text-on-surface-variant line-clamp-2 mt-1">Gồm 3 lựa chọn (chọn 1). Tạo bởi ví 0xC1e8...08C2.</p>
-              </div>
-              <div class="space-y-1 pt-1 mt-auto">
-                <div class="flex items-center justify-between font-label-code text-[11px] text-xs">
-                  <span class="text-on-surface-variant">Tiến độ: <span class="font-bold text-on-surface">2</span> cử tri đã bỏ phiếu</span>
-                </div>
-                <div class="w-full h-2 bg-surface-container rounded-full overflow-hidden mb-2">
-                  <div class="h-full bg-primary rounded-full w-[66%]"></div>
-                </div>
-              </div>
-            </div>
-            <div class="pt-2 mt-auto">
-              <button class="w-full py-2.5 rounded-xl bg-primary text-on-primary font-headline-sm text-sm flex items-center justify-center gap-2 group-hover:opacity-90 transition-colors border-0 cursor-pointer shadow-md shadow-primary/20 pointer-events-none">
-                <span class="material-symbols-outlined text-[16px]">how_to_vote</span>Bỏ phiếu ngay
-              </button>
-            </div>
-          </a>
-
-          <!-- Card 3 -->
-          <a href="/election/0x0000000000000000000000000000000000000000/" class="text-decoration-none rounded-2xl bg-surface-container-lowest p-5 shadow-sm border border-surface-container-high/60 hover:shadow-lg hover:-translate-y-1 hover:border-primary/50 transition-all flex flex-col justify-between space-y-4 h-full cursor-pointer group block">
-            <div class="space-y-3">
-              <div class="flex items-center justify-between text-xs">
-                <span class="px-2.5 py-1 rounded-full bg-[#ECFDF5] text-[#065F46] font-semibold flex items-center gap-1.5">
-                  <span class="w-1.5 h-1.5 rounded-full bg-[#10B981]"></span>Đang mở • Còn Không hẹn giờ
-                </span>
-                <span class="font-label-code text-label-code text-outline group-hover:text-primary transition-colors">#E7F5-759A</span>
-              </div>
-              <div>
-                <div class="flex items-center gap-2">
-                  <div class="font-label-tag text-[10px] text-primary uppercase font-bold">Bầu cử ứng viên</div>
-                  <span class="bg-secondary-fixed-dim text-on-secondary-fixed-variant text-[9px] font-bold px-1.5 py-0.5 rounded">Riêng tư</span>
-                </div>
-                <h4 class="font-headline-sm text-base text-on-surface font-bold mt-1 line-clamp-1 group-hover:text-primary transition-colors">Test Bầu Chọn Ứng Viên</h4>
-                <p class="font-body-sm text-xs text-on-surface-variant line-clamp-2 mt-1">Gồm 3 lựa chọn (chọn 1). Tạo bởi ví 0xC1e8...08C2.</p>
-              </div>
-              <div class="space-y-1 pt-1 mt-auto">
-                <div class="flex items-center justify-between font-label-code text-[11px] text-xs">
-                  <span class="text-on-surface-variant">Tiến độ: <span class="font-bold text-on-surface">0</span> cử tri đã bỏ phiếu</span>
-                </div>
-                <div class="w-full h-2 bg-surface-container rounded-full overflow-hidden mb-2">
-                  <div class="h-full bg-surface-container-high rounded-full w-full"></div>
-                </div>
-              </div>
-            </div>
-            <div class="pt-2 mt-auto">
-              <button class="w-full py-2.5 rounded-xl bg-primary text-on-primary font-headline-sm text-sm flex items-center justify-center gap-2 group-hover:opacity-90 transition-colors border-0 cursor-pointer shadow-md shadow-primary/20 pointer-events-none">
-                <span class="material-symbols-outlined text-[16px]">how_to_vote</span>Bỏ phiếu ngay
-              </button>
-            </div>
-          </a>
-
-          <!-- Card 4 -->
-          <a href="/election/0x0000000000000000000000000000000000000000/" class="text-decoration-none rounded-2xl bg-surface-container-lowest p-5 shadow-sm border border-surface-container-high/60 hover:shadow-lg hover:-translate-y-1 hover:border-primary/50 transition-all flex flex-col justify-between space-y-4 h-full cursor-pointer group block">
-            <div class="space-y-3">
-              <div class="flex items-center justify-between text-xs">
-                <span class="px-2.5 py-1 rounded-full bg-[#ECFDF5] text-[#065F46] font-semibold flex items-center gap-1.5">
-                  <span class="w-1.5 h-1.5 rounded-full bg-[#10B981]"></span>Đang mở • Còn 16 giờ 53 phút
-                </span>
-                <span class="font-label-code text-label-code text-outline group-hover:text-primary transition-colors">#1908-35B3</span>
-              </div>
-              <div>
-                <div class="font-label-tag text-[10px] text-primary uppercase font-bold">Bầu cử ứng viên</div>
-                <h4 class="font-headline-sm text-base text-on-surface font-bold mt-1 line-clamp-1 group-hover:text-primary transition-colors">Bầu lớp trưởng</h4>
-                <p class="font-body-sm text-xs text-on-surface-variant line-clamp-2 mt-1">Gồm 3 lựa chọn (chọn 1). Tạo bởi ví 0x83db...6763.</p>
-              </div>
-              <div class="space-y-1 pt-1 mt-auto">
-                <div class="flex items-center justify-between font-label-code text-[11px] text-xs">
-                  <span class="text-on-surface-variant">Tiến độ: <span class="font-bold text-on-surface">1</span> cử tri đã bỏ phiếu</span>
-                </div>
-                <div class="w-full h-2 bg-surface-container rounded-full overflow-hidden mb-2">
-                  <div class="h-full bg-primary rounded-full w-[33%]"></div>
-                </div>
-              </div>
-            </div>
-            <div class="pt-2 mt-auto">
-              <button class="w-full py-2.5 rounded-xl bg-primary text-on-primary font-headline-sm text-sm flex items-center justify-center gap-2 group-hover:opacity-90 transition-colors border-0 cursor-pointer shadow-md shadow-primary/20 pointer-events-none">
-                <span class="material-symbols-outlined text-[16px]">how_to_vote</span>Bỏ phiếu ngay
-              </button>
-            </div>
-          </a>
-
-          <!-- Card 5 -->
-          <a href="/election/0x0000000000000000000000000000000000000000/" class="text-decoration-none rounded-2xl bg-surface-container-lowest p-5 shadow-sm border border-surface-container-high/60 hover:shadow-lg hover:-translate-y-1 hover:border-primary/50 transition-all flex flex-col justify-between space-y-4 h-full cursor-pointer group block">
-            <div class="space-y-3">
-              <div class="flex items-center justify-between text-xs">
-                <span class="px-2.5 py-1 rounded-full bg-[#ECFDF5] text-[#065F46] font-semibold flex items-center gap-1.5">
-                  <span class="w-1.5 h-1.5 rounded-full bg-[#10B981]"></span>Đang mở • Còn Không hẹn giờ
-                </span>
-                <span class="font-label-code text-label-code text-outline group-hover:text-primary transition-colors">#1BEF-6141</span>
-              </div>
-              <div>
-                <div class="font-label-tag text-[10px] text-primary uppercase font-bold">Bầu cử ứng viên</div>
-                <h4 class="font-headline-sm text-base text-on-surface font-bold mt-1 line-clamp-1 group-hover:text-primary transition-colors">Test Bầu Chọn Ứng Viên</h4>
-                <p class="font-body-sm text-xs text-on-surface-variant line-clamp-2 mt-1">Gồm 3 lựa chọn (chọn 1). Tạo bởi ví 0xC1e8...08C2.</p>
-              </div>
-              <div class="space-y-1 pt-1 mt-auto">
-                <div class="flex items-center justify-between font-label-code text-[11px] text-xs">
-                  <span class="text-on-surface-variant">Tiến độ: <span class="font-bold text-on-surface">1</span> cử tri đã bỏ phiếu</span>
-                </div>
-                <div class="w-full h-2 bg-surface-container rounded-full overflow-hidden mb-2">
-                  <div class="h-full bg-primary rounded-full w-[33%]"></div>
-                </div>
-              </div>
-            </div>
-            <div class="pt-2 mt-auto">
-              <button class="w-full py-2.5 rounded-xl bg-primary text-on-primary font-headline-sm text-sm flex items-center justify-center gap-2 group-hover:opacity-90 transition-colors border-0 cursor-pointer shadow-md shadow-primary/20 pointer-events-none">
-                <span class="material-symbols-outlined text-[16px]">how_to_vote</span>Bỏ phiếu ngay
-              </button>
-            </div>
-          </a>
-
-          <!-- Card 6: Tạo hòm phiếu -->
-          <a href="/create/" class="text-decoration-none rounded-2xl bg-primary p-5 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all flex flex-col justify-between space-y-4 border-0 h-full group block cursor-pointer">
-            <div class="space-y-3">
-              <div class="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center text-white">
-                <span class="material-symbols-outlined text-[28px] group-hover:scale-110 transition-transform">add_box</span>
-              </div>
-              <div>
-                <h4 class="font-headline-md text-xl font-bold text-white mt-1">Tạo Hòm Phiếu Mới</h4>
-                <p class="font-body-sm text-xs text-white/80 mt-1 line-clamp-2">Khởi tạo cuộc biểu quyết độc lập cho tổ chức hoặc câu lạc bộ của bạn trong 3 bước.</p>
-              </div>
-            </div>
-            <div class="pt-2 mt-auto">
-              <div class="w-full py-2.5 rounded-xl bg-white text-primary font-headline-sm text-sm flex items-center justify-center gap-2 group-hover:bg-surface-container transition-colors shadow-sm">
-                Khởi tạo ngay <span class="material-symbols-outlined text-[16px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
-              </div>
-            </div>
-          </a>
-
-        </div>
+        <!-- CÁC CARD TẠO BỞI JS SẼ HIỂN THỊ VÀO ĐÂY (Đã mở khoá dữ liệu động 100%) -->
+        <div id="electionGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-space-md mt-6" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));"></div>
 
         <!-- Pagination Controls -->
         <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 sm:pt-space-lg">
           <div id="paginationSummary" class="font-body-sm text-xs sm:text-body-sm text-on-surface-variant">
-            Hiển thị 1 - 5 trên tổng số 5 hòm phiếu
+            Đang tải hòm phiếu...
           </div>
           <div id="pager" class="pager flex justify-center"></div>
         </div>
