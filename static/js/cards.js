@@ -10,12 +10,15 @@ window.ElectionCards = (function () {
   function card(e, me) {
     const isOwner = me && App.sameAddr(me, e.owner);
     const rule = e.max_choices > 1 ? `chọn từ 1 đến ${e.max_choices}` : 'chọn 1';
-    const pollId = `#${e.address.slice(2, 6).toUpperCase()}-${e.address.slice(-4).toUpperCase()}`;
+    
+    // Đảm bảo không bị crash nếu dữ liệu address chưa load kịp
+    const safeAddress = e.address || e.contract_addr || '0x0000000000000000000000000000000000000000';
+    const pollId = `#${safeAddress.slice(2, 6).toUpperCase()}-${safeAddress.slice(-4).toUpperCase()}`;
 
     let statusBadge = '';
     let btnHtml = '';
     
-    // Xử lý Trạng thái & Nút bấm
+    // Xử lý Trạng thái & Nút bấm (ĐÃ ĐỔI <button> THÀNH <div> ĐỂ TRÌNH DUYỆT KHÔNG CHẶN THẺ <a> BÊN NGOÀI)
     if (e.status === 'open') {
       const remaining = e.end_time ? fmtDuration(Date.parse(e.end_time) - Date.now()) : 'Không hẹn giờ';
       statusBadge = `
@@ -25,9 +28,9 @@ window.ElectionCards = (function () {
         </span>
       `;
       btnHtml = `
-        <button class="w-full py-2.5 rounded-xl bg-primary text-on-primary font-headline-sm text-sm flex items-center justify-center gap-2 group-hover:opacity-90 transition-colors border-0 cursor-pointer shadow-md shadow-primary/20 pointer-events-none">
+        <div class="w-full py-2.5 rounded-xl bg-primary text-on-primary font-headline-sm text-sm flex items-center justify-center gap-2 group-hover:opacity-90 transition-colors shadow-md shadow-primary/20">
           <span class="material-symbols-outlined text-[16px]">how_to_vote</span>Bỏ phiếu ngay
-        </button>
+        </div>
       `;
     } else if (e.status === 'upcoming') {
       statusBadge = `
@@ -37,9 +40,9 @@ window.ElectionCards = (function () {
         </span>
       `;
       btnHtml = `
-        <button class="w-full py-2.5 rounded-xl bg-surface-container-high text-on-surface font-headline-sm text-sm flex items-center justify-center gap-2 group-hover:bg-surface-variant transition-colors border-0 cursor-pointer pointer-events-none">
+        <div class="w-full py-2.5 rounded-xl bg-surface-container-high text-on-surface font-headline-sm text-sm flex items-center justify-center gap-2 group-hover:bg-surface-variant transition-colors">
           <span class="material-symbols-outlined text-[16px] text-primary">schedule</span>Xem chi tiết
-        </button>
+        </div>
       `;
     } else {
       statusBadge = `
@@ -48,9 +51,9 @@ window.ElectionCards = (function () {
         </span>
       `;
       btnHtml = `
-        <button class="w-full py-2.5 rounded-xl bg-primary-container/20 text-primary font-headline-sm text-sm flex items-center justify-center gap-2 group-hover:bg-primary group-hover:text-on-primary transition-colors border-0 cursor-pointer pointer-events-none">
+        <div class="w-full py-2.5 rounded-xl bg-primary-container/20 text-primary font-headline-sm text-sm flex items-center justify-center gap-2 group-hover:bg-primary group-hover:text-on-primary transition-colors">
           <span class="material-symbols-outlined text-[16px]">visibility</span>Xem kết quả
-        </button>
+        </div>
       `;
     }
 
@@ -69,9 +72,8 @@ window.ElectionCards = (function () {
     const optsCount = e.option_count || 0;
     const progressPercent = votersCount > 0 ? Math.min(100, Math.max(10, votersCount * 5)) : 0;
 
-    // Trả về HTML khớp 100% với giao diện mockup đã làm
     return `
-      <a href="/election/${esc(e.address)}/" class="text-decoration-none rounded-2xl bg-surface-container-lowest p-5 shadow-sm border border-surface-container-high/60 hover:shadow-lg hover:-translate-y-1 hover:border-primary/50 transition-all flex flex-col justify-between space-y-4 h-full cursor-pointer group block">
+      <a href="/election/${esc(safeAddress)}/" class="text-decoration-none rounded-2xl bg-surface-container-lowest p-5 shadow-sm border border-surface-container-high/60 hover:shadow-lg hover:-translate-y-1 hover:border-primary/50 transition-all flex flex-col justify-between space-y-4 h-full cursor-pointer group block">
         <div class="space-y-3">
           <div class="flex items-center justify-between text-xs">
             ${statusBadge}
