@@ -75,6 +75,9 @@ def pin_file(filename, data: bytes, content_type: str, owner: str = ''):
         _log('ERROR', f'Pinata từ chối ghim ảnh: HTTP {r.status_code} {r.text[:200]}')
         raise IpfsError('Dịch vụ IPFS từ chối yêu cầu, thử lại sau.')
     cid = r.json().get('IpfsHash')
+    if not cid:
+        _log('ERROR', f'Pinata không trả về IpfsHash: {r.text[:200]}')
+        raise IpfsError('Dịch vụ IPFS không trả về mã định danh CID hợp lệ.')
     _log('SUCCESS', f'Đã ghim ảnh {cid} cho {owner[:10]}…')
     return cid
 
@@ -93,5 +96,8 @@ def pin_json(obj: dict, name: str = 'vote-metadata', owner: str = ''):
         _log('ERROR', f'Pinata từ chối ghim metadata: HTTP {r.status_code} {r.text[:200]}')
         raise IpfsError('Dịch vụ IPFS từ chối yêu cầu, thử lại sau.')
     cid = r.json().get('IpfsHash')
+    if not cid:
+        _log('ERROR', f'Pinata không trả về IpfsHash: {r.text[:200]}')
+        raise IpfsError('Dịch vụ IPFS không trả về mã định danh CID hợp lệ.')
     _log('SUCCESS', f'Đã ghim metadata {cid} cho {owner[:10]}…')
     return cid
