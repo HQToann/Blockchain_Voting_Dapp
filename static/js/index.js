@@ -36,6 +36,9 @@
     const p = new URLSearchParams({ status: st.status, page: st.page, page_size: 8 });
     if (st.kind) p.set('kind', st.kind);
     if (st.q) p.set('q', st.q);
+    
+    // [THÊM MỚI]: Gửi tín hiệu cho Backend (Django) biết để nó lấy dữ liệu mới nhất (đảo ngược ID)
+    if (st.sort === 'newest') p.set('ordering', '-id');
 
     try {
       const d = await App.api('/api/elections/?' + p);
@@ -51,14 +54,22 @@
               </div>
               <h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Chưa có cuộc bầu cử nào phù hợp</h3>
               <p class="font-body-sm text-body-sm text-on-surface-variant max-w-md mx-auto mt-2 mb-6">Hãy là người đầu tiên khởi tạo cuộc bỏ phiếu phi tập trung trên mạng Sepolia!</p>
-              <a href="/create/" class="inline-flex items-center gap-2 px-space-xl py-3 rounded-xl bg-primary-container text-on-primary font-headline-sm text-headline-sm shadow-md hover:opacity-95 transition-all">
+              <a href="/create/" class="inline-flex items-center gap-2 px-space-xl py-3 rounded-xl bg-primary-container text-on-primary font-headline-sm text-headline-sm shadow-md hover:opacity-95 transition-all text-decoration-none">
                 <span class="material-symbols-outlined text-[20px]">add_box</span> + Tạo hòm phiếu ngay
               </a>
             </div>`;
         } else {
-          // Sắp xếp phía Client nếu người dùng chọn
+          
           let items = [...d.elections];
-          if (st.sort === 'most_votes') {
+          
+          // [SỬA LẠI LOGIC]: Ép thuật toán sắp xếp đẩy hòm phiếu có thời gian bắt đầu mới nhất lên đầu danh sách
+          if (st.sort === 'newest') {
+            items.sort((a, b) => {
+              const tA = Date.parse(a.start_time) || a.created_block || 0;
+              const tB = Date.parse(b.start_time) || b.created_block || 0;
+              return tB - tA; 
+            });
+          } else if (st.sort === 'most_votes') {
             items.sort((a, b) => (b.total_voters || 0) - (a.total_voters || 0));
           } else if (st.sort === 'closing_soon') {
             items.sort((a, b) => (Date.parse(a.end_time || '9999-12-31') || 0) - (Date.parse(b.end_time || '9999-12-31') || 0));
@@ -77,7 +88,7 @@
                 <p class="font-body-sm text-body-sm text-white/80">Khởi tạo cuộc biểu quyết độc lập cho tổ chức hoặc câu lạc bộ của bạn trong 3 bước.</p>
               </div>
               <div class="pt-space-md">
-                <a class="w-full py-2.5 rounded-xl bg-white text-primary font-headline-sm text-headline-sm flex items-center justify-center gap-1 hover:bg-surface transition-all shadow-sm font-bold" href="/create/">
+                <a class="w-full py-2.5 rounded-xl bg-white text-primary font-headline-sm text-headline-sm flex items-center justify-center gap-1 hover:bg-surface transition-all shadow-sm font-bold text-decoration-none" href="/create/">
                   Khởi tạo ngay
                   <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
                 </a>
