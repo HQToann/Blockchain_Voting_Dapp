@@ -16,9 +16,10 @@ urlpatterns = [
     path('verify/', TemplateView.as_view(template_name='verify.html'), name='verify'),
     re_path(rf'^election/{ADDR}/$', TemplateView.as_view(template_name='detail.html'), name='detail'),
 
-    # --- API: cấu hình & sức khoẻ ---
+    # --- API: cấu hình & sức khoẻ & thống kê ---
     path('api/config/', views.config),
     path('api/health/', views.health),
+    path('api/stats/', views.platform_stats),
 
     # --- API: đăng nhập ví (chỉ để upload IPFS) ---
     path('api/auth/nonce/', views.auth_nonce),
