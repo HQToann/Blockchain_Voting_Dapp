@@ -115,3 +115,11 @@ $RECYCLE.BIN/
 
 # Tài liệu
 docs/
+
+<<<<<<< Updated upstream
+# Mockup
+mockup/
+=======
+# UI/UX
+mockup
+>>>>>>> Stashed changes

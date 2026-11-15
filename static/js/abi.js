@@ -16,7 +16,7 @@ window.ELECTION_ABI = [
           },
           {
             "internalType": "string",
-            "name": "metadataURL",
+            "name": "metadataURI",
             "type": "string"
           },
           {
@@ -338,7 +338,7 @@ window.ELECTION_ABI = [
   },
   {
     "inputs": [],
-    "name": "metadataURL",
+    "name": "metadataURI",
     "outputs": [
       {
         "internalType": "string",
@@ -585,7 +585,7 @@ window.FACTORY_ABI = [
       {
         "indexed": false,
         "internalType": "string",
-        "name": "metadataURL",
+        "name": "metadataURI",
         "type": "string"
       }
     ],
@@ -603,7 +603,7 @@ window.FACTORY_ABI = [
           },
           {
             "internalType": "string",
-            "name": "metadataURL",
+            "name": "metadataURI",
             "type": "string"
           },
           {

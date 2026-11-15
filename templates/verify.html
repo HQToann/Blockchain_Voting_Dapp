@@ -1,31 +1,182 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}Xác minh phiếu - VoteChain{% endblock %}
-{% block nav_verify %}active{% endblock %}
+
+{% block title %}VoteChain - Xác Minh Phiếu Bầu Blockchain{% endblock %}
+
+{% block nav_verify %}active bg-surface-container-low font-bold text-primary{% endblock %}
 
 {% block content %}
-<div style="max-width: 700px; margin: 40px auto; text-align: center;">
-    <h1 style="background: linear-gradient(to right, #60a5fa, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-        <i class="fa-solid fa-shield-halved" style="color: #60a5fa; margin-right: 8px;"></i>Xác Minh Phiếu Bầu
-    </h1>
-    <p style="margin-bottom: 32px; color: var(--text-main);">Dán mã giao dịch (TxHash) để kiểm tra tính toàn vẹn và hợp lệ của phiếu bầu trên mạng lưới blockchain.</p>
-    
-    <!-- ĐÃ SỬA: Giao diện ô nhập liệu chuẩn Light Theme -->
-    <div class="glass-panel" style="padding: 24px; background: #ffffff; border: 1px solid var(--glass-border); border-radius: 12px; box-shadow: var(--shadow-sm); display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
-        <div style="position: relative; flex: 1; min-width: 280px;">
-            <i class="fa-solid fa-hashtag" style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
-            <input id="tx" type="text" placeholder="Dán mã 0x... (64 ký tự hex) vào đây" style="width: 100%; padding: 14px 16px 14px 44px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; color: var(--text-main); font-family: monospace; font-size: 1rem;" autocomplete="off" spellcheck="false">
-        </div>
-        <button id="btnVerify" class="btn btn-primary" style="padding: 14px 28px; white-space: nowrap;">
-            <i class="fa-solid fa-magnifying-glass"></i> Kiểm tra
-        </button>
+<div class="relative w-full overflow-hidden mt-2 sm:mt-0">
+  
+  <!-- Ambient mesh background accents -->
+  <div class="absolute -top-32 left-1/2 -translate-x-1/2 w-[320px] sm:w-[900px] h-[250px] sm:h-[450px] bg-gradient-to-b from-primary/10 via-secondary-container/5 to-transparent blur-3xl pointer-events-none rounded-full -z-10"></div>
+  <div class="absolute top-96 -right-10 sm:-right-40 w-48 sm:w-96 h-48 sm:h-96 bg-tertiary-container/5 blur-3xl pointer-events-none rounded-full -z-10"></div>
+
+  <div class="max-w-5xl mx-auto px-4 sm:px-8 flex flex-col gap-6 sm:gap-10 relative z-10 pt-2 sm:pt-0">
+
+    <!-- Breadcrumbs & Live Node Ticker -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 no-print pb-4 sm:pb-0 border-b border-surface-container-high/60 sm:border-0">
+      <div class="flex items-center gap-1 sm:gap-2 font-body-sm text-xs sm:text-sm text-on-surface-variant">
+        <a class="hover:text-primary transition-colors flex items-center gap-1 text-decoration-none" href="/">
+          <span class="material-symbols-outlined text-[16px]">home</span>
+          <span>Trang chủ</span>
+        </a>
+        <span class="text-outline">/</span>
+        <span class="text-on-surface font-semibold">Xác minh phiếu bầu</span>
+      </div>
+
+      <div class="flex items-center gap-1 sm:gap-2 px-3 sm:px-4 py-1.5 rounded-full bg-surface-container-lowest shadow-sm border border-surface-container-high/60 w-fit">
+        <span class="relative flex h-2 sm:h-2.5 w-2 sm:w-2.5 shrink-0">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-tertiary opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2 sm:h-2.5 w-2 sm:w-2.5 bg-tertiary-container"></span>
+        </span>
+        <span class="font-label-code text-[10px] sm:text-xs text-on-surface-variant font-medium">Node:</span>
+        <span id="nodeStatus" class="font-label-code text-[10px] sm:text-xs text-tertiary font-bold">Sepolia RPC</span>
+        <span class="font-label-code text-[10px] sm:text-xs text-outline-variant">•</span>
+        <span id="nodeBlock" class="font-label-code text-[10px] sm:text-xs text-on-surface-variant truncate">Live Sync</span>
+      </div>
     </div>
-    
-    <!-- Nơi hiển thị kết quả -->
-    <div id="result" style="margin-top: 32px; text-align: left;"></div>
+
+    <!-- 1. Page Header -->
+    <div class="flex flex-col items-center text-center max-w-3xl mx-auto pt-2 sm:pt-4 pb-2 sm:pb-4 gap-3 sm:gap-4 no-print">
+      <div class="inline-flex items-center gap-1 sm:gap-2 px-3 sm:px-4 py-1 rounded-full bg-primary-fixed text-on-primary-fixed shadow-sm">
+        <span class="material-symbols-outlined text-[14px] sm:text-[15px] text-primary">verified_user</span>
+        <span class="font-label-tag text-[9px] sm:text-xs tracking-wider uppercase font-bold">MÃ HÓA BẤT BIẾN MERKLE TREE • EIP-712</span>
+      </div>
+      <h1 class="font-headline-xl text-3xl sm:text-[2.25rem] text-on-surface font-extrabold tracking-tight leading-tight">
+        Xác Minh Phiếu Bầu Blockchain
+      </h1>
+      <p class="font-body-lg text-sm sm:text-base text-on-surface-variant max-w-2xl px-2 sm:px-0">
+        Kiểm tra tính toàn vẹn và chứng thực mã hóa của lá phiếu trên sổ cái phi tập trung. Dán mã giao dịch (TxHash) để đối soát với smart contract theo thời gian thực.
+      </p>
+    </div>
+
+    <!-- 2. Search Card -->
+    <div id="searchSection" class="w-full bg-surface-container-lowest rounded-2xl sm:rounded-3xl shadow-md sm:shadow-xl p-5 sm:p-8 flex flex-col gap-4 sm:gap-6 border border-surface-container-high/60 no-print">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+        <label class="font-headline-sm text-base sm:text-lg text-on-surface font-bold flex items-center gap-2" for="tx">
+          <span class="material-symbols-outlined text-primary text-[20px] sm:text-[22px]">receipt_long</span>
+          <span>Mã phiếu bầu hoặc Giao dịch (TxHash)</span>
+        </label>
+        <div class="flex items-center gap-3">
+          <button id="btnSample" type="button" class="font-body-sm text-xs sm:text-sm text-primary hover:text-primary/80 transition-colors flex items-center gap-1 font-semibold cursor-pointer border-0 bg-transparent">
+            <span class="material-symbols-outlined text-[16px]">history_edu</span>
+            <span>Dùng mã mẫu</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Search Bar Input Group -->
+      <div class="flex flex-col md:flex-row items-stretch gap-3 sm:gap-4 w-full">
+        <div class="relative flex-1 flex items-center w-full">
+          <div class="absolute left-3 sm:left-4 text-outline pointer-events-none flex items-center">
+            <span class="material-symbols-outlined text-[18px] sm:text-[20px]">key</span>
+          </div>
+          <input id="tx" type="text" autocomplete="off" spellcheck="false" placeholder="Dán mã giao dịch 0x... (66 ký tự hex)" class="w-full pl-10 sm:pl-12 pr-[88px] sm:pr-24 py-3 sm:py-3.5 bg-surface-container-low rounded-xl font-label-code text-xs sm:text-sm text-on-surface placeholder:text-outline focus:outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary shadow-inner border border-surface-container-high transition-all truncate">
+          
+          <div class="absolute right-1.5 sm:right-2 flex items-center gap-1">
+            <button id="btnPaste" type="button" title="Dán từ Clipboard" class="px-2 sm:px-2.5 py-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface-variant transition-colors flex items-center gap-1 font-body-sm text-[11px] sm:text-xs cursor-pointer border-0">
+              <span class="material-symbols-outlined text-[14px] sm:text-[16px]">content_paste</span>
+              <span class="hidden sm:inline">Dán</span>
+            </button>
+            <button id="btnScanQR" type="button" title="Quét mã QR" class="p-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface-variant transition-colors cursor-pointer border-0">
+              <span class="material-symbols-outlined text-[16px] sm:text-[18px]">qr_code_scanner</span>
+            </button>
+          </div>
+        </div>
+
+        <button id="btnVerify" type="button" class="w-full md:w-auto px-6 py-3.5 rounded-xl bg-primary-container hover:bg-primary text-on-primary font-headline-sm text-sm sm:text-base font-bold flex items-center justify-center gap-2 shadow-md transition-all shrink-0 active:scale-[0.98] cursor-pointer border-0">
+          <span class="material-symbols-outlined text-[18px] sm:text-[20px]">search</span>
+          <span>Tra cứu phiếu</span>
+        </button>
+      </div>
+
+      <!-- Node & Network Sub-status strip -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4 pt-4 font-body-sm text-xs sm:text-sm text-on-surface-variant border-t border-surface-container-high/40">
+        <div class="flex items-start sm:items-center gap-1 sm:gap-2">
+          <span class="material-symbols-outlined text-tertiary text-[16px] sm:text-[18px] shrink-0">verified</span>
+          <span class="hidden sm:inline">Hệ thống VoteChain:</span>
+          <span class="text-tertiary font-semibold leading-tight">Hợp đồng thông minh đã xác thực trên Sepolia</span>
+        </div>
+        <div class="flex items-start sm:items-center gap-1 sm:gap-2">
+          <span class="flex items-start sm:items-center gap-1 text-on-surface-variant leading-tight">
+            <span class="material-symbols-outlined text-[14px] sm:text-[16px] text-tertiary shrink-0 mt-0.5 sm:mt-0">lock</span>
+            Dữ liệu mã hóa bất biến (Immutable Ledger)
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. Verification Result Card (Inspection Panel) -->
+    <div id="result" class="w-full">
+      <!-- Khi chưa tra cứu: Hiển thị hướng dẫn mẫu -->
+      <div class="bg-surface-container-lowest rounded-2xl shadow-sm p-6 sm:p-12 text-center border border-surface-container-high/60 flex flex-col items-center justify-center gap-3">
+        <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-surface-container flex items-center justify-center text-primary">
+          <span class="material-symbols-outlined text-[32px] sm:text-[36px]">fingerprint</span>
+        </div>
+        <h3 class="font-headline-md text-xl sm:text-2xl text-on-surface font-bold">Chưa có kết quả tra cứu</h3>
+        <p class="font-body-md text-sm sm:text-base text-on-surface-variant max-w-md px-4 sm:px-0">
+          Nhập hoặc dán mã băm giao dịch (TxHash) từ ví MetaMask của bạn vào khung tìm kiếm phía trên để xác minh biên lai bỏ phiếu trên sổ cái Ethereum Sepolia.
+        </p>
+      </div>
+    </div>
+
+    <!-- 4. Security & Cryptographic Guarantee Info Banner -->
+    <div id="securityBanner" class="w-full rounded-2xl bg-gradient-to-r from-primary/10 via-surface-container-high to-tertiary-container/10 p-5 sm:p-8 flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 shadow-sm border border-surface-container-high/60 no-print">
+      <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-primary flex items-center justify-center text-on-primary shrink-0 shadow-md">
+        <span class="material-symbols-outlined text-[28px] sm:text-[32px]">security</span>
+      </div>
+      <div class="flex flex-col gap-2 text-center sm:text-left">
+        <span class="font-headline-sm text-base sm:text-lg text-on-surface font-bold">
+          Cơ Chế Bảo Mật Tuyệt Đối Của VoteChain
+        </span>
+        <p class="font-body-md text-xs sm:text-sm text-on-surface-variant leading-relaxed">
+          Không ai kể cả quản trị viên máy chủ hay cơ quan tổ chức có thể can thiệp hoặc thay đổi kết quả sau khi đã ghi nhận vào blockchain. Mọi phiếu bầu tạo thành một mắt xích mã hóa Merkle Tree không thể đảo ngược, được giám sát độc lập bởi hàng ngàn node mạng phi tập trung.
+        </p>
+      </div>
+    </div>
+
+    <!-- Quick Action Footnote -->
+    <div id="actionFootnotes" class="flex flex-col md:flex-row items-center justify-between gap-4 py-2 sm:py-4 font-body-sm text-xs sm:text-sm text-on-surface-variant no-print text-center md:text-left">
+      <div class="flex items-center gap-1 sm:gap-2">
+        <span class="material-symbols-outlined text-outline text-[16px] sm:text-[18px]">help</span>
+        <span class="leading-relaxed">Không tìm thấy mã giao dịch? Vui lòng kiểm tra lại trong <a class="text-primary font-semibold hover:underline text-decoration-none" href="/my/">Hòm phiếu của tôi</a></span>
+      </div>
+      <div class="flex items-center justify-center gap-2 sm:gap-4 flex-wrap">
+        <a class="text-on-surface-variant hover:text-primary transition-colors flex items-center gap-1 text-decoration-none" href="https://eips.ethereum.org/EIPS/eip-712" target="_blank" rel="noopener">
+          <span class="material-symbols-outlined text-[16px]">menu_book</span>
+          <span>Tài liệu EIP-712</span>
+        </a>
+        <span class="text-outline-variant">•</span>
+        <a class="text-on-surface-variant hover:text-primary transition-colors flex items-center gap-1 text-decoration-none" href="/api/config/">
+          <span class="material-symbols-outlined text-[16px]">terminal</span>
+          <span>API đối soát tự động</span>
+        </a>
+      </div>
+    </div>
+
+  </div>
+  
+  <!-- Giữ lại ID ảo để JS cũ không bị lỗi -->
+  <span id="footerContract" class="hidden"></span>
+
 </div>
 {% endblock %}
 
 {% block scripts %}
+<style>
+  @media print {
+    header, footer, #searchSection, #securityBanner, #actionFootnotes, #toasts, .no-print {
+      display: none !important;
+    }
+    main {
+      padding-top: 0 !important;
+    }
+    #result {
+      box-shadow: none !important;
+      border: 1px solid #000 !important;
+    }
+  }
+</style>
 <script src="{% static 'js/verify.js' %}"></script>
 {% endblock %}
