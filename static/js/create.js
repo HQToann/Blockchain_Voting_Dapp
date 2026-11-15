@@ -85,8 +85,53 @@
     `;
   }
 
+  // 2.5. Các hàm hỗ trợ xử lý ảnh cho bản nháp & xem trước
+  function dataURLtoFile(dataurl, filename = 'candidate.jpg') {
+    if (!dataurl || typeof dataurl !== 'string' || !dataurl.startsWith('data:')) return null;
+    try {
+      const arr = dataurl.split(',');
+      const mime = arr[0].match(/:(.*?);/)?.[1] || 'image/jpeg';
+      const bstr = atob(arr[1]);
+      let n = bstr.length;
+      const u8arr = new Uint8Array(n);
+      while (n--) {
+        u8arr[n] = bstr.charCodeAt(n);
+      }
+      return new File([u8arr], filename, { type: mime });
+    } catch (_) {
+      return null;
+    }
+  }
+
+  function compressImageForDraft(file) {
+    return new Promise((resolve) => {
+      if (!file) return resolve(null);
+      const img = new Image();
+      const url = URL.createObjectURL(file);
+      img.onload = () => {
+        URL.revokeObjectURL(url);
+        const maxDim = 500;
+        let w = img.width, h = img.height;
+        if (w > maxDim || h > maxDim) {
+          if (w > h) { h = Math.round((h * maxDim) / w); w = maxDim; }
+          else { w = Math.round((w * maxDim) / h); h = maxDim; }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', 0.8));
+      };
+      img.onerror = () => {
+        URL.revokeObjectURL(url);
+        resolve(null);
+      };
+      img.src = url;
+    });
+  }
+
   // 3. Thêm một hàng ứng viên / lựa chọn
-  function addRow(label = '', role = '', desc = '') {
+  function addRow(label = '', role = '', desc = '', imageDataUrl = null, fileObj = null) {
     const id = ++rowSeq;
     const div = document.createElement('div');
     div.className = 'candidate-row rounded-2xl p-space-md bg-surface-container-low/50 border border-surface-container-high hover:border-primary/40 transition-all flex flex-col md:flex-row items-start gap-space-md relative';
@@ -105,6 +150,20 @@
     const imgThumb = div.querySelector('.thumb');
     const placeholderIcon = div.querySelector('.placeholder-icon');
 
+    if (imageDataUrl) {
+      imgThumb.src = imageDataUrl;
+      imgThumb.classList.remove('hidden');
+      placeholderIcon.classList.add('hidden');
+    }
+    if (fileObj) {
+      div._file = fileObj;
+      try {
+        const dt = new DataTransfer();
+        dt.items.add(fileObj);
+        fileInput.files = dt.files;
+      } catch (_) {}
+    }
+
     fileInput.addEventListener('change', (e) => {
       const f = e.target.files[0];
       if (f && f.size > L.max_image_bytes) {
@@ -112,13 +171,16 @@
         e.target.value = '';
         imgThumb.classList.add('hidden');
         placeholderIcon.classList.remove('hidden');
+        div._file = null;
         return;
       }
       if (f) {
+        div._file = f;
         imgThumb.src = URL.createObjectURL(f);
         imgThumb.classList.remove('hidden');
         placeholderIcon.classList.add('hidden');
       } else {
+        div._file = null;
         imgThumb.classList.add('hidden');
         placeholderIcon.classList.remove('hidden');
       }
@@ -282,15 +344,23 @@
       description: $('desc') ? $('desc').value.trim() : '',
       isPrivate,
       whitelist,
+      whitelistRaw: $('wlInput') ? $('wlInput').value : '',
       maxChoices: $('maxChoices') ? +$('maxChoices').value : 1,
       startMode: radio('startMode') || 'now',
+      startAt: $('startAt') ? $('startAt').value : '',
       endMode: radio('endMode') || 'none',
-      options: rows().map((r) => ({
-        label: r.querySelector('.o-label').value.trim(),
-        role: r.querySelector('.o-role') ? r.querySelector('.o-role').value.trim() : '',
-        description: r.querySelector('.o-desc').value.trim(),
-        file: r.querySelector('.o-file').files[0] || null,
-      })),
+      endAt: $('endAt') ? $('endAt').value : '',
+      options: rows().map((r) => {
+        const thumb = r.querySelector('.thumb');
+        const hasImg = thumb && !thumb.classList.contains('hidden') && thumb.src;
+        return {
+          label: r.querySelector('.o-label').value.trim(),
+          role: r.querySelector('.o-role') ? r.querySelector('.o-role').value.trim() : '',
+          description: r.querySelector('.o-desc').value.trim(),
+          file: r.querySelector('.o-file').files[0] || r._file || null,
+          imageDataUrl: hasImg ? thumb.src : null,
+        };
+      }),
     };
   }
 
@@ -480,6 +550,9 @@
       }
 
       step('Khởi tạo thành công! Đang chuyển hướng…');
+      if (activeDraftId) {
+        deleteDraft(activeDraftId, true);
+      }
       setTimeout(() => {
         location.href = `/election/${electionAddr}/?new=1`;
       }, 1500);
@@ -494,6 +567,586 @@
       }
       if (submitBtn) submitBtn.disabled = false;
     }
+  }
+
+  // =========================================================================
+  // 9.5. HỆ THỐNG QUẢN LÝ BẢN NHÁP (DRAFTS SYSTEM)
+  // =========================================================================
+  const DRAFTS_KEY = 'votechain_election_drafts';
+  let activeDraftId = null;
+
+  function getDrafts() {
+    try {
+      return JSON.parse(localStorage.getItem(DRAFTS_KEY) || '[]');
+    } catch (_) {
+      return [];
+    }
+  }
+
+  function saveDraftsToStorage(drafts) {
+    try {
+      localStorage.setItem(DRAFTS_KEY, JSON.stringify(drafts));
+    } catch (err) {
+      console.warn('Không thể lưu vào localStorage:', err);
+      App.toast('Bộ nhớ trình duyệt đầy, vui lòng xóa bớt bản nháp cũ.', 'error');
+    }
+  }
+
+  function updateDraftsUI() {
+    const drafts = getDrafts();
+    const count = drafts.length;
+
+    if ($('draftBanner')) $('draftBanner').classList.toggle('hidden', count === 0);
+    if ($('draftCountBadge')) $('draftCountBadge').textContent = count;
+
+    if ($('btnQuickDrafts')) $('btnQuickDrafts').classList.toggle('hidden', count === 0);
+    if ($('quickDraftsLabel')) $('quickDraftsLabel').textContent = `Nháp (${count})`;
+
+    if ($('btnViewDraftsBottom')) $('btnViewDraftsBottom').classList.toggle('hidden', count === 0);
+    if ($('bottomDraftsLabel')) $('bottomDraftsLabel').textContent = `Xem bản nháp (${count})`;
+  }
+
+  async function saveCurrentDraft(silent = false) {
+    const f = collect();
+    const hasAnyContent = f.name || f.description || f.options.some((o) => o.label || o.role || o.description || o.file || o.imageDataUrl);
+    
+    if (!hasAnyContent) {
+      App.toast('Chưa có nội dung nào trên form để lưu bản nháp.', 'warn');
+      return null;
+    }
+
+    // Nén ảnh để lưu trữ nhẹ nhàng trong localStorage
+    const optsForDraft = [];
+    for (let i = 0; i < f.options.length; i++) {
+      const o = f.options[i];
+      let compressedDataUrl = o.imageDataUrl;
+      if (o.file) {
+        compressedDataUrl = await compressImageForDraft(o.file);
+      }
+      optsForDraft.push({
+        label: o.label,
+        role: o.role,
+        description: o.description,
+        imageDataUrl: compressedDataUrl,
+      });
+    }
+
+    const drafts = getDrafts();
+    const nowIso = new Date().toISOString();
+    const draftId = activeDraftId || `draft_${Date.now()}`;
+    activeDraftId = draftId;
+
+    const newDraft = {
+      id: draftId,
+      updatedAt: nowIso,
+      name: f.name || '(Bản nháp chưa đặt tên)',
+      description: f.description,
+      kind: f.kind,
+      maxChoices: f.maxChoices,
+      startMode: f.startMode,
+      startAt: f.startAt,
+      endMode: f.endMode,
+      endAt: f.endAt,
+      isPrivate: f.isPrivate,
+      whitelistRaw: f.whitelistRaw,
+      options: optsForDraft,
+    };
+
+    const existingIdx = drafts.findIndex((d) => d.id === draftId);
+    if (existingIdx >= 0) {
+      drafts[existingIdx] = newDraft;
+    } else {
+      drafts.unshift(newDraft);
+    }
+
+    saveDraftsToStorage(drafts);
+    updateDraftsUI();
+
+    if (!silent) {
+      App.toast(`Đã lưu bản nháp: "${newDraft.name}"!`, 'ok');
+    }
+    return newDraft;
+  }
+
+  function deleteDraft(draftId, silent = false) {
+    let drafts = getDrafts();
+    drafts = drafts.filter((d) => d.id !== draftId);
+    saveDraftsToStorage(drafts);
+
+    if (activeDraftId === draftId) {
+      activeDraftId = null;
+    }
+
+    updateDraftsUI();
+    renderDraftsList();
+
+    if (!silent) {
+      App.toast('Đã xóa bản nháp!', 'ok');
+    }
+  }
+
+  function clearAllDrafts() {
+    if (!confirm('Bạn có chắc chắn muốn xóa TOÀN BỘ các bản nháp hòm phiếu đã lưu trên trình duyệt này?')) return;
+    localStorage.removeItem(DRAFTS_KEY);
+    activeDraftId = null;
+    updateDraftsUI();
+    renderDraftsList();
+    App.toast('Đã xóa tất cả bản nháp.', 'ok');
+  }
+
+  function loadDraftToForm(draft) {
+    if (!draft) return;
+
+    activeDraftId = draft.id;
+
+    if ($('name')) {
+      $('name').value = draft.name === '(Bản nháp chưa đặt tên)' ? '' : (draft.name || '');
+      if ($('title-counter')) $('title-counter').textContent = `${$('name').value.length} / 90 ký tự`;
+    }
+    if ($('desc')) {
+      $('desc').value = draft.description || '';
+      if ($('desc-counter')) $('desc-counter').textContent = `${$('desc').value.length} / 500`;
+    }
+
+    const kindRadio = document.querySelector(`input[name=kind][value="${draft.kind || 0}"]`);
+    if (kindRadio) {
+      kindRadio.checked = true;
+      applyKind();
+    }
+
+    if ($('maxChoices')) $('maxChoices').value = draft.maxChoices || 1;
+
+    const startRadio = document.querySelector(`input[name=startMode][value="${draft.startMode || 'now'}"]`);
+    if (startRadio) {
+      startRadio.checked = true;
+      if ($('startAtBox')) $('startAtBox').classList.toggle('hidden', draft.startMode !== 'at');
+    }
+    if ($('startAt') && draft.startAt) $('startAt').value = draft.startAt;
+
+    const endRadio = document.querySelector(`input[name=endMode][value="${draft.endMode || 'none'}"]`);
+    if (endRadio) {
+      endRadio.checked = true;
+      if ($('endAtBox')) $('endAtBox').classList.toggle('hidden', draft.endMode !== 'at');
+    }
+    if ($('endAt') && draft.endAt) $('endAt').value = draft.endAt;
+
+    if ($('whitelist-toggle')) {
+      $('whitelist-toggle').checked = !!draft.isPrivate;
+      if ($('whitelist-box')) $('whitelist-box').classList.toggle('hidden', !draft.isPrivate);
+    }
+    if ($('wlInput')) {
+      $('wlInput').value = draft.whitelistRaw || '';
+      refreshWhitelistUI();
+    }
+
+    // Nạp lại danh sách options
+    const container = $('optionsContainer') || $('options');
+    if (container) {
+      container.innerHTML = '';
+      rowSeq = 0;
+      if (draft.options && draft.options.length) {
+        draft.options.forEach((o, idx) => {
+          const fileObj = o.imageDataUrl ? dataURLtoFile(o.imageDataUrl, `candidate_${idx + 1}.jpg`) : null;
+          addRow(o.label || '', o.role || '', o.description || '', o.imageDataUrl || null, fileObj);
+        });
+      } else {
+        addRow('', '', '');
+        addRow('', '', '');
+      }
+    }
+
+    hideDraftsModal();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    App.toast(`Đã nạp bản nháp: "${draft.name}"!`, 'ok');
+  }
+
+  function showDraftsModal() {
+    renderDraftsList();
+    if ($('draftsModal')) $('draftsModal').classList.remove('hidden');
+  }
+
+  function hideDraftsModal() {
+    if ($('draftsModal')) $('draftsModal').classList.add('hidden');
+  }
+
+  function renderDraftsList() {
+    const container = $('draftsListContainer');
+    if (!container) return;
+    const drafts = getDrafts();
+
+    if (!drafts.length) {
+      container.innerHTML = `
+        <div class="p-12 text-center flex flex-col items-center justify-center gap-3 text-on-surface-variant">
+          <div class="w-14 h-14 rounded-2xl bg-surface-container flex items-center justify-center text-outline">
+            <span class="material-symbols-outlined text-[32px]">drafts</span>
+          </div>
+          <div class="space-y-1">
+            <h4 class="font-headline-sm font-bold text-on-surface">Chưa có bản nháp nào được lưu</h4>
+            <p class="font-body-sm text-xs max-w-xs mx-auto">
+              Khi bạn điền thông tin và bấm "Lưu bản nháp", dữ liệu sẽ được lưu an toàn tại đây để tiếp tục chỉnh sửa bất kỳ lúc nào.
+            </p>
+          </div>
+        </div>
+      `;
+      if ($('btnClearAllDrafts')) $('btnClearAllDrafts').classList.add('hidden');
+      return;
+    }
+
+    if ($('btnClearAllDrafts')) $('btnClearAllDrafts').classList.remove('hidden');
+
+    container.innerHTML = drafts.map((d) => {
+      const isProp = d.kind === 1;
+      const count = d.options ? d.options.length : 0;
+      const timeStr = App.fmtDate(new Date(d.updatedAt));
+      const isActive = activeDraftId === d.id;
+
+      return `
+        <div class="p-space-md rounded-2xl bg-surface-container-lowest border ${isActive ? 'border-primary ring-1 ring-primary/30' : 'border-surface-container-high'} hover:border-primary/50 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-space-md shadow-xs">
+          <div class="space-y-1.5 flex-1 min-w-0">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="px-2.5 py-0.5 rounded-full font-label-tag text-[10px] font-bold uppercase ${isProp ? 'bg-secondary-fixed text-on-secondary-fixed' : 'bg-primary-fixed text-on-primary-fixed'}">
+                ${isProp ? 'Biểu quyết' : 'Bầu cử'}
+              </span>
+              <span class="px-2.5 py-0.5 rounded-full font-label-tag text-[10px] font-semibold bg-surface-container-high text-on-surface-variant">
+                ${d.isPrivate ? 'Riêng tư (Whitelist)' : 'Công khai'}
+              </span>
+              <span class="px-2.5 py-0.5 rounded-full font-label-tag text-[10px] font-semibold bg-surface-container-high text-on-surface-variant">
+                ${count} lựa chọn
+              </span>
+              ${isActive ? '<span class="px-2 py-0.5 rounded-full font-label-tag text-[10px] font-bold bg-amber-100 text-amber-900 border border-amber-300">Đang mở trên form</span>' : ''}
+            </div>
+
+            <h4 class="font-headline-sm font-bold text-on-surface text-base truncate">
+              ${App.esc(d.name)}
+            </h4>
+
+            <p class="font-body-sm text-xs text-on-surface-variant flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-[14px]">update</span>
+              Cập nhật gần nhất: <span class="font-label-code text-on-surface font-medium">${timeStr}</span>
+            </p>
+          </div>
+
+          <div class="flex items-center gap-2 shrink-0 self-end sm:self-center">
+            <button type="button" class="btn-draft-edit px-3 py-1.5 rounded-xl bg-primary-container text-on-primary font-headline-sm text-xs font-bold hover:bg-primary transition-all flex items-center gap-1 shadow-xs cursor-pointer" data-id="${d.id}" title="Nạp vào form để sửa">
+              <span class="material-symbols-outlined text-[15px]">edit</span>
+              Mở sửa
+            </button>
+            <button type="button" class="btn-draft-prev px-3 py-1.5 rounded-xl bg-surface-container-low hover:bg-surface-container-high text-on-surface font-headline-sm text-xs font-semibold transition-all flex items-center gap-1 cursor-pointer border border-surface-container-high" data-id="${d.id}" title="Xem trước bản nháp này">
+              <span class="material-symbols-outlined text-[15px] text-secondary">visibility</span>
+              Xem trước
+            </button>
+            <button type="button" class="btn-draft-del px-2.5 py-1.5 rounded-xl hover:bg-red-50 text-error font-headline-sm text-xs font-semibold transition-all flex items-center gap-1 cursor-pointer" data-id="${d.id}" title="Xóa bản nháp này">
+              <span class="material-symbols-outlined text-[16px]">delete</span>
+            </button>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    // Bắt sự kiện các nút trên từng bản nháp
+    container.querySelectorAll('.btn-draft-edit').forEach((b) => {
+      b.addEventListener('click', () => {
+        const id = b.dataset.id;
+        const d = getDrafts().find((x) => x.id === id);
+        if (d) loadDraftToForm(d);
+      });
+    });
+
+    container.querySelectorAll('.btn-draft-prev').forEach((b) => {
+      b.addEventListener('click', () => {
+        const id = b.dataset.id;
+        const d = getDrafts().find((x) => x.id === id);
+        if (d) {
+          hideDraftsModal();
+          showPreviewModal(d);
+        }
+      });
+    });
+
+    container.querySelectorAll('.btn-draft-del').forEach((b) => {
+      b.addEventListener('click', () => {
+        const id = b.dataset.id;
+        if (confirm('Bạn có chắc chắn muốn xóa bản nháp này?')) {
+          deleteDraft(id);
+        }
+      });
+    });
+  }
+
+  // =========================================================================
+  // 9.6. HỆ THỐNG XEM TRƯỚC HÒM PHIẾU (PREVIEW SYSTEM)
+  // =========================================================================
+  function showPreviewModal(data) {
+    const body = $('previewBody');
+    if (body) {
+      body.innerHTML = renderPreview(data);
+      setupMockSelection(data.maxChoices || 1);
+    }
+    if ($('previewModal')) $('previewModal').classList.remove('hidden');
+  }
+
+  function hidePreviewModal() {
+    if ($('previewModal')) $('previewModal').classList.add('hidden');
+  }
+
+  function renderPreview(data) {
+    const isProposal = data.kind === 1;
+    const now = Date.now() / 1000;
+    
+    // Tính trạng thái dự kiến
+    let startTimeText = 'Ngay sau khi giao dịch tạo hòm phiếu hoàn tất';
+    let endTimeText = 'Không giới hạn thời gian (Đóng thủ công bởi chủ hòm phiếu)';
+    let isLiveNow = true;
+
+    if (data.startMode === 'at' && data.startAt) {
+      const startUnix = App.toUnix(data.startAt);
+      if (startUnix) {
+        startTimeText = App.fmtDate(new Date(startUnix * 1000));
+        if (startUnix > now) isLiveNow = false;
+      }
+    }
+    if (data.endMode === 'at' && data.endAt) {
+      const endUnix = App.toUnix(data.endAt);
+      if (endUnix) {
+        endTimeText = App.fmtDate(new Date(endUnix * 1000));
+      }
+    }
+
+    const addr = App.state.address || '0xVí của bạn (Chưa kết nối)';
+    const whitelistArr = Array.isArray(data.whitelist) 
+      ? data.whitelist 
+      : (data.whitelistRaw ? parseAddresses(data.whitelistRaw).valid : []);
+    const wlCount = whitelistArr.length;
+
+    let optionsHtml = '';
+    if (data.options && data.options.length) {
+      optionsHtml = data.options.map((o, idx) => {
+        const idNum = idx + 1;
+        const idStr = String(idNum).padStart(3, '0');
+        const hasImg = !!o.imageDataUrl;
+        
+        return `
+          <div class="p-space-md sm:p-space-lg rounded-2xl bg-surface-container-lowest border border-surface-container-high/80 shadow-xs hover:border-primary/40 transition-all flex flex-col md:flex-row items-start gap-space-md preview-option-item" data-id="${idNum}">
+            <div class="flex items-center gap-space-md w-full md:w-auto">
+              <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden bg-surface-container-high border border-surface-container-high flex items-center justify-center shrink-0 shadow-xs">
+                ${hasImg 
+                  ? `<img src="${o.imageDataUrl}" alt="${App.esc(o.label)}" class="w-full h-full object-cover">`
+                  : `<span class="material-symbols-outlined text-[36px] text-outline">${isProposal ? 'ballot' : 'person'}</span>`
+                }
+              </div>
+              <div class="flex md:hidden flex-col">
+                <span class="font-headline-sm font-bold text-on-surface text-base">${App.esc(o.label) || `Lựa chọn #${idNum}`}</span>
+                ${o.role ? `<span class="text-xs font-semibold text-secondary">${App.esc(o.role)}</span>` : ''}
+              </div>
+            </div>
+
+            <div class="flex-1 w-full space-y-2">
+              <div class="hidden md:flex items-center justify-between gap-2">
+                <div class="flex items-center gap-2">
+                  <h4 class="font-headline-md text-on-surface font-bold text-base sm:text-lg">
+                    ${App.esc(o.label) || `Lựa chọn #${idNum}`}
+                  </h4>
+                  ${o.role ? `
+                    <span class="px-2.5 py-0.5 rounded-lg bg-secondary-fixed/60 text-on-secondary-fixed font-headline-sm text-xs font-bold">
+                      ${App.esc(o.role)}
+                    </span>` : ''}
+                </div>
+                <span class="font-label-code text-xs px-2 py-0.5 rounded-md bg-surface-container-low text-primary font-bold">
+                  ID #${idStr}
+                </span>
+              </div>
+
+              ${o.description ? `
+                <div class="p-3 rounded-xl bg-surface-container-low/60 border border-surface-container-high/40 text-on-surface-variant font-body-sm text-xs sm:text-sm leading-relaxed whitespace-pre-wrap">
+                  <span class="font-bold text-on-surface block mb-0.5">${isProposal ? 'Nội dung chi tiết:' : 'Cương lĩnh hành động:'}</span>
+                  ${App.esc(o.description)}
+                </div>
+              ` : ''}
+
+              <!-- Mock Vote Selection Button -->
+              <div class="pt-2 flex items-center justify-between gap-2 flex-wrap">
+                <button type="button" class="btn-mock-pick px-4 py-2 rounded-xl bg-surface-container-low hover:bg-surface-container-high text-on-surface font-headline-sm text-xs sm:text-sm font-bold flex items-center gap-1.5 transition-all cursor-pointer border border-surface-container-high" data-id="${idNum}">
+                  <span class="material-symbols-outlined text-[18px] text-outline pick-icon">check_box_outline_blank</span>
+                  <span class="pick-text">Chọn thử nghiệm</span>
+                </button>
+                <span class="text-outline font-label-code text-[11px]">
+                  Số phiếu ban đầu: 0 phiếu (0%)
+                </span>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    } else {
+      optionsHtml = `
+        <div class="p-8 text-center bg-surface-container-low rounded-2xl text-on-surface-variant font-medium">
+          Chưa có lựa chọn nào được thêm vào danh sách.
+        </div>
+      `;
+    }
+
+    return `
+      <!-- Card Hero Preview -->
+      <div class="rounded-3xl bg-surface-container-lowest p-space-lg sm:p-space-xl border border-surface-container-high/70 shadow-sm space-y-space-md">
+        
+        <!-- Badges Bar -->
+        <div class="flex flex-wrap items-center gap-2">
+          ${isLiveNow ? `
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-on-tertiary-container text-tertiary font-label-tag text-label-tag font-bold tracking-wide uppercase shadow-2xs">
+              <span class="w-2 h-2 rounded-full bg-tertiary animate-ping"></span>
+              BỎ PHIẾU ĐANG DIỄN RA
+            </span>
+          ` : `
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 text-amber-900 font-label-tag text-label-tag font-bold tracking-wide uppercase">
+              <span class="material-symbols-outlined text-[14px]">schedule</span>
+              SẮP DIỄN RA
+            </span>
+          `}
+
+          <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-surface-container-low text-secondary font-label-tag text-label-tag font-semibold">
+            <span class="material-symbols-outlined text-[14px]">${isProposal ? 'poll' : 'badge'}</span>
+            ${isProposal ? 'Lấy ý kiến biểu quyết' : 'Bầu chọn ứng viên'}
+          </span>
+
+          <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-surface-container-low ${data.isPrivate ? 'text-purple-700' : 'text-primary'} font-label-tag text-label-tag font-semibold">
+            <span class="material-symbols-outlined text-[14px]">${data.isPrivate ? 'lock' : 'public'}</span>
+            ${data.isPrivate ? `Riêng tư (Whitelist: ${wlCount} ví)` : 'Công khai (Mọi ví Web3)'}
+          </span>
+        </div>
+
+        <!-- Title & Metadata -->
+        <div class="space-y-1">
+          <h2 class="font-headline-xl text-headline-xl text-on-surface font-extrabold tracking-tight">
+            ${App.esc(data.name) || '<span class="text-outline italic">Chưa đặt tiêu đề hòm phiếu</span>'}
+          </h2>
+          <div class="flex flex-wrap items-center gap-x-4 gap-y-1 font-body-sm text-xs sm:text-sm text-on-surface-variant pt-1">
+            <span class="flex items-center gap-1">
+              <span class="material-symbols-outlined text-[16px] text-outline">account_circle</span>
+              Chủ tạo: <strong class="text-on-surface font-label-code">${App.short(addr)}</strong>
+            </span>
+            <span>•</span>
+            <span class="flex items-center gap-1">
+              <span class="material-symbols-outlined text-[16px] text-tertiary">toll</span>
+              Mạng: <strong>Ethereum Sepolia</strong>
+            </span>
+            <span>•</span>
+            <span class="flex items-center gap-1">
+              <span class="material-symbols-outlined text-[16px] text-secondary">verified</span>
+              Chuẩn: <strong>ERC-1202</strong>
+            </span>
+          </div>
+        </div>
+
+        <!-- Description -->
+        ${data.description ? `
+          <div class="p-space-md rounded-2xl bg-surface-container-low/60 border border-surface-container-high/40">
+            <p class="font-body-md text-on-surface-variant text-sm leading-relaxed whitespace-pre-wrap">${App.esc(data.description)}</p>
+          </div>
+        ` : ''}
+
+        <!-- Rules & Metrics Box -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-space-sm pt-1">
+          <div class="p-space-md rounded-2xl bg-surface-container-low border border-surface-container-high/60 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-primary-fixed text-primary flex items-center justify-center shrink-0">
+              <span class="material-symbols-outlined text-[20px]">how_to_vote</span>
+            </div>
+            <div>
+              <span class="text-xs text-on-surface-variant block">Quy tắc lựa chọn</span>
+              <strong class="font-headline-sm text-sm text-on-surface">Tối đa ${data.maxChoices} lựa chọn</strong>
+            </div>
+          </div>
+
+          <div class="p-space-md rounded-2xl bg-surface-container-low border border-surface-container-high/60 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-secondary-fixed text-secondary flex items-center justify-center shrink-0">
+              <span class="material-symbols-outlined text-[20px]">groups</span>
+            </div>
+            <div>
+              <span class="text-xs text-on-surface-variant block">Quyền tham gia</span>
+              <strong class="font-headline-sm text-sm text-on-surface">${data.isPrivate ? `${wlCount} ví cử tri` : 'Mọi ví Web3'}</strong>
+            </div>
+          </div>
+
+          <div class="p-space-md rounded-2xl bg-surface-container-low border border-surface-container-high/60 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-tertiary-fixed text-on-tertiary-fixed-variant flex items-center justify-center shrink-0">
+              <span class="material-symbols-outlined text-[20px]">lock_clock</span>
+            </div>
+            <div>
+              <span class="text-xs text-on-surface-variant block">Thời gian diễn ra</span>
+              <strong class="font-headline-sm text-xs text-on-surface line-clamp-1" title="${endTimeText}">${endTimeText}</strong>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Candidate / Options List -->
+      <div class="space-y-space-md">
+        <div class="flex items-center justify-between">
+          <h3 class="font-headline-lg text-headline-lg font-bold text-on-surface flex items-center gap-2">
+            <span class="material-symbols-outlined text-primary text-[24px]">ballot</span>
+            ${isProposal ? 'Danh sách đáp án biểu quyết' : 'Danh sách ứng viên & lựa chọn'}
+          </h3>
+          <span class="font-body-sm text-xs text-on-surface-variant">
+            Bạn có thể bấm vào các nút để thử nghiệm chọn
+          </span>
+        </div>
+
+        <div class="space-y-space-md" id="previewOptionsList">
+          ${optionsHtml}
+        </div>
+      </div>
+
+      <!-- Technical Protocol Notice -->
+      <div class="p-space-md rounded-2xl bg-blue-50 border border-blue-200 text-blue-950 flex items-start gap-3 text-xs leading-relaxed">
+        <span class="material-symbols-outlined text-primary text-[22px] shrink-0 mt-0.5">info</span>
+        <div>
+          <strong class="font-bold block mb-0.5">Chế độ xem trước tương tác (Pre-flight Preview)</strong>
+          Dữ liệu này chỉ đang hiển thị thử nghiệm trên trình duyệt của bạn. Khi bấm <b>"Xác nhận & Đẩy lên Blockchain"</b>, hệ thống sẽ thực hiện đăng nhập ví, tải ảnh lên IPFS và gửi giao dịch tạo hợp đồng thông minh đến mạng Sepolia Testnet.
+        </div>
+      </div>
+    `;
+  }
+
+  function setupMockSelection(maxChoices) {
+    const selected = new Set();
+    document.querySelectorAll('.btn-mock-pick').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const id = +btn.dataset.id;
+        if (selected.has(id)) {
+          selected.delete(id);
+        } else {
+          if (maxChoices === 1) {
+            selected.clear();
+          } else if (selected.size >= maxChoices) {
+            App.toast(`Chỉ được chọn tối đa ${maxChoices} lựa chọn!`, 'warn');
+            return;
+          }
+          selected.add(id);
+        }
+
+        document.querySelectorAll('.btn-mock-pick').forEach((b) => {
+          const bId = +b.dataset.id;
+          const isSel = selected.has(bId);
+          const icon = b.querySelector('.pick-icon');
+          const text = b.querySelector('.pick-text');
+          if (isSel) {
+            b.className = 'btn-mock-pick px-4 py-2 rounded-xl bg-primary-container text-on-primary font-headline-sm text-xs sm:text-sm font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-xs';
+            if (icon) {
+              icon.textContent = maxChoices === 1 ? 'radio_button_checked' : 'check_box';
+              icon.className = 'material-symbols-outlined text-[18px] pick-icon text-on-primary';
+            }
+            if (text) text.textContent = 'Đã chọn';
+          } else {
+            b.className = 'btn-mock-pick px-4 py-2 rounded-xl bg-surface-container-low hover:bg-surface-container-high text-on-surface font-headline-sm text-xs sm:text-sm font-bold flex items-center gap-1.5 transition-all cursor-pointer border border-surface-container-high';
+            if (icon) {
+              icon.textContent = maxChoices === 1 ? 'radio_button_unchecked' : 'check_box_outline_blank';
+              icon.className = 'material-symbols-outlined text-[18px] pick-icon text-outline';
+            }
+            if (text) text.textContent = 'Chọn thử nghiệm';
+          }
+        });
+      });
+    });
   }
 
   // 10. Khởi tạo các sự kiện & giao diện ban đầu
@@ -526,6 +1179,61 @@
 
   if ($('submit')) $('submit').addEventListener('click', submit);
 
+  // Bắt sự kiện Bản nháp & Xem trước
+  if ($('btnSaveDraft')) {
+    $('btnSaveDraft').addEventListener('click', async () => {
+      const d = await saveCurrentDraft();
+      if (d && $('btnViewDraftsBottom')) {
+        $('btnViewDraftsBottom').classList.add('animate-bounce');
+        setTimeout(() => $('btnViewDraftsBottom').classList.remove('animate-bounce'), 1800);
+      }
+    });
+  }
+
+  if ($('btnViewDraftsBottom')) $('btnViewDraftsBottom').addEventListener('click', showDraftsModal);
+
+  if ($('btnPreview')) {
+    $('btnPreview').addEventListener('click', () => {
+      const f = collect();
+      showPreviewModal(f);
+    });
+  }
+
+  if ($('btnOpenDrafts')) $('btnOpenDrafts').addEventListener('click', showDraftsModal);
+  if ($('btnQuickDrafts')) $('btnQuickDrafts').addEventListener('click', showDraftsModal);
+
+  if ($('btnCloseDrafts')) $('btnCloseDrafts').addEventListener('click', hideDraftsModal);
+  if ($('btnCloseDraftsBtn')) $('btnCloseDraftsBtn').addEventListener('click', hideDraftsModal);
+  if ($('btnClearAllDrafts')) $('btnClearAllDrafts').addEventListener('click', clearAllDrafts);
+
+  if ($('btnClosePreview')) $('btnClosePreview').addEventListener('click', hidePreviewModal);
+  if ($('btnPreviewBack')) $('btnPreviewBack').addEventListener('click', hidePreviewModal);
+  if ($('btnPreviewSave')) {
+    $('btnPreviewSave').addEventListener('click', async () => {
+      await saveCurrentDraft();
+      $('btnPreviewSave').innerHTML = '<span class="material-symbols-outlined text-[18px] text-tertiary">check_circle</span> Đã lưu bản nháp';
+      setTimeout(() => {
+        if ($('btnPreviewSave')) {
+          $('btnPreviewSave').innerHTML = '<span class="material-symbols-outlined text-[18px] text-amber-600">save</span> Lưu bản nháp này';
+        }
+      }, 3000);
+    });
+  }
+  if ($('btnPreviewDeploy')) {
+    $('btnPreviewDeploy').addEventListener('click', () => {
+      hidePreviewModal();
+      submit();
+    });
+  }
+
+  // Đóng Modal khi bấm phím Escape
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      hidePreviewModal();
+      hideDraftsModal();
+    }
+  });
+
   // Thêm 2 hàng lựa chọn ban đầu
   const container = $('optionsContainer') || $('options');
   if (container) container.innerHTML = '';
@@ -535,4 +1243,15 @@
   applyKind();
 
   updateOwnerUI();
+  updateDraftsUI();
+
+  // Kiểm tra nếu được mở từ URL có tham số ?draftId=...
+  const urlParams = new URLSearchParams(window.location.search);
+  const draftIdParam = urlParams.get('draftId');
+  if (draftIdParam) {
+    const d = getDrafts().find((x) => x.id === draftIdParam);
+    if (d) {
+      loadDraftToForm(d);
+    }
+  }
 })();
