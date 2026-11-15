@@ -1,8 +1,10 @@
+{% extends 'base.html' %}
 {% load static %}
 
 {% block title %}VoteChain - Xác Minh Phiếu Bầu Blockchain{% endblock %}
 
 {% block nav_verify %}active bg-surface-container-low font-bold text-primary{% endblock %}
+{% block mob_nav_verify %}bg-blue-50 text-blue-600 font-bold{% endblock %}
 
 {% block content %}
 <div class="relative w-full overflow-hidden mt-2 sm:mt-0">
@@ -11,7 +13,7 @@
   <div class="absolute -top-32 left-1/2 -translate-x-1/2 w-[320px] sm:w-[900px] h-[250px] sm:h-[450px] bg-gradient-to-b from-primary/10 via-secondary-container/5 to-transparent blur-3xl pointer-events-none rounded-full -z-10"></div>
   <div class="absolute top-96 -right-10 sm:-right-40 w-48 sm:w-96 h-48 sm:h-96 bg-tertiary-container/5 blur-3xl pointer-events-none rounded-full -z-10"></div>
 
-  <div class="max-w-5xl mx-auto px-4 sm:px-8 flex flex-col gap-6 sm:gap-10 relative z-10 pt-2 sm:pt-0">
+  <div class="w-full flex flex-col gap-6 sm:gap-10 relative z-10 pt-2 sm:pt-0">
 
     <!-- Breadcrumbs & Live Node Ticker -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 no-print pb-4 sm:pb-0 border-b border-surface-container-high/60 sm:border-0">
@@ -20,7 +22,7 @@
           <span class="material-symbols-outlined text-[16px]">home</span>
           <span>Trang chủ</span>
         </a>
-        <span class="text-outline">/</span>
+        <span class="material-symbols-outlined text-[14px] text-outline">chevron_right</span>
         <span class="text-on-surface font-semibold">Xác minh phiếu bầu</span>
       </div>
 
@@ -37,8 +39,8 @@
     </div>
 
     <!-- 1. Page Header -->
-    <div class="flex flex-col items-center text-center max-w-3xl mx-auto pt-2 sm:pt-4 pb-2 sm:pb-4 gap-3 sm:gap-4 no-print">
-      <div class="inline-flex items-center gap-1 sm:gap-2 px-3 sm:px-4 py-1 rounded-full bg-primary-fixed text-on-primary-fixed shadow-sm">
+    <div class="rounded-3xl bg-gradient-to-br from-blue-50/80 via-surface-container-low to-white/90 p-6 sm:p-8 border border-blue-100/80 shadow-xs flex flex-col items-center text-center max-w-3xl mx-auto pt-4 sm:pt-6 pb-4 sm:pb-6 gap-3 sm:gap-4 no-print mb-2">
+      <div class="inline-flex items-center gap-1 sm:gap-2 px-3 sm:px-4 py-1 rounded-full bg-primary-fixed text-on-primary-fixed shadow-xs">
         <span class="material-symbols-outlined text-[14px] sm:text-[15px] text-primary">verified_user</span>
         <span class="font-label-tag text-[9px] sm:text-xs tracking-wider uppercase font-bold">MÃ HÓA BẤT BIẾN MERKLE TREE • EIP-712</span>
       </div>

@@ -34,7 +34,7 @@ from web3.utils.subscriptions import LogsSubscription
 from election import indexer_core as core
 from election.models import Election
 from election.realtime import publish
-from election.utils import check_factory_compatible, get_factory_address
+from election.utils import check_factory_compatible, get_factory_address, create_resilient_w3
 
 logging.basicConfig(
     level=logging.INFO,
@@ -79,7 +79,7 @@ if not FACTORY:
     logger.error('Chưa cấu hình FACTORY_ADDRESS (hoặc chưa deploy Factory cho CHAIN_ID hiện tại).')
     sys.exit(1)
 
-w3_http = Web3(Web3.HTTPProvider(RPC_URL, request_kwargs={'timeout': 20}))
+w3_http = create_resilient_w3(timeout=20)
 
 # Cầu nối sync -> async: mọi thao tác DB/RPC chạy trong thread, DB connection được dọn đúng cách
 
@@ -147,7 +147,11 @@ def _heartbeat():
 # Catch-up + đối soát
 
 async def catch_up():
-    head = await asyncio.to_thread(lambda: w3_http.eth.block_number)
+    try:
+        head = await asyncio.to_thread(lambda: w3_http.eth.block_number)
+    except Exception as e:
+        logger.warning('Không thể lấy block_number khi catch-up (%s): %s', type(e).__name__, e)
+        return
     last = await _get_last_block()
     if last == 0:
         start_env = os.getenv('START_BLOCK', '').strip()
@@ -219,9 +223,15 @@ async def background_jobs():
     """Chạy song song với việc nhận event: catch-up, đối soát, nhịp tim."""
     try:
         await catch_up()
+        # Nghỉ nhẹ 2s giữa catch-up và reconcile để RPC giải phóng rate limit bucket
+        await asyncio.sleep(2)
         await reconcile()
-    except Exception:
-        logger.exception('Lỗi catch-up/đối soát ban đầu')
+    except Exception as e:
+        err_str = str(e).lower()
+        if any(k in err_str for k in ['429', 'too many requests', 'rate limit']):
+            logger.warning('RPC đang bị giới hạn tốc độ (429). Hệ thống sẽ thử lại ở chu kỳ tiếp theo.')
+        else:
+            logger.exception('Lỗi catch-up/đối soát ban đầu: %s', e)
     ticks = 0
     while True:
         await asyncio.sleep(HEARTBEAT_INTERVAL)

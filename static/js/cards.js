@@ -2,7 +2,7 @@
  * Thư viện Giao diện Thẻ & Phân trang dùng chung (VoteChain UI Cards)
  * Chuẩn hóa thiết kế Material 3 & Tailwind CSS
  */
-window.ElectionCards = (function () {
+var ElectionCards = window.ElectionCards = (function () {
   'use strict';
   // Safe helper fallbacks in case App is not fully initialized
   const esc = (s) => (window.App && typeof window.App.esc === 'function')
@@ -36,24 +36,44 @@ window.ElectionCards = (function () {
 
     let statusHtml = '';
     if (e.status === 'open') {
-      const remaining = e.end_time ? fmtDuration(Date.parse(e.end_time) - Date.now()) : 'Không hẹn giờ';
+      let openText = 'Đang mở • Không hẹn giờ';
+      let titleAttr = 'Hòm phiếu mở không giới hạn thời gian (Đóng thủ công)';
+      if (e.end_time) {
+        const diff = Date.parse(e.end_time) - Date.now();
+        if (diff > 0) {
+          const s = Math.floor(diff / 1000);
+          const d = Math.floor(s / 86400);
+          const h = Math.floor((s % 86400) / 3600);
+          const m = Math.floor((s % 3600) / 60);
+          let remStr = '';
+          if (d > 0) remStr = `${d} ngày`;
+          else if (h > 0) remStr = `${h} giờ`;
+          else if (m > 0) remStr = `${m} phút`;
+          else remStr = `${s}s`;
+          openText = `Đang mở • Còn ${remStr}`;
+          titleAttr = `Hẹn giờ kết thúc: ${fmtDate(e.end_time)}`;
+        } else {
+          openText = 'Đang mở • Sắp đóng';
+          titleAttr = `Đã đến hạn kết thúc: ${fmtDate(e.end_time)}`;
+        }
+      }
       statusHtml = `
-        <span class="px-2.5 py-1 rounded-full bg-[#ECFDF5] text-[#065F46] font-semibold flex items-center gap-1.5 text-xs">
-          <span class="w-2 h-2 rounded-full bg-[#10B981] animate-pulse"></span>
-          Đang mở • Còn ${esc(remaining)}
+        <span class="px-2.5 py-0.5 rounded-full bg-[#ECFDF5] text-[#065F46] font-semibold flex items-center gap-1.5 text-xs whitespace-nowrap shrink-0" title="${esc(titleAttr)}">
+          <span class="w-1.5 h-1.5 rounded-full bg-[#10B981] animate-pulse"></span>
+          ${esc(openText)}
         </span>
       `;
     } else if (e.status === 'upcoming') {
       statusHtml = `
-        <span class="px-2.5 py-1 rounded-full bg-[#FFFBEB] text-[#92400E] font-semibold flex items-center gap-1.5 text-xs">
-          <span class="w-2 h-2 rounded-full bg-[#F59E0B]"></span>
+        <span class="px-2.5 py-0.5 rounded-full bg-[#FFFBEB] text-[#92400E] font-semibold flex items-center gap-1.5 text-xs whitespace-nowrap shrink-0">
+          <span class="w-1.5 h-1.5 rounded-full bg-[#F59E0B]"></span>
           Sắp diễn ra
         </span>
       `;
     } else {
       statusHtml = `
-        <span class="px-2.5 py-1 rounded-full bg-surface-container-high text-on-surface-variant font-semibold flex items-center gap-1.5 text-xs">
-          <span class="w-2 h-2 rounded-full bg-outline"></span>
+        <span class="px-2.5 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant font-semibold flex items-center gap-1.5 text-xs whitespace-nowrap shrink-0">
+          <span class="w-1.5 h-1.5 rounded-full bg-outline"></span>
           Đã kết thúc
         </span>
       `;
@@ -99,9 +119,9 @@ window.ElectionCards = (function () {
     return `
       <div class="rounded-2xl bg-surface-container-lowest p-space-lg shadow-sm hover:shadow-md transition-all flex flex-col justify-between space-y-space-md border border-slate-100">
         <div class="space-y-space-sm">
-          <div class="flex items-center justify-between text-xs">
+          <div class="flex items-center justify-between text-xs gap-2 min-w-0">
             ${statusHtml}
-            <span class="font-label-code text-label-code text-outline">${pollId}</span>
+            <span class="font-label-code text-[11px] text-outline shrink-0 whitespace-nowrap">${pollId}</span>
           </div>
 
           <div>
@@ -109,7 +129,9 @@ window.ElectionCards = (function () {
               <span class="font-label-tag text-label-tag text-primary uppercase font-bold text-xs">${kindLabel}</span>
               ${extraBadges}
             </div>
-            <h4 class="font-headline-sm text-headline-sm text-on-surface font-bold mt-1 line-clamp-1" title="${esc(e.name)}">${esc(e.name)}</h4>
+            <h4 class="font-headline-sm text-headline-sm text-on-surface font-bold mt-1 line-clamp-1">
+              <a href="/election/${esc(e.address)}/" class="text-on-surface hover:text-primary transition-colors text-decoration-none" title="${esc(e.name)}">${esc(e.name)}</a>
+            </h4>
             <p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2 mt-1">
               Gồm <b>${optsCount}</b> lựa chọn (${rule}). Tạo bởi ví <span class="font-label-code text-xs text-primary">${esc(short(e.owner))}</span>.
             </p>
@@ -142,18 +164,23 @@ window.ElectionCards = (function () {
     let statusBadge = '';
     let timeLabel = '';
     if (e.status === 'open') {
-      const remaining = e.end_time ? fmtDuration(Date.parse(e.end_time) - Date.now()) : 'Không hẹn giờ';
+      const remaining = e.end_time ? fmtDuration(Date.parse(e.end_time) - Date.now()) : null;
       statusBadge = `
         <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 font-label-tag text-label-tag font-bold tracking-wide">
           <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
           ĐANG MỞ
         </span>
       `;
-      timeLabel = `
+      timeLabel = remaining ? `
         <div class="flex items-center gap-1.5 text-error font-medium">
           <span class="material-symbols-outlined text-[18px]">alarm</span>
           <span>Kết thúc: ${esc(fmtDate(e.end_time))}</span>
           <span class="px-2 py-0.5 rounded-full bg-error-container text-on-error-container font-label-tag text-label-tag font-bold">Còn ${esc(remaining)}</span>
+        </div>
+      ` : `
+        <div class="flex items-center gap-1.5 text-on-surface-variant font-medium">
+          <span class="material-symbols-outlined text-[18px] text-tertiary">all_inclusive</span>
+          <span>Không hẹn giờ (Chủ hòm phiếu đóng thủ công)</span>
         </div>
       `;
     } else if (e.status === 'upcoming') {
@@ -620,5 +647,5 @@ window.ElectionCards = (function () {
     });
   }
 
-  return { card, myCard, candidateCard, votersTable, whitelistTable, detailBadges, pager };
+  return { card, myCard, cardMy: myCard, candidateCard, votersTable, whitelistTable, detailBadges, pager };
 })();

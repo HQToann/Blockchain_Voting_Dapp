@@ -30,12 +30,13 @@
     try {
         const stats = await App.api(`/api/stats/?address=${encodeURIComponent(me)}`);
         if (stats) {
-          globalStats.ownerTotal = stats.owner_total || 0;
-          globalStats.ownerOpen = stats.owner_open || 0;
-          globalStats.ownerEnded = stats.owner_ended || 0;
-          globalStats.votedTotal = stats.voted_total || 0;
+          const u = stats.user || stats;
+          globalStats.ownerTotal = u.owner_total != null ? u.owner_total : 0;
+          globalStats.ownerOpen = u.owner_open != null ? u.owner_open : 0;
+          globalStats.ownerEnded = u.owner_ended != null ? u.owner_ended : 0;
+          globalStats.votedTotal = u.voted_total != null ? u.voted_total : 0;
 
-          if ($('statCreatedTotal')) $('statCreatedTotal').textContent = String(globalStats.ownerTotal).padStart(2, '0');
+          if ($('statCreatedTotal')) $('statCreatedTotal').textContent = globalStats.ownerTotal;
           if ($('statCreatedOpen')) $('statCreatedOpen').innerHTML = `<span class="w-2 h-2 rounded-full bg-tertiary-container"></span> ${globalStats.ownerOpen} đang mở`;
           if ($('statCreatedEnded')) $('statCreatedEnded').textContent = `• ${globalStats.ownerEnded} đã kết thúc`;
           if ($('statCreatedBar')) {
@@ -44,39 +45,40 @@
           }
           if ($('tabCountOwner')) $('tabCountOwner').textContent = globalStats.ownerTotal;
 
-          if ($('statVotedTotal')) $('statVotedTotal').textContent = String(globalStats.votedTotal).padStart(2, '0');
+          if ($('statVotedTotal')) $('statVotedTotal').textContent = globalStats.votedTotal;
           if ($('tabCountVoted')) $('tabCountVoted').textContent = globalStats.votedTotal;
 
-            if (stats.recent_voted_time) {
-              globalStats.recentVotedText = `Gần nhất: ${App.fmtDate(stats.recent_voted_time)}`;
-            } else {
-              globalStats.recentVotedText = 'Chưa tham gia bỏ phiếu';
-            }
+          const recentTime = u.recent_voted_time || stats.recent_voted_time;
+          if (recentTime) {
+            globalStats.recentVotedText = `Gần nhất: ${App.fmtDate(recentTime)}`;
+          } else {
+            globalStats.recentVotedText = 'Chưa tham gia bỏ phiếu';
+          }
 
-            if ($('statVotedRecent')) {
-              $('statVotedRecent').innerHTML = `
+          if ($('statVotedRecent')) {
+            $('statVotedRecent').innerHTML = `
             <span class="material-symbols-outlined text-[16px] text-tertiary">check_circle</span>
             <span class="truncate">${esc(globalStats.recentVotedText)}</span>
           `;
-            }
-
-            // Cập nhật số đếm trên các bộ lọc (Filter pills)
-            if (st.tab === 'owner') {
-              if ($('filterAllCount')) $('filterAllCount').textContent = globalStats.ownerTotal;
-              if ($('filterOpenCount')) $('filterOpenCount').textContent = globalStats.ownerOpen;
-              if ($('filterEndedCount')) $('filterEndedCount').textContent = globalStats.ownerEnded;
-            } else if (st.tab === 'voted') {
-              if ($('filterAllCount')) $('filterAllCount').textContent = globalStats.votedTotal;
-            }
-
-            // Cập nhật huy hiệu tổng trên Hero Title
-            if ($('heroTotalBadge')) {
-              $('heroTotalBadge').textContent = st.tab === 'owner' ? globalStats.ownerTotal : (st.tab === 'voted' ? globalStats.votedTotal : 0);
-            }
           }
-        } catch (err) {
-          console.warn('Lỗi tải thống kê Bento:', err);
+
+          // Cập nhật số đếm trên các bộ lọc (Filter pills)
+          if (st.tab === 'owner') {
+            if ($('filterAllCount')) $('filterAllCount').textContent = globalStats.ownerTotal;
+            if ($('filterOpenCount')) $('filterOpenCount').textContent = globalStats.ownerOpen;
+            if ($('filterEndedCount')) $('filterEndedCount').textContent = globalStats.ownerEnded;
+          } else if (st.tab === 'voted') {
+            if ($('filterAllCount')) $('filterAllCount').textContent = globalStats.votedTotal;
+          }
+
+          // Cập nhật huy hiệu tổng trên Hero Title
+          if ($('heroTotalBadge')) {
+            $('heroTotalBadge').textContent = st.tab === 'owner' ? globalStats.ownerTotal : (st.tab === 'voted' ? globalStats.votedTotal : 0);
+          }
         }
+      } catch (err) {
+        console.warn('Lỗi tải thống kê Bento:', err);
+      }
       }
 
       function updateDraftCountInMy() {
@@ -388,15 +390,42 @@
           });
         });
 
-        // 7. Tìm Kiếm (Search Bar Debounced)
+        // 7. Tìm Kiếm (Search Bar Debounced & Instant Clear)
+        function resetMySearch() {
+          st.q = '';
+          st.page = 1;
+          if ($('searchInput')) $('searchInput').value = '';
+          if ($('clearSearchBtn')) $('clearSearchBtn').classList.add('hidden');
+          load();
+        }
+
+        if ($('clearSearchBtn')) {
+          $('clearSearchBtn').addEventListener('click', resetMySearch);
+        }
+
         if ($('searchInput')) {
+          $('searchInput').addEventListener('input', (e) => {
+            const val = e.target.value.trim();
+            if ($('clearSearchBtn')) $('clearSearchBtn').classList.toggle('hidden', !val);
+          });
+
           $('searchInput').addEventListener('input', App.debounce((e) => {
             st.q = e.target.value.trim();
             st.page = 1;
             load();
-          }, 400));
+          }, 350));
+
+          $('searchInput').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              st.q = e.target.value.trim();
+              st.page = 1;
+              load();
+            }
+          });
         }
 
         show();
+        window.addEventListener('app:wallet', show);
         App.watch('all', App.debounce(() => App.state.address && (loadBentoStats(), load()), 800));
       }) ();

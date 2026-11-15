@@ -3,6 +3,8 @@
 
 <!-- Tiêu đề trang hiển thị trên tab trình duyệt -->
 {% block title %}VoteChain - Chi Tiết Hòm Phiếu Bầu Cử{% endblock %}
+{% block nav_home %}active bg-surface-container-low font-bold text-primary{% endblock %}
+{% block mob_nav_home %}bg-blue-50 text-blue-600 font-bold{% endblock %}
 
 {% block content %}
 <!-- Thanh điều hướng (Trang chủ > Khám phá > Tên hòm phiếu) -->
@@ -236,7 +238,7 @@
     <!-- ================================================================= -->
     <!-- CỘT PHẢI: BẢNG BỎ PHIẾU (Sẽ luôn bám sát màn hình khi cuộn chuột) -->
     <!-- ================================================================= -->
-    <div class="lg:col-span-4 lg:sticky lg:top-28 flex flex-col gap-4 sm:gap-space-md mt-2 lg:mt-0">
+    <div class="lg:col-span-4 lg:sticky lg:top-24 self-start z-10 flex flex-col gap-4 sm:gap-space-md mt-2 lg:mt-0">
       
       <div class="bg-surface-container-lowest rounded-2xl p-5 sm:p-space-lg shadow-xl border border-surface-container-high/60 flex flex-col gap-4 sm:gap-space-md">
         
@@ -257,24 +259,24 @@
           </span>
           
           <!-- Các con số đếm ngược -->
-          <div class="flex items-baseline gap-2 sm:gap-space-xs justify-center py-2 sm:py-space-xs">
+          <div class="flex items-baseline gap-1.5 sm:gap-space-xs justify-center py-2 sm:py-space-xs">
             <div class="flex flex-col items-center">
-              <span id="cdDays" class="font-headline-xl text-3xl sm:text-headline-xl text-on-surface font-extrabold tracking-tight">00</span>
+              <span id="cdDays" class="font-headline-xl text-2xl sm:text-3xl text-on-surface font-extrabold tracking-tight">00</span>
               <span class="font-label-tag text-[10px] sm:text-label-tag text-on-surface-variant">NGÀY</span>
             </div>
-            <span class="font-headline-lg text-xl sm:text-headline-lg text-outline font-bold px-0.5 sm:px-1">:</span>
+            <span class="font-headline-lg text-lg sm:text-xl text-outline font-bold px-0.5">:</span>
             <div class="flex flex-col items-center">
-              <span id="cdHours" class="font-headline-xl text-3xl sm:text-headline-xl text-on-surface font-extrabold tracking-tight">00</span>
+              <span id="cdHours" class="font-headline-xl text-2xl sm:text-3xl text-on-surface font-extrabold tracking-tight">00</span>
               <span class="font-label-tag text-[10px] sm:text-label-tag text-on-surface-variant">GIỜ</span>
             </div>
-            <span class="font-headline-lg text-xl sm:text-headline-lg text-outline font-bold px-0.5 sm:px-1">:</span>
+            <span class="font-headline-lg text-lg sm:text-xl text-outline font-bold px-0.5">:</span>
             <div class="flex flex-col items-center">
-              <span id="cdMins" class="font-headline-xl text-3xl sm:text-headline-xl text-on-surface font-extrabold tracking-tight">00</span>
+              <span id="cdMins" class="font-headline-xl text-2xl sm:text-3xl text-on-surface font-extrabold tracking-tight">00</span>
               <span class="font-label-tag text-[10px] sm:text-label-tag text-on-surface-variant">PHÚT</span>
             </div>
-            <span class="font-headline-lg text-xl sm:text-headline-lg text-outline font-bold px-0.5 sm:px-1">:</span>
+            <span class="font-headline-lg text-lg sm:text-xl text-outline font-bold px-0.5">:</span>
             <div class="flex flex-col items-center">
-              <span id="cdSecs" class="font-headline-xl text-3xl sm:text-headline-xl text-primary font-extrabold tracking-tight">00</span>
+              <span id="cdSecs" class="font-headline-xl text-2xl sm:text-3xl text-primary font-extrabold tracking-tight">00</span>
               <span class="font-label-tag text-[10px] sm:text-label-tag text-on-surface-variant">GIÂY</span>
             </div>
           </div>
@@ -355,6 +357,5 @@
     color: var(--color-on-surface-variant, #434655) !important;
   }
 </style>
-<script src="{% static 'js/cards.js' %}"></script>
 <script src="{% static 'js/detail.js' %}"></script>
 {% endblock %}

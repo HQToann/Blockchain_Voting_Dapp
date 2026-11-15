@@ -7,24 +7,22 @@
 
 <!-- Kích hoạt trạng thái sáng (active) cho nút Trang chủ trên thanh điều hướng -->
 {% block nav_home %}active bg-surface-container-low font-bold text-primary{% endblock %}
+{% block mob_nav_home %}bg-blue-50 text-blue-600 font-bold{% endblock %}
 
 {% block content %}
 <div class="flex flex-col w-full">
 
-  <!-- Vùng hiển thị các thông báo lỗi hoặc thành công của hệ thống -->
-  <div id="banner" class="max-w-7xl mx-auto px-4 sm:px-8 pt-4 w-full"></div>
-
   <!-- Hiệu ứng ánh sáng nền trang trí (Ambient Glow) -->
-  <div class="relative w-full overflow-hidden bg-surface pb-10 sm:pb-space-xl">
-    <div class="pointer-events-none absolute -top-40 right-10 w-[550px] h-[550px] bg-primary/5 rounded-full blur-3xl"></div>
-    <div class="pointer-events-none absolute top-96 -left-32 w-[480px] h-[480px] bg-secondary/5 rounded-full blur-3xl"></div>
+  <div class="relative w-full overflow-hidden pb-10 sm:pb-space-xl">
+    <div class="pointer-events-none absolute -top-40 right-10 w-[550px] h-[550px] bg-blue-400/10 rounded-full blur-3xl"></div>
+    <div class="pointer-events-none absolute top-96 -left-32 w-[480px] h-[480px] bg-indigo-400/10 rounded-full blur-3xl"></div>
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-8 space-y-6 sm:space-y-space-xl pt-6 sm:pt-space-lg">
+    <div class="w-full space-y-6 sm:space-y-space-xl pt-2 sm:pt-space-md">
 
       <!-- ===================================================================== -->
       <!-- 1. PHẦN GIỚI THIỆU CHÍNH (HERO HEADER SECTION)                        -->
       <!-- ===================================================================== -->
-      <section class="relative rounded-2xl sm:rounded-3xl bg-surface-container-low p-5 sm:p-space-xl overflow-hidden shadow-sm">
+      <section class="relative rounded-2xl sm:rounded-3xl bg-gradient-to-br from-blue-50/90 via-surface-container-low to-indigo-50/40 p-5 sm:p-space-xl overflow-hidden shadow-xs border border-blue-100/80">
         <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-space-xl items-center">
 
           <!-- Cột trái: Nội dung giới thiệu và Các nút bấm hành động -->
@@ -158,57 +156,112 @@
       </section>
 
       <!-- ===================================================================== -->
-      <!-- 3. KHU VỰC DANH SÁCH HÒM PHIẾU VÀ BỘ LỌC (BALLOTS DIRECTORY)          -->
+      <!-- 3. KHU VỰC DANH SÁCH HÒM PHIẾU VÀ TÌM KIẾM (BALLOTS DIRECTORY)        -->
       <!-- ===================================================================== -->
       <section class="space-y-4 sm:space-y-space-md pt-6 sm:pt-space-sm" id="explore-ballots">
-        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 p-3 sm:p-space-md rounded-2xl bg-surface-container-lowest shadow-sm border border-surface-container-high/60">
-
-          <!-- Thanh menu chọn trạng thái (Tất cả, Đang mở, Sắp diễn ra...) -->
-          <div id="statusChips" class="flex items-center gap-1 sm:gap-space-xs p-1.5 bg-surface-container-low rounded-xl border border-surface-container-high/60 overflow-x-auto no-scrollbar w-full lg:w-auto">
-            <button class="chip active px-3 sm:px-space-md py-2 sm:py-2.5 rounded-lg font-headline-sm text-xs sm:text-headline-sm font-semibold transition-all border-0 cursor-pointer text-on-surface-variant whitespace-nowrap" data-status="all" style="margin:0;">
-              Tất cả <span id="tabCountAll"></span>
-            </button>
-            <button class="chip px-3 sm:px-space-md py-2 sm:py-2.5 rounded-lg font-headline-sm text-xs sm:text-headline-sm font-semibold transition-all border-0 cursor-pointer bg-transparent text-on-surface-variant hover:text-on-surface flex items-center gap-1.5 whitespace-nowrap" data-status="open" style="margin:0;">
-              <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-tertiary-container animate-pulse"></span> Đang mở <span id="tabCountOpen"></span>
-            </button>
-            <button class="chip px-3 sm:px-space-md py-2 sm:py-2.5 rounded-lg font-headline-sm text-xs sm:text-headline-sm font-semibold transition-all border-0 cursor-pointer bg-transparent text-on-surface-variant hover:text-on-surface whitespace-nowrap" data-status="upcoming" style="margin:0;">
-              Sắp diễn ra
-            </button>
-            <button class="chip px-3 sm:px-space-md py-2 sm:py-2.5 rounded-lg font-headline-sm text-xs sm:text-headline-sm font-semibold transition-all border-0 cursor-pointer bg-transparent text-on-surface-variant hover:text-on-surface whitespace-nowrap" data-status="finished" style="margin:0;">
-              Đã kết thúc
-            </button>
+        
+        <!-- Tiêu đề khu vực tìm kiếm & khám phá -->
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-2 sm:gap-space-sm">
+          <div class="space-y-1">
+            <div class="font-label-tag text-[10px] sm:text-label-tag text-primary uppercase tracking-widest font-bold">Danh sách trực tiếp</div>
+            <h2 class="font-headline-lg text-2xl sm:text-headline-lg text-on-surface font-bold tracking-tight">Khám Phá &amp; Tìm Kiếm Hòm Phiếu</h2>
           </div>
+          <p class="font-body-md text-sm sm:text-body-md text-on-surface-variant max-w-md">Tra cứu tức thì các cuộc bỏ phiếu theo tên, ứng viên, mô tả hoặc mã hòm phiếu (#ID, 0x...).</p>
+        </div>
 
-          <!-- Các công cụ: Lọc loại, Sắp xếp và Tìm kiếm -->
-          <div class="flex flex-wrap sm:flex-nowrap items-center justify-between lg:justify-end gap-2 sm:gap-3 w-full lg:w-auto mt-2 lg:mt-0">
+        <!-- Khung tìm kiếm & bộ lọc trung tâm -->
+        <div class="p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl bg-surface-container-lowest shadow-sm border border-surface-container-high/60 space-y-3.5">
+          
+          <!-- Hàng 1: Thanh tìm kiếm toàn năng nổi bật -->
+          <div class="relative flex items-center w-full">
+            <div class="absolute left-3.5 sm:left-4 text-primary flex items-center pointer-events-none">
+              <span class="material-symbols-outlined text-[22px] sm:text-[24px]">search</span>
+            </div>
+            <input id="searchInput" type="text"
+              placeholder="Tìm theo tên cuộc bầu cử, tên ứng viên, mô tả hoặc mã hòm phiếu (#ID, 0x...)..."
+              class="w-full pl-11 sm:pl-12 pr-24 sm:pr-28 py-3 sm:py-3.5 rounded-xl bg-surface-container-low text-on-surface placeholder:text-outline font-body-md text-xs sm:text-sm font-semibold border border-transparent focus:border-primary focus:bg-surface-container-lowest outline-none transition-all shadow-inner focus:shadow-md">
             
-            <!-- Trình đơn lọc theo loại hòm phiếu (Bầu cử ứng viên / Lấy ý kiến) -->
-            <div class="relative w-[calc(50%-0.25rem)] sm:w-auto">
-              <select id="typeFilter" class="w-full appearance-none bg-surface-container-low text-on-surface font-headline-sm text-xs sm:text-sm font-semibold pl-3 pr-8 py-2.5 rounded-xl border border-transparent outline-none hover:bg-surface-container-high cursor-pointer transition-colors">
-                <option value="all">Mọi hòm phiếu</option>
-                <option value="0">Bầu cử ứng viên</option>
-                <option value="1">Lấy ý kiến</option>
-              </select>
-              <span class="material-symbols-outlined absolute right-2.5 top-1/2 -translate-y-1/2 text-outline pointer-events-none text-[16px] sm:text-[20px]">expand_more</span>
+            <div class="absolute right-2.5 sm:right-3 flex items-center gap-1.5">
+              <!-- Nút xóa nhanh từ khóa (X) -->
+              <button id="clearSearchBtn" type="button" title="Xóa từ khóa tìm kiếm"
+                class="hidden w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-on-surface-variant hover:text-on-surface flex items-center justify-center transition-colors border-0 cursor-pointer">
+                <span class="material-symbols-outlined text-[16px] sm:text-[18px]">close</span>
+              </button>
+              <!-- Nút bấm tìm kiếm -->
+              <button id="btnSearchSubmit" type="button" title="Tìm kiếm ngay"
+                class="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg bg-primary hover:bg-primary/90 text-white font-headline-sm text-xs sm:text-sm font-bold flex items-center gap-1 transition-all border-0 cursor-pointer shadow-sm">
+                <span class="hidden sm:inline">Tìm</span>
+                <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Hàng 2: Bộ lọc trạng thái (Chips) & Trình đơn phân loại/sắp xếp -->
+          <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 pt-1 border-t border-surface-container-high/40">
+            
+            <!-- Trái: Thanh menu chọn trạng thái (Tất cả, Đang mở, Sắp diễn ra...) -->
+            <div id="statusChips" class="flex items-center gap-1 sm:gap-space-xs p-1 bg-surface-container-low rounded-xl border border-surface-container-high/60 overflow-x-auto no-scrollbar w-full lg:w-auto">
+              <button class="chip active px-3 sm:px-space-md py-1.5 sm:py-2 rounded-lg font-headline-sm text-xs sm:text-headline-sm font-semibold transition-all border-0 cursor-pointer text-white bg-primary whitespace-nowrap focus:outline-none" data-status="all" style="margin:0;">
+                Tất cả <span id="tabCountAll"></span>
+              </button>
+              <button class="chip px-3 sm:px-space-md py-1.5 sm:py-2 rounded-lg font-headline-sm text-xs sm:text-headline-sm font-semibold transition-all border-0 cursor-pointer bg-transparent text-on-surface-variant hover:text-on-surface flex items-center gap-1.5 whitespace-nowrap focus:outline-none" data-status="open" style="margin:0;">
+                <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-tertiary-container animate-pulse"></span> Đang mở <span id="tabCountOpen"></span>
+              </button>
+              <button class="chip px-3 sm:px-space-md py-1.5 sm:py-2 rounded-lg font-headline-sm text-xs sm:text-headline-sm font-semibold transition-all border-0 cursor-pointer bg-transparent text-on-surface-variant hover:text-on-surface whitespace-nowrap focus:outline-none" data-status="upcoming" style="margin:0;">
+                Sắp diễn ra <span id="tabCountUpcoming"></span>
+              </button>
+              <button class="chip px-3 sm:px-space-md py-1.5 sm:py-2 rounded-lg font-headline-sm text-xs sm:text-headline-sm font-semibold transition-all border-0 cursor-pointer bg-transparent text-on-surface-variant hover:text-on-surface whitespace-nowrap focus:outline-none" data-status="finished" style="margin:0;">
+                Đã kết thúc <span id="tabCountEnded"></span>
+              </button>
             </div>
 
-            <!-- Trình đơn sắp xếp (Mới nhất, Nhiều vote nhất...) -->
-            <div class="relative w-[calc(50%-0.25rem)] sm:w-auto block">
-              <select id="sortFilter" class="w-full appearance-none bg-surface-container-low text-on-surface font-headline-sm text-xs sm:text-sm font-semibold pl-3 pr-8 py-2.5 rounded-xl border border-transparent outline-none hover:bg-surface-container-high cursor-pointer transition-colors">
-                <option value="newest">Mới nhất</option>
-                <option value="most_votes">Nhiều vote nhất</option>
-                <option value="closing_soon">Sắp đóng</option>
-              </select>
-              <span class="material-symbols-outlined absolute right-2.5 top-1/2 -translate-y-1/2 text-outline pointer-events-none text-[16px] sm:text-[20px]">swap_vert</span>
-            </div>
+            <!-- Phải: Các trình đơn lọc Thể loại và Sắp xếp -->
+            <div class="flex items-center gap-2 sm:gap-3 w-full lg:w-auto justify-end">
+              <!-- Trình đơn lọc theo loại hòm phiếu -->
+              <div class="relative flex-1 sm:flex-initial">
+                <select id="typeFilter" class="w-full sm:w-auto appearance-none bg-surface-container-low text-on-surface font-headline-sm text-xs sm:text-sm font-semibold pl-3 pr-8 py-2 rounded-xl border border-surface-container-high/60 outline-none hover:bg-surface-container-high cursor-pointer transition-colors">
+                  <option value="all">Mọi thể loại</option>
+                  <option value="0">Bầu cử ứng viên</option>
+                  <option value="1">Lấy ý kiến</option>
+                </select>
+                <span class="material-symbols-outlined absolute right-2.5 top-1/2 -translate-y-1/2 text-outline pointer-events-none text-[16px] sm:text-[18px]">expand_more</span>
+              </div>
 
-            <!-- Ô tìm kiếm mã Hợp đồng (có hiệu ứng mở rộng khi click) -->
-            <div class="relative w-full sm:w-auto mt-2 sm:mt-0 group flex items-center justify-end">
-              <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[18px] sm:text-[20px] pointer-events-none z-10">search</span>
-              <input id="searchInput" type="text" placeholder="Tìm kiếm mã Hợp đồng..." class="w-full sm:w-48 xl:focus:w-64 bg-surface-container-lowest text-on-surface pl-9 pr-3 py-2.5 rounded-xl font-body-md text-xs sm:text-sm font-semibold border border-surface-container-high outline-none focus:border-primary transition-all shadow-sm">
+              <!-- Trình đơn sắp xếp -->
+              <div class="relative flex-1 sm:flex-initial">
+                <select id="sortFilter" class="w-full sm:w-auto appearance-none bg-surface-container-low text-on-surface font-headline-sm text-xs sm:text-sm font-semibold pl-3 pr-8 py-2 rounded-xl border border-surface-container-high/60 outline-none hover:bg-surface-container-high cursor-pointer transition-colors">
+                  <option value="newest">Mới nhất</option>
+                  <option value="most_votes">Nhiều phiếu nhất</option>
+                  <option value="closing_soon">Sắp kết thúc</option>
+                </select>
+                <span class="material-symbols-outlined absolute right-2.5 top-1/2 -translate-y-1/2 text-outline pointer-events-none text-[16px] sm:text-[18px]">swap_vert</span>
+              </div>
             </div>
 
           </div>
+
+          <!-- Hàng 3: Gợi ý tìm kiếm nhanh (Quick search pills) -->
+          <div class="flex items-center gap-1.5 sm:gap-2 flex-wrap pt-0.5 font-body-sm text-[11px] sm:text-xs text-on-surface-variant">
+            <span class="flex items-center gap-1 font-semibold text-outline">
+              <span class="material-symbols-outlined text-[14px]">lightbulb</span> Gợi ý:
+            </span>
+            <button type="button" class="quick-search-tag px-2.5 py-1 rounded-lg bg-surface-container-low hover:bg-surface-container-high text-on-surface transition-colors border-0 cursor-pointer font-medium" data-query="Bầu ban cán sự">Bầu ban cán sự</button>
+            <button type="button" class="quick-search-tag px-2.5 py-1 rounded-lg bg-surface-container-low hover:bg-surface-container-high text-on-surface transition-colors border-0 cursor-pointer font-medium" data-query="Lấy ý kiến">Lấy ý kiến</button>
+            <button type="button" class="quick-search-tag px-2.5 py-1 rounded-lg bg-surface-container-low hover:bg-surface-container-high text-on-surface transition-colors border-0 cursor-pointer font-medium" data-query="Test">Test</button>
+            <button type="button" class="quick-search-tag px-2.5 py-1 rounded-lg bg-surface-container-low hover:bg-surface-container-high text-on-surface transition-colors border-0 cursor-pointer font-medium" data-query="HQT">Ứng viên HQT</button>
+          </div>
+
+        </div>
+
+        <!-- Khung thông báo trạng thái kết quả tìm kiếm (Search Feedback Banner) -->
+        <div id="searchFeedback" class="hidden p-3 px-4 rounded-xl bg-blue-50 border border-blue-200 text-blue-900 flex items-center justify-between gap-3 text-xs sm:text-sm font-medium">
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-[18px] text-primary">manage_search</span>
+            <span>Kết quả tìm kiếm cho: "<strong id="searchFeedbackQuery" class="font-bold text-primary"></strong>" (<span id="searchFeedbackCount">0</span> hòm phiếu)</span>
+          </div>
+          <button id="btnResetSearch" type="button" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white hover:bg-blue-100 text-primary font-bold text-xs shadow-sm transition-colors border border-blue-200 cursor-pointer">
+            <span class="material-symbols-outlined text-[14px]">close</span> Xóa bộ lọc tìm kiếm
+          </button>
         </div>
 
         <!-- Khung chứa các thẻ hòm phiếu (Sẽ được file JS tự động đổ dữ liệu vào đây) -->
@@ -222,6 +275,30 @@
           <div id="pager" class="pager flex justify-center"></div>
         </div>
 
+        <!-- Khối gợi ý tạo hòm phiếu mới (Hiển thị ở cuối phân trang khi người dùng đã xem hết tất cả các hòm phiếu) -->
+        <div id="createSuggestionBanner" class="hidden mt-8 sm:mt-10 rounded-2xl sm:rounded-3xl p-6 sm:p-8 bg-primary text-on-primary shadow-sm hover:shadow-md transition-all flex flex-col md:flex-row items-center justify-between gap-6 bg-gradient-to-br from-primary to-primary-container">
+          <div class="flex flex-col sm:flex-row items-center sm:items-start gap-4 text-center sm:text-left">
+            <div class="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center shrink-0">
+              <span class="material-symbols-outlined text-white text-[28px]">add_box</span>
+            </div>
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-center sm:justify-start gap-2">
+                <h4 class="font-headline-md text-xl sm:text-2xl font-bold text-white">Tạo Hòm Phiếu Mới</h4>
+                <span class="px-2.5 py-0.5 rounded-full bg-white/20 text-white font-label-tag text-[10px] font-bold uppercase tracking-wider">Gợi ý</span>
+              </div>
+              <p class="font-body-md text-sm sm:text-base text-white/90 max-w-2xl leading-relaxed">
+                Bạn đã xem hết các cuộc bầu cử hiện có. Hãy khởi tạo cuộc biểu quyết độc lập cho tổ chức hoặc câu lạc bộ của bạn trong 3 bước.
+              </p>
+            </div>
+          </div>
+          <div class="shrink-0 w-full sm:w-auto">
+            <a class="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-white text-primary font-headline-sm text-sm sm:text-base flex items-center justify-center gap-2 hover:bg-slate-50 transition-all shadow-md font-bold text-decoration-none" href="/create/">
+              <span>Khởi tạo ngay</span>
+              <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+            </a>
+          </div>
+        </div>
+
       </section>
 
     </div>
@@ -232,16 +309,32 @@
 <!-- Khối nhúng Script JS và tinh chỉnh CSS riêng cho trang chủ -->
 {% block scripts %}
 <style>
-  /* Bắt ép style cho nút tab đang được kích hoạt từ JS cũ */
+  #statusChips .chip {
+    outline: none !important;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  #statusChips .chip:focus,
+  #statusChips .chip:focus-visible {
+    outline: none !important;
+    box-shadow: none !important;
+  }
   #statusChips .chip.active {
     background-color: var(--color-primary-container, #2563eb) !important;
     color: var(--color-on-primary, #ffffff) !important;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+    box-shadow: 0 1px 3px rgba(37, 99, 235, 0.25) !important;
+    font-weight: 700 !important;
   }
 
   #statusChips .chip:not(.active) {
     background-color: transparent !important;
     color: var(--color-on-surface-variant, #434655) !important;
+    font-weight: 600 !important;
+  }
+
+  #statusChips .chip:not(.active):hover {
+    background-color: rgba(0, 0, 0, 0.05) !important;
+    color: #0f172a !important;
   }
 
   .container {
@@ -256,6 +349,5 @@
   }
 </style>
 
-<script src="{% static 'js/cards.js' %}"></script>
 <script src="{% static 'js/index.js' %}"></script>
 {% endblock %}

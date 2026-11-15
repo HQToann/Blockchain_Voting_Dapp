@@ -335,13 +335,13 @@
     const items = E.options.map((o) => {
       const isLeader = max > 0 && o.votes === max;
       return `
-        <div class="bg-surface-container-low rounded-xl p-space-md border ${isLeader ? 'border-primary-container/60 bg-primary-container/[0.02]' : 'border-surface-container-high/60'} flex flex-col gap-2">
-          <div class="flex justify-between items-center font-headline-sm text-body-md">
-            <span class="text-on-surface font-semibold flex items-center gap-1.5">
-              ${isLeader ? '<span class="material-symbols-outlined text-amber-500 text-[18px]">trophy</span>' : ''}
-              ${App.esc(o.label)}
+        <div class="bg-surface-container-low rounded-xl p-3.5 sm:p-space-md border ${isLeader ? 'border-primary-container/60 bg-primary-container/[0.02]' : 'border-surface-container-high/60'} flex flex-col gap-2">
+          <div class="flex justify-between items-center font-headline-sm text-sm sm:text-body-md">
+            <span class="text-on-surface font-semibold flex items-center gap-1.5 truncate">
+              ${isLeader ? '<span class="material-symbols-outlined text-amber-500 text-[18px] shrink-0">trophy</span>' : ''}
+              <span class="truncate">${App.esc(o.label)}</span>
             </span>
-            <span class="${isLeader ? 'text-primary font-bold' : 'text-on-surface-variant'} font-label-code text-label-code">
+            <span class="${isLeader ? 'text-primary font-bold' : 'text-on-surface-variant'} font-label-code text-xs sm:text-label-code shrink-0">
               ${o.votes} phiếu (${o.percent}%)
             </span>
           </div>
@@ -352,23 +352,80 @@
       `;
     }).join('');
 
-    const wl = E.is_private ? `
-      <div class="text-center">
-        <span class="font-headline-xl text-headline-xl text-on-surface font-bold block">${E.whitelist_count || 0}</span>
-        <span class="font-body-sm text-body-sm text-on-surface-variant">Ví được cấp quyền</span>
-      </div>
-    ` : '';
+    let summaryHtml = '';
+    if (E.is_private) {
+      const turnout = (E.whitelist_count && E.whitelist_count > 0)
+        ? Math.round((E.total_voters / E.whitelist_count) * 100)
+        : 0;
+      summaryHtml = `
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div class="bg-surface-container-low p-3 sm:p-3.5 rounded-xl border border-surface-container-high/70 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center text-primary shrink-0">
+              <span class="material-symbols-outlined text-[22px]">how_to_reg</span>
+            </div>
+            <div class="min-w-0">
+              <span class="text-xs text-on-surface-variant font-medium block">Cử tri đã bỏ phiếu</span>
+              <span class="font-headline-md text-xl sm:text-2xl text-primary font-bold">${E.total_voters}</span>
+            </div>
+          </div>
+          <div class="bg-surface-container-low p-3 sm:p-3.5 rounded-xl border border-surface-container-high/70 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center text-secondary shrink-0">
+              <span class="material-symbols-outlined text-[22px]">playlist_add_check</span>
+            </div>
+            <div class="min-w-0">
+              <span class="text-xs text-on-surface-variant font-medium block">Ví trong Whitelist</span>
+              <span class="font-headline-md text-xl sm:text-2xl text-on-surface font-bold">${E.whitelist_count || 0}</span>
+            </div>
+          </div>
+          <div class="bg-surface-container-low p-3 sm:p-3.5 rounded-xl border border-surface-container-high/70 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center text-tertiary shrink-0">
+              <span class="material-symbols-outlined text-[22px]">pie_chart</span>
+            </div>
+            <div class="min-w-0">
+              <span class="text-xs text-on-surface-variant font-medium block">Tỷ lệ tham gia</span>
+              <span class="font-headline-md text-xl sm:text-2xl text-tertiary font-bold">${turnout}%</span>
+            </div>
+          </div>
+        </div>
+      `;
+    } else {
+      summaryHtml = `
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div class="bg-surface-container-low p-3 sm:p-3.5 rounded-xl border border-surface-container-high/70 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center text-primary shrink-0">
+              <span class="material-symbols-outlined text-[22px]">how_to_reg</span>
+            </div>
+            <div class="min-w-0">
+              <span class="text-xs text-on-surface-variant font-medium block">Cử tri đã bỏ phiếu</span>
+              <span class="font-headline-md text-xl sm:text-2xl text-primary font-bold">${E.total_voters}</span>
+            </div>
+          </div>
+          <div class="bg-surface-container-low p-3 sm:p-3.5 rounded-xl border border-surface-container-high/70 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center text-secondary shrink-0">
+              <span class="material-symbols-outlined text-[22px]">ballot</span>
+            </div>
+            <div class="min-w-0">
+              <span class="text-xs text-on-surface-variant font-medium block">Số lượng lựa chọn</span>
+              <span class="font-headline-md text-xl sm:text-2xl text-secondary font-bold">${E.options ? E.options.length : 0}</span>
+            </div>
+          </div>
+          <div class="bg-surface-container-low p-3 sm:p-3.5 rounded-xl border border-surface-container-high/70 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center text-tertiary shrink-0">
+              <span class="material-symbols-outlined text-[22px]">public</span>
+            </div>
+            <div class="min-w-0">
+              <span class="text-xs text-on-surface-variant font-medium block">Quyền tham gia</span>
+              <span class="font-headline-md text-sm sm:text-base text-tertiary font-bold truncate block">Công khai mọi ví</span>
+            </div>
+          </div>
+        </div>
+      `;
+    }
 
     $('pane-results').innerHTML = `
-      <div class="grid grid-cols-2 gap-space-md bg-surface-container-low p-space-md rounded-xl border border-surface-container-high/60">
-        <div class="text-center">
-          <span class="font-headline-xl text-headline-xl text-primary font-bold block">${E.total_voters}</span>
-          <span class="font-body-sm text-body-sm text-on-surface-variant">Tổng cử tri đã bỏ phiếu</span>
-        </div>
-        ${wl}
-      </div>
+      ${summaryHtml}
       <div class="flex flex-col gap-space-sm pt-2">
-        ${items}
+        ${items || '<div class="p-6 text-center text-on-surface-variant font-body-sm bg-surface-container-low rounded-xl">Chưa có ứng viên hoặc dữ liệu kết quả nào.</div>'}
       </div>
       ${E.max_choices > 1 ? '<p class="font-body-sm text-body-sm text-on-surface-variant text-center mt-2 flex items-center justify-center gap-1"><span class="material-symbols-outlined text-[16px] text-outline">info</span> Tổng tỷ lệ phần trăm có thể vượt 100% do cử tri được chọn nhiều lựa chọn.</p>' : ''}
     `;

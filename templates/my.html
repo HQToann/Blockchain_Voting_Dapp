@@ -7,6 +7,7 @@
 
 <!-- Bật sáng (active) nút "Hòm Phiếu Của Tôi" trên thanh điều hướng chính -->
 {% block nav_my %}active bg-surface-container-low font-bold text-primary{% endblock %}
+{% block mob_nav_my %}bg-blue-50 text-blue-600 font-bold{% endblock %}
 
 {% block content %}
 <div class="relative w-full flex flex-col gap-6 sm:gap-space-md mt-2 sm:mt-0">
@@ -15,7 +16,7 @@
   <div class="absolute top-4 left-1/2 -translate-x-1/2 w-[320px] sm:w-[680px] h-[280px] bg-gradient-to-r from-primary-container/10 via-secondary-container/8 to-tertiary-fixed/15 blur-3xl pointer-events-none -z-10 rounded-full"></div>
 
   <!-- PHẦN 1: Thanh điều hướng (Breadcrumb) và Nhãn kết nối ví Sepolia -->
-  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-space-sm pb-4 sm:pb-space-md border-b border-surface-container-high/60 px-4 sm:px-0">
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-space-sm pb-4 sm:pb-space-md border-b border-surface-container-high/60">
     <!-- Đường dẫn về Trang chủ -->
     <div class="flex items-center gap-1 sm:gap-space-xs text-on-surface-variant font-body-sm text-xs sm:text-body-sm">
       <a class="hover:text-primary transition-colors flex items-center gap-1 text-decoration-none" href="/">
@@ -38,7 +39,7 @@
   </div>
 
   <!-- PHẦN 2: Tiêu đề trang (Hero Section) và Các khối thống kê nhanh -->
-  <div class="pt-2 sm:pt-space-lg pb-6 sm:pb-space-lg flex flex-col gap-6 sm:gap-space-md px-4 sm:px-0">
+  <div class="rounded-3xl bg-gradient-to-br from-blue-50/80 via-surface-container-low to-white/90 p-5 sm:p-7 border border-blue-100/80 shadow-xs flex flex-col gap-6 sm:gap-space-md mb-2">
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 sm:gap-space-md">
       
       <!-- Cụm Tiêu đề và Mô tả -->
@@ -65,7 +66,9 @@
         </a>
       </div>
     </div>
+  </div>
 
+  <div class="pt-2 pb-6 sm:pb-space-lg flex flex-col gap-6 sm:gap-space-md">
     <!-- 3 Thẻ thống kê (Mosaic Bento Cards) hiển thị số liệu cá nhân -->
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-space-md pt-2 sm:pt-space-xs">
       
@@ -128,7 +131,7 @@
   </div>
 
   <!-- PHẦN 3A: Màn hình yêu cầu khi CHƯA KẾT NỐI VÍ -->
-  <div id="needWallet" class="hidden bg-surface-container-lowest rounded-2xl p-6 sm:p-12 text-center shadow-sm border border-surface-container-high my-4 sm:my-8 flex flex-col items-center justify-center gap-4 mx-4 sm:mx-0">
+  <div id="needWallet" class="hidden bg-surface-container-lowest rounded-2xl p-6 sm:p-12 text-center shadow-sm border border-surface-container-high my-4 sm:my-8 flex flex-col items-center justify-center gap-4">
     <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-surface-container flex items-center justify-center text-primary shrink-0">
       <span class="material-symbols-outlined text-[32px] sm:text-[36px]">account_balance_wallet</span>
     </div>
@@ -145,7 +148,7 @@
   </div>
 
   <!-- PHẦN 3B: Bảng quản lý khi ĐÃ KẾT NỐI VÍ -->
-  <div id="mine" class="flex flex-col gap-5 sm:gap-space-md px-4 sm:px-0">
+  <div id="mine" class="flex flex-col gap-5 sm:gap-space-md">
 
     <!-- Cụm chức năng: Chuyển Tab (Tôi tạo / Lịch sử) & Bộ lọc -->
     <div class="flex flex-col gap-4 sm:gap-space-md">
@@ -178,9 +181,13 @@
       <!-- Thanh công cụ: Tìm kiếm và Lọc theo Trạng thái -->
       <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 sm:gap-space-sm bg-surface-container-lowest p-3 sm:p-space-sm rounded-2xl shadow-sm border border-surface-container-high/60">
         <!-- Ô nhập tìm kiếm -->
-        <div class="relative flex-1 w-full lg:min-w-[280px]">
-          <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-outline text-[18px] sm:text-[20px]">search</span>
-          <input id="searchInput" type="text" placeholder="Tìm tên hòm phiếu, địa chỉ contract..." class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-surface-container-low font-body-md text-xs sm:text-sm text-on-surface placeholder:text-outline focus:outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary-container border border-surface-container-high/60 transition-all">
+        <div class="relative flex-1 w-full lg:min-w-[280px] flex items-center">
+          <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-outline text-[18px] sm:text-[20px] pointer-events-none">search</span>
+          <input id="searchInput" type="text" placeholder="Tìm tên hòm phiếu, ứng viên, mã #ID, địa chỉ ví..." class="w-full pl-10 pr-10 py-2.5 rounded-xl bg-surface-container-low font-body-md text-xs sm:text-sm text-on-surface placeholder:text-outline focus:outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary-container border border-surface-container-high/60 transition-all">
+          <button id="clearSearchBtn" type="button" title="Xóa tìm kiếm"
+            class="hidden absolute right-2.5 w-6 h-6 rounded-md bg-surface-container-high hover:bg-surface-container-highest text-on-surface-variant hover:text-on-surface flex items-center justify-center transition-colors border-0 cursor-pointer">
+            <span class="material-symbols-outlined text-[14px]">close</span>
+          </button>
         </div>
 
         <!-- Các nút bộ lọc: Tất cả / Đang diễn ra / Đã kết thúc -->
@@ -209,7 +216,7 @@
   </div>
 
   <!-- PHẦN 4: Banner cảnh báo bảo mật và nút Tra cứu mã băm Hash dưới cùng -->
-  <div class="mt-6 sm:mt-space-xl p-4 sm:p-space-md rounded-2xl bg-surface-container-lowest shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4 sm:gap-space-md border border-surface-container-high/60 mx-4 sm:mx-0">
+  <div class="mt-6 sm:mt-space-xl p-4 sm:p-space-md rounded-2xl bg-surface-container-lowest shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4 sm:gap-space-md border border-surface-container-high/60">
     <div class="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-space-md">
       <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-tertiary-container/10 flex items-center justify-center text-tertiary shrink-0">
         <span class="material-symbols-outlined text-[24px] sm:text-[28px]">verified_user</span>
@@ -261,6 +268,5 @@
     color: var(--color-on-surface-variant, #434655) !important;
   }
 </style>
-<script src="{% static 'js/cards.js' %}"></script>
 <script src="{% static 'js/my.js' %}"></script>
 {% endblock %}

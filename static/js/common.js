@@ -162,6 +162,7 @@
       }
       b.title = App.state.address;
     }
+    window.dispatchEvent(new CustomEvent('app:wallet', { detail: App.state.address }));
   };
 
   App.connect = async () => {
