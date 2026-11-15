@@ -4,11 +4,33 @@
  */
 window.ElectionCards = (function () {
   'use strict';
-  const { esc, short, fmtDate, fmtDuration } = App;
+  // Safe helper fallbacks in case App is not fully initialized
+  const esc = (s) => (window.App && typeof window.App.esc === 'function')
+    ? window.App.esc(s)
+    : String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+  const short = (a) => (window.App && typeof window.App.short === 'function')
+    ? window.App.short(a)
+    : (a ? a.slice(0, 6) + '…' + a.slice(-4) : '');
+
+  const fmtDate = (iso) => (window.App && typeof window.App.fmtDate === 'function')
+    ? window.App.fmtDate(iso)
+    : (iso ? new Date(iso).toLocaleString('vi-VN') : '—');
+
+  const fmtDuration = (ms) => {
+    if (window.App && typeof window.App.fmtDuration === 'function') return window.App.fmtDuration(ms);
+    if (!ms || ms <= 0) return '0 giây';
+    const s = Math.floor(ms / 1000), d = Math.floor(s / 86400), h = Math.floor((s % 86400) / 3600), m = Math.floor((s % 3600) / 60);
+    return d ? `${d} ngày ${h} giờ` : h ? `${h} giờ ${m} phút` : m ? `${m} phút ${s % 60} giây` : `${s} giây`;
+  };
+
+  const sameAddr = (a, b) => (window.App && typeof window.App.sameAddr === 'function')
+    ? window.App.sameAddr(a, b)
+    : (!!a && !!b && a.toLowerCase() === b.toLowerCase());
 
   // 1. Thẻ Hòm Phiếu Khám Phá (Dùng trên trang Chủ / Khám Phá)
   function card(e, me) {
-    const isOwner = me && App.sameAddr(me, e.owner);
+    const isOwner = me && sameAddr(me, e.owner);
     const rule = e.max_choices > 1 ? `chọn từ 1 đến ${e.max_choices}` : 'chọn 1';
     const pollId = `#${e.address.slice(2, 6).toUpperCase()}-${e.address.slice(-4).toUpperCase()}`;
 
@@ -115,8 +137,8 @@ window.ElectionCards = (function () {
 
   // 2. Thẻ Hòm Phiếu Cá Nhân (Dùng trên trang Hòm Phiếu Của Tôi)
   function myCard(e, me, isVotedTab) {
-    const explorerUrl = App.cfg.explorer_url || 'https://sepolia.etherscan.io';
-    const isOwner = me && App.sameAddr(me, e.owner);
+    const explorerUrl = (window.App && window.App.cfg && window.App.cfg.explorer_url) || 'https://sepolia.etherscan.io';
+    const isOwner = me && sameAddr(me, e.owner);
 
     let statusBadge = '';
     let timeLabel = '';
@@ -402,7 +424,7 @@ window.ElectionCards = (function () {
           <tbody class="divide-y divide-surface-container-high">
             ${votes.map((v) => `
               <tr class="hover:bg-surface-container-low/50 transition-colors">
-                <td class="p-3 font-label-code">${App.addrLink(v.voter)}</td>
+                <td class="p-3 font-label-code">${(window.App && typeof window.App.addrLink === 'function') ? window.App.addrLink(v.voter) : short(v.voter)}</td>
                 <td class="p-3 font-semibold text-on-surface">${v.choice_labels.map(esc).join(', ')}</td>
                 <td class="p-3 text-on-surface-variant">${esc(fmtDate(v.time))}</td>
                 <td class="p-3 text-right font-label-code">
@@ -443,12 +465,12 @@ window.ElectionCards = (function () {
           <tbody class="divide-y divide-surface-container-high">
             ${entries.map((w) => `
               <tr class="hover:bg-surface-container-low/50 transition-colors">
-                <td class="p-3 font-label-code">${App.addrLink(w.address)}</td>
+                <td class="p-3 font-label-code">${(window.App && typeof window.App.addrLink === 'function') ? window.App.addrLink(w.address) : short(w.address)}</td>
                 <td class="p-3">
                   ${w.voted
-                    ? '<span class="inline-flex items-center gap-1 text-tertiary font-bold"><span class="material-symbols-outlined text-[16px]">check_circle</span> Đã bỏ phiếu</span>'
-                    : '<span class="inline-flex items-center gap-1 text-amber-600 font-medium"><span class="material-symbols-outlined text-[16px]">schedule</span> Chưa bỏ</span>'
-                  }
+        ? '<span class="inline-flex items-center gap-1 text-tertiary font-bold"><span class="material-symbols-outlined text-[16px]">check_circle</span> Đã bỏ phiếu</span>'
+        : '<span class="inline-flex items-center gap-1 text-amber-600 font-medium"><span class="material-symbols-outlined text-[16px]">schedule</span> Chưa bỏ</span>'
+      }
                 </td>
                 <td class="p-3 text-right">
                   ${canRemove && !w.voted ? `
@@ -526,34 +548,77 @@ window.ElectionCards = (function () {
 
   // 7. Render thanh phân trang chung
   function pager(el, page, pages, go) {
-    if (pages <= 1) { el.innerHTML = ''; return; }
+    if (!el) return;
+    const cur = Math.max(1, parseInt(page, 10) || 1);
+    const total = Math.max(1, parseInt(pages, 10) || 1);
 
-    let pageButtons = '';
-    for (let p = 1; p <= pages; p++) {
-      if (p === 1 || p === pages || (p >= page - 1 && p <= page + 1)) {
-        const active = p === page;
-        pageButtons += `
-          <button type="button" class="w-9 h-9 rounded-xl flex items-center justify-center font-label-code text-label-code transition-colors cursor-pointer ${active ? 'bg-primary-container text-on-primary font-bold shadow-sm' : 'bg-surface-container-low text-on-surface hover:bg-surface-container-high'}" data-p="${p}">
-            ${p}
-          </button>
-        `;
-      } else if (p === page - 2 || p === page + 2) {
-        pageButtons += `<span class="px-1 text-outline">…</span>`;
-      }
+    if (total <= 1) {
+      el.innerHTML = '';
+      return;
     }
 
+    // Tạo danh sách trang hiển thị (chuẩn UI tối đa 7 nút, hiển thị dấu "…" đối xứng hợp lý)
+    let items = [];
+    if (total <= 7) {
+      items = Array.from({ length: total }, (_, i) => i + 1);
+    } else if (cur <= 4) {
+      items = [1, 2, 3, 4, 5, '…', total];
+    } else if (cur >= total - 3) {
+      items = [1, '…', total - 4, total - 3, total - 2, total - 1, total];
+    } else {
+      items = [1, '…', cur - 1, cur, cur + 1, '…', total];
+    }
+
+    const pageButtons = items.map((item) => {
+      if (item === '…') {
+        return `<span class="w-9 h-9 flex items-center justify-center text-outline select-none font-label-code text-sm">…</span>`;
+      }
+      const active = item === cur;
+      return `
+        <button type="button"
+          class="w-9 h-9 rounded-xl flex items-center justify-center font-label-code text-label-code transition-colors select-none ${active
+          ? 'bg-primary-container text-on-primary font-bold shadow-sm cursor-default'
+          : 'bg-surface-container-low text-on-surface hover:bg-surface-container-high cursor-pointer'
+        }"
+          ${active ? 'aria-current="page"' : ''}
+          aria-label="${active ? `Trang hiện tại ${item}` : `Đến trang ${item}`}"
+          data-p="${item}">
+          ${item}
+        </button>
+      `;
+    }).join('');
+
     el.innerHTML = `
-      <div class="flex items-center gap-space-xs">
-        <button type="button" class="w-9 h-9 rounded-xl flex items-center justify-center bg-surface-container-low text-on-surface hover:bg-surface-container-high disabled:opacity-40 disabled:pointer-events-none transition-colors cursor-pointer" ${page <= 1 ? 'disabled' : ''} data-p="${page - 1}">
+      <div class="flex items-center gap-space-xs" role="navigation" aria-label="Phân trang">
+        <button type="button"
+          class="w-9 h-9 rounded-xl flex items-center justify-center bg-surface-container-low text-on-surface hover:bg-surface-container-high disabled:opacity-40 disabled:pointer-events-none transition-colors cursor-pointer select-none"
+          ${cur <= 1 ? 'disabled' : ''}
+          aria-label="Trang trước"
+          title="Trang trước"
+          data-p="${cur - 1}">
           <span class="material-symbols-outlined text-[18px]">chevron_left</span>
         </button>
         ${pageButtons}
-        <button type="button" class="w-9 h-9 rounded-xl flex items-center justify-center bg-surface-container-low text-on-surface hover:bg-surface-container-high disabled:opacity-40 disabled:pointer-events-none transition-colors cursor-pointer" ${page >= pages ? 'disabled' : ''} data-p="${page + 1}">
+        <button type="button"
+          class="w-9 h-9 rounded-xl flex items-center justify-center bg-surface-container-low text-on-surface hover:bg-surface-container-high disabled:opacity-40 disabled:pointer-events-none transition-colors cursor-pointer select-none"
+          ${cur >= total ? 'disabled' : ''}
+          aria-label="Trang sau"
+          title="Trang sau"
+          data-p="${cur + 1}">
           <span class="material-symbols-outlined text-[18px]">chevron_right</span>
         </button>
       </div>
     `;
-    el.querySelectorAll('button[data-p]').forEach((b) => b.addEventListener('click', () => go(+b.dataset.p)));
+
+    el.querySelectorAll('button[data-p]').forEach((b) => {
+      b.addEventListener('click', () => {
+        if (b.disabled) return;
+        const target = parseInt(b.dataset.p, 10);
+        if (target && target !== cur && target >= 1 && target <= total) {
+          go(target);
+        }
+      });
+    });
   }
 
   return { card, myCard, candidateCard, votersTable, whitelistTable, detailBadges, pager };
