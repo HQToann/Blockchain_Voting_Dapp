@@ -1,10 +1,11 @@
 {% extends 'base.html' %}
 {% load static %}
 
+<!-- Tiêu đề trang hiển thị trên tab trình duyệt -->
 {% block title %}VoteChain - Chi Tiết Hòm Phiếu Bầu Cử{% endblock %}
 
 {% block content %}
-<!-- Breadcrumbs Navigation -->
+<!-- Thanh điều hướng (Trang chủ > Khám phá > Tên hòm phiếu) -->
 <nav class="flex flex-wrap items-center gap-2 sm:gap-space-xs text-on-surface-variant font-body-sm text-xs sm:text-body-sm mb-4 sm:mb-space-md">
   <a class="hover:text-primary transition-colors flex items-center gap-1 text-decoration-none" href="/">
     <span class="material-symbols-outlined text-[16px]">home</span>
@@ -16,14 +17,14 @@
   <span id="crumbTitle" class="text-on-surface font-semibold truncate max-w-[200px] sm:max-w-md">Đang tải chi tiết...</span>
 </nav>
 
-<!-- Trạng thái Đang tải (Loading) -->
+<!-- Màn hình 1: Đang tải dữ liệu từ máy chủ (Loading) -->
 <div id="loading" class="bg-surface-container-lowest rounded-2xl p-6 sm:p-12 text-center shadow-sm border border-surface-container-high my-6 sm:my-8 flex flex-col items-center justify-center gap-3">
   <span class="material-symbols-outlined text-primary text-[42px] animate-spin">progress_activity</span>
   <h3 class="font-headline-md text-lg sm:text-headline-md text-on-surface font-bold">Đang tải dữ liệu hòm phiếu...</h3>
   <p class="font-body-md text-sm sm:text-base text-on-surface-variant px-4">Đang kết nối API và đối soát hợp đồng thông minh trên mạng Sepolia.</p>
 </div>
 
-<!-- Trạng thái Đang đồng bộ từ Blockchain (Syncing khi vừa tạo) -->
+<!-- Màn hình 2: Hòm phiếu vừa tạo xong, đang chờ đồng bộ Blockchain -->
 <div id="syncing" class="hidden bg-surface-container-lowest rounded-2xl p-6 sm:p-12 text-center shadow-sm border-2 border-amber-400 my-6 sm:my-8 flex flex-col items-center justify-center gap-3">
   <span class="material-symbols-outlined text-amber-500 text-[48px] animate-bounce">cloud_sync</span>
   <h3 class="font-headline-md text-lg sm:text-headline-md text-amber-600 font-bold">Đang đồng bộ từ chuỗi khối...</h3>
@@ -32,57 +33,57 @@
   </p>
 </div>
 
-<!-- Thông báo Lỗi Nghiêm Trọng / Không Tìm Thấy (Fatal Error) -->
+<!-- Màn hình 3: Thông báo lỗi (Ví dụ: Không tìm thấy hòm phiếu) -->
 <div id="fatal" class="hidden bg-red-50 border-l-4 border-error p-4 sm:p-6 rounded-xl my-6 sm:my-8 text-error font-body-md text-sm sm:text-base break-words"></div>
 
 <!-- ===================================================================== -->
-<!-- GIAO DIỆN CHÍNH (CONTENT CONTAINER)                                  -->
+<!-- KHUNG HIỂN THỊ CHÍNH (Chỉ hiện ra khi tải dữ liệu thành công)         -->
 <!-- ===================================================================== -->
 <div id="content" class="hidden flex flex-col gap-6 sm:gap-space-lg">
 
-  <!-- Cảnh báo Indexer Chậm (Nếu có lag) -->
+  <!-- Cảnh báo nếu Blockchain bị nghẽn mạng -->
   <div id="syncWarning" class="hidden bg-amber-50 border border-amber-300 text-amber-900 px-4 py-3 rounded-xl flex items-start sm:items-center gap-3 font-body-sm text-sm shadow-sm">
     <span class="material-symbols-outlined text-amber-600 text-[20px] mt-0.5 sm:mt-0 shrink-0">warning</span>
     <span>Trình đồng bộ blockchain đang chậm nhịp khối. Dữ liệu trên chuỗi vẫn hoàn toàn an toàn và bạn vẫn có thể bỏ phiếu bình thường.</span>
   </div>
 
-  <!-- Bố Cục 12 Cột (8 Cột Nội Dung & Ứng Viên - 4 Cột Điều Khiển Bỏ Phiếu) -->
+  <!-- Chia bố cục làm 2 cột: Cột trái (8 phần) và Cột phải (4 phần) -->
   <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-space-xl items-start">
 
     <!-- ================================================================= -->
-    <!-- CỘT TRÁI (8 CỘT): THÔNG TIN HÒM PHIẾU, ỨNG VIÊN, QUẢN TRỊ, TAB    -->
+    <!-- CỘT TRÁI: THÔNG TIN CHI TIẾT, ỨNG VIÊN & KẾT QUẢ                  -->
     <!-- ================================================================= -->
     <div class="lg:col-span-8 flex flex-col gap-6 sm:gap-space-lg">
 
-      <!-- 1. Hộp Thông Tin Chung Hòm Phiếu (Hero Banner) -->
+      <!-- PHẦN 1: Thông tin tổng quan hòm phiếu -->
       <div class="bg-surface-container-lowest rounded-2xl p-5 sm:p-space-lg shadow-sm border border-surface-container-high/60 flex flex-col gap-4 sm:gap-space-md">
         
-        <!-- Badges Trạng Thái & Phân Loại -->
+        <!-- Các nhãn trạng thái (Đang mở, Public/Private,...) -->
         <div id="badges" class="flex flex-wrap items-center gap-2 sm:gap-space-xs">
-          <!-- Sẽ được fill bằng JavaScript: Live Badge, Kind, Privacy, Owner -->
+          <!-- JS sẽ tự động điền nhãn vào đây -->
         </div>
 
-        <!-- Tiêu đề & Thông tin Meta -->
+        <!-- Tên hòm phiếu và thông tin người tạo -->
         <div class="flex flex-col gap-2 sm:gap-space-xs">
           <div id="metaLine" class="flex flex-wrap items-center gap-x-3 sm:gap-x-space-md gap-y-2 font-body-sm text-xs sm:text-body-sm text-on-surface-variant">
-            <!-- JS điền Owner, Contract, Ngày tạo -->
+            <!-- JS sẽ điền địa chỉ ví tạo và ngày tạo -->
           </div>
           <h1 id="title" class="font-headline-xl text-2xl sm:text-headline-xl text-on-surface tracking-tight font-extrabold leading-tight mt-1 sm:mt-0">
-            <!-- JS điền tên cuộc bầu cử -->
+            <!-- JS sẽ điền tên cuộc bầu cử -->
           </h1>
         </div>
 
-        <!-- Mô tả Cuộc Bầu Cử -->
+        <!-- Đoạn mô tả chi tiết -->
         <p id="desc" class="font-body-md text-sm sm:text-body-md text-on-surface-variant leading-relaxed whitespace-pre-wrap">
-          <!-- JS điền mô tả -->
+          <!-- JS sẽ điền mô tả -->
         </p>
 
-        <!-- Quy chế bỏ phiếu (Rule Box) -->
+        <!-- Thẻ nhắc nhở luật chơi (chọn 1 hay nhiều) -->
         <div id="ruleBox" class="bg-[#F0F5FF] px-4 sm:px-space-md py-3 rounded-xl border border-blue-200 text-on-surface font-body-sm text-sm leading-relaxed">
-          <!-- JS điền: chọn 1 hoặc nhiều, whitelist note -->
+          <!-- JS sẽ điền quy chế bỏ phiếu -->
         </div>
 
-        <!-- 3 Thẻ Thống Kê Nhanh (Metric Stats) -->
+        <!-- 3 Thẻ thống kê: Số lượng cử tri, Số phiếu đã bầu, Trạng thái On-chain -->
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-space-sm pt-2 sm:pt-space-xs">
           <div class="bg-surface-container-low p-3 sm:p-space-sm rounded-xl flex items-center gap-3 sm:gap-space-sm border border-surface-container-high/50">
             <div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center shrink-0">
@@ -117,7 +118,7 @@
 
       </div>
 
-      <!-- 2. Danh Sách Ứng Viên / Lựa Chọn (Candidate List) -->
+      <!-- PHẦN 2: Danh sách các thẻ ứng viên (Lựa chọn bầu cử) -->
       <div class="flex flex-col gap-4 sm:gap-space-md">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div class="flex items-center gap-2 sm:gap-space-xs">
@@ -131,13 +132,12 @@
           </span>
         </div>
 
-        <!-- Danh sách Card ứng viên render động bằng JS -->
+        <!-- Nơi JS sẽ đổ các thẻ (card) ứng viên vào đây -->
         <div class="flex flex-col gap-4 sm:gap-space-md" id="options">
-          <!-- Javascript sẽ tạo các thẻ ứng viên Material 3 tại đây -->
         </div>
       </div>
 
-      <!-- 3. Bảng Quản Trị Dành Cho Chủ Sở Hữu (Owner Panel) -->
+      <!-- PHẦN 3: Bảng công cụ dành riêng cho Chủ hòm phiếu (Owner) -->
       <div id="ownerPanel" class="hidden bg-surface-container-lowest rounded-2xl p-5 sm:p-space-lg shadow-sm border-2 border-amber-300 flex flex-col gap-4 sm:gap-space-md">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-surface-container-high pb-3 sm:pb-space-sm gap-3">
           <div class="flex items-center gap-2 sm:gap-space-xs">
@@ -149,7 +149,7 @@
           </span>
         </div>
 
-        <!-- 3.1. Thêm cử tri Whitelist (Dành cho hòm riêng tư) -->
+        <!-- Nút thêm ví cử tri (Dành cho hòm riêng tư) -->
         <div id="ownerWhitelist" class="hidden flex flex-col gap-3 sm:gap-space-xs">
           <label class="font-headline-sm text-sm sm:text-headline-sm text-on-surface font-semibold flex flex-col sm:flex-row sm:items-center justify-between gap-1">
             <span>Cấp quyền cử tri (Whitelist)</span>
@@ -164,7 +164,7 @@
           </div>
         </div>
 
-        <!-- 3.2. Dời lịch hòm phiếu (Khi chưa bắt đầu) -->
+        <!-- Form đổi lịch bầu cử (chỉ đổi được nếu chưa đến giờ mở) -->
         <div id="ownerSchedule" class="hidden flex flex-col gap-3 sm:gap-space-xs border-t border-surface-container-high pt-4 sm:pt-space-md">
           <label class="font-headline-sm text-sm sm:text-headline-sm text-on-surface font-semibold">
             Dời lịch tổ chức (Chỉ áp dụng khi cuộc bầu cử chưa bắt đầu)
@@ -187,7 +187,7 @@
           </div>
         </div>
 
-        <!-- 3.3. Đóng hòm phiếu khẩn cấp -->
+        <!-- Nút khẩn cấp: Đóng hẳn hòm phiếu -->
         <div id="ownerClose" class="hidden flex flex-col sm:flex-row sm:items-center justify-between border-t border-surface-container-high pt-4 sm:pt-space-md gap-4">
           <div class="flex flex-col">
             <span class="font-headline-sm text-sm sm:text-headline-sm text-error font-bold">Đóng hòm phiếu khẩn cấp</span>
@@ -201,10 +201,10 @@
 
       </div>
 
-      <!-- 4. Tab Kết Quả, Biên Lai Phiếu Bầu & Whitelist (Transparency Tabs) -->
+      <!-- PHẦN 4: Khu vực các Tab (Kết quả phiếu, Lịch sử bầu, Whitelist) -->
       <div class="bg-surface-container-lowest rounded-2xl p-5 sm:p-space-lg shadow-sm border border-surface-container-high/60 flex flex-col gap-4 sm:gap-space-md">
         
-        <!-- Tabs Header -->
+        <!-- Thanh menu chọn Tab -->
         <div class="flex items-center gap-2 sm:gap-space-xs border-b border-surface-container-high pb-3 sm:pb-space-sm overflow-x-auto no-scrollbar">
           <button class="tab-btn active px-4 py-2 sm:px-space-md sm:py-space-sm rounded-xl font-headline-sm text-sm sm:text-headline-sm font-bold flex items-center gap-1.5 bg-primary-container text-on-primary shadow-sm transition-all border-0 cursor-pointer whitespace-nowrap" data-tab="results">
             <span class="material-symbols-outlined text-[18px]">leaderboard</span>
@@ -220,13 +220,13 @@
           </button>
         </div>
 
-        <!-- Nội dung Tab 1: Kết quả -->
+        <!-- Khung chứa nội dung Tab 1: Kết quả -->
         <div id="pane-results" class="flex flex-col gap-4 sm:gap-space-md"></div>
 
-        <!-- Nội dung Tab 2: Phiếu đã bỏ -->
+        <!-- Khung chứa nội dung Tab 2: Lịch sử biên lai phiếu -->
         <div id="pane-voters" class="hidden flex flex-col gap-4 sm:gap-space-md"></div>
 
-        <!-- Nội dung Tab 3: Danh sách cử tri Whitelist -->
+        <!-- Khung chứa nội dung Tab 3: Danh sách ví được cấp quyền -->
         <div id="pane-whitelist" class="hidden flex flex-col gap-4 sm:gap-space-md"></div>
 
       </div>
@@ -234,13 +234,13 @@
     </div>
 
     <!-- ================================================================= -->
-    <!-- CỘT PHẢI (4 CỘT): BẢNG ĐIỀU KHIỂN BỎ PHIẾU CỐ ĐỊNH (STICKY PANEL) -->
+    <!-- CỘT PHẢI: BẢNG BỎ PHIẾU (Sẽ luôn bám sát màn hình khi cuộn chuột) -->
     <!-- ================================================================= -->
     <div class="lg:col-span-4 lg:sticky lg:top-28 flex flex-col gap-4 sm:gap-space-md mt-2 lg:mt-0">
       
       <div class="bg-surface-container-lowest rounded-2xl p-5 sm:p-space-lg shadow-xl border border-surface-container-high/60 flex flex-col gap-4 sm:gap-space-md">
         
-        <!-- Header Bảng Điều Khiển -->
+        <!-- Tiêu đề Bảng điều khiển -->
         <div class="flex items-center justify-between pb-3 sm:pb-space-xs border-b border-surface-container-high">
           <span class="font-headline-sm text-base sm:text-headline-sm text-on-surface font-bold">Bảng điều khiển bỏ phiếu</span>
           <span class="px-2.5 py-0.5 rounded-full bg-[#ECFDF5] text-[#065F46] font-label-code text-[10px] sm:text-[11px] font-bold flex items-center gap-1.5 shadow-sm border border-[#A7F3D0]">
@@ -249,13 +249,14 @@
           </span>
         </div>
 
-        <!-- Đồng Hồ Đếm Ngược Thời Gian Thực (Digital Countdown) -->
+        <!-- Bảng Đồng Hồ Đếm Ngược -->
         <div class="bg-surface-container-low p-4 sm:p-space-md rounded-xl flex flex-col gap-2 sm:gap-space-xs border border-surface-container-high/60">
           <span id="countdownLabel" class="font-body-sm text-xs sm:text-body-sm text-on-surface-variant flex items-center justify-center sm:justify-start gap-1">
             <span class="material-symbols-outlined text-[16px] text-primary">timer</span>
             Thời gian còn lại:
           </span>
           
+          <!-- Các con số đếm ngược -->
           <div class="flex items-baseline gap-2 sm:gap-space-xs justify-center py-2 sm:py-space-xs">
             <div class="flex flex-col items-center">
               <span id="cdDays" class="font-headline-xl text-3xl sm:text-headline-xl text-on-surface font-extrabold tracking-tight">00</span>
@@ -278,14 +279,14 @@
             </div>
           </div>
 
-          <!-- Text phụ trợ trạng thái thời gian -->
+          <!-- Thông báo tình trạng thời gian (vd: "Đã kết thúc") -->
           <div id="countdown" class="text-center font-body-sm text-xs sm:text-body-sm text-on-surface-variant mt-1"></div>
         </div>
 
-        <!-- Khu vực Trạng thái Tư cách Cử tri & Thao tác (Vote Box) -->
+        <!-- Khu vực hiển thị Trạng thái & Nút Submit Bỏ phiếu -->
         <div class="flex flex-col gap-3 sm:gap-space-sm pt-2 sm:pt-space-xs">
           
-          <!-- Nhãn Ứng viên Đã Chọn -->
+          <!-- Thanh hiển thị tên ứng viên đã click chọn -->
           <div class="flex items-center justify-between font-body-sm text-xs sm:text-body-sm bg-surface-container-low px-3 py-2.5 rounded-xl border border-surface-container-high">
             <span class="text-on-surface-variant">Ứng viên đã chọn:</span>
             <span id="selected-candidate-label" class="font-headline-sm text-sm sm:text-headline-sm text-outline font-semibold truncate max-w-[140px] sm:max-w-[180px]">
@@ -293,16 +294,16 @@
             </span>
           </div>
 
-          <!-- Trạng thái Cử tri (Vote Status: đã vote, chưa kết nối ví, lỗi...) -->
+          <!-- Trạng thái ví (Đã kết nối hay chưa, Có quyền bầu không) -->
           <div id="voteStatus"></div>
 
-          <!-- Nút Submit Phiếu Bầu Thực Tế -->
+          <!-- Nút Bấm Thực Hiện Bầu Cử (Submit lên Blockchain) -->
           <button id="btnVote" type="button" disabled class="w-full py-3 sm:py-3.5 px-4 sm:px-space-lg rounded-xl bg-primary-fixed text-primary font-headline-sm text-sm sm:text-headline-sm font-bold shadow-sm disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 sm:gap-space-sm cursor-pointer border-0">
             <span class="material-symbols-outlined text-[20px] sm:text-[22px]">how_to_reg</span>
             <span id="btnVoteText">Vui lòng chọn ứng viên</span>
           </button>
 
-          <!-- Dòng Chú Thích Bảo Mật -->
+          <!-- Dòng cảnh báo an toàn -->
           <p class="text-center font-body-sm text-[11px] sm:text-body-sm text-on-surface-variant flex items-center justify-center gap-1.5 mt-1 sm:mt-2">
             <span class="material-symbols-outlined text-[14px]">lock</span>
             Xác thực bảo mật trên chuỗi khối Sepolia
@@ -312,7 +313,7 @@
 
       </div>
 
-      <!-- Khối Hướng Dẫn Nhanh Cho Cử Tri -->
+      <!-- Khối Hướng dẫn dành cho Cử tri (Bên dưới bảng đếm ngược) -->
       <div class="bg-surface-container-low rounded-2xl p-4 sm:p-space-md border border-surface-container-high/60 flex flex-col gap-2 sm:gap-space-xs">
         <span class="font-headline-sm text-sm sm:text-body-md font-bold text-on-surface flex items-center gap-1.5">
           <span class="material-symbols-outlined text-primary text-[18px]">verified</span>
@@ -341,9 +342,10 @@
 </div>
 {% endblock %}
 
+<!-- Khối nhúng Script JS và tinh chỉnh CSS riêng cho trang này -->
 {% block scripts %}
 <style>
-  /* Fix style active tab from JS */
+  /* Sửa lỗi hiển thị màu sắc khi chọn Tab */
   .tab-btn.active {
     background-color: var(--color-primary-container, #2563eb) !important;
     color: var(--color-on-primary, #ffffff) !important;
