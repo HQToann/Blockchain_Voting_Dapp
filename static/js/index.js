@@ -3,29 +3,28 @@
   const st = { status: 'all', kind: '', q: '', page: 1, sort: 'newest' };
   const $ = App.$;
 
-  // 1. Thống kê dữ liệu thực từ hệ thống Backend
+  // 1. Thống kê dữ liệu thực từ hệ thống Backend (sử dụng API /api/stats/ chuyên dụng)
   async function updateStats() {
     try {
-      const [resAll, resOpen] = await Promise.all([
-        App.api('/api/elections/?page_size=100'),
-        App.api('/api/elections/?status=open&page_size=1')
-      ]);
+      const s = await App.api('/api/stats/');
+      if (!s) return;
 
-      const totalElections = resAll.total || 0;
-      const openCount = resOpen.total || 0;
-      let totalVotes = 0;
-      if (resAll.elections) {
-        resAll.elections.forEach(e => totalVotes += (e.total_voters || 0));
-      }
+      const totalElections = s.total_elections || 0;
+      const openCount = s.open_elections || 0;
+      const totalVotes = s.total_votes || 0;
+      const totalVoters = s.total_voters || 0;
 
+      // Cập nhật các ô số liệu thống kê Hero
       if ($('statTotalVotes')) $('statTotalVotes').textContent = totalVotes.toLocaleString('vi-VN');
       if ($('statTotalElections')) $('statTotalElections').textContent = `${totalElections} hòm`;
       if ($('statOpenElections')) $('statOpenElections').textContent = `${openCount} đang mở`;
-      if ($('statTotalVoters')) $('statTotalVoters').textContent = totalVotes.toLocaleString('vi-VN');
+      if ($('statTotalVoters')) $('statTotalVoters').textContent = totalVoters.toLocaleString('vi-VN');
 
-      // Cập nhật số đếm trên các Tab
+      // Cập nhật số đếm trên các Tab trạng thái
       if ($('tabCountAll')) $('tabCountAll').textContent = `(${totalElections})`;
       if ($('tabCountOpen')) $('tabCountOpen').textContent = `(Live - ${openCount})`;
+      if ($('tabCountUpcoming')) $('tabCountUpcoming').textContent = `(${s.upcoming_elections || 0})`;
+      if ($('tabCountEnded')) $('tabCountEnded').textContent = `(${s.ended_elections || 0})`;
     } catch (err) {
       console.warn('Lỗi cập nhật thống kê:', err);
     }
@@ -40,6 +39,11 @@
     try {
       const d = await App.api('/api/elections/?' + p);
       if ($('syncWarning')) $('syncWarning').classList.toggle('hidden', !d.indexer.lagging);
+
+      const Cards = window.ElectionCards;
+      if (!Cards) {
+        throw new Error('Thư viện giao diện (cards.js) chưa sẵn sàng. Vui lòng tải lại trang.');
+      }
 
       const listEl = $('electionGrid');
       if (listEl) {
@@ -64,7 +68,7 @@
             items.sort((a, b) => (Date.parse(a.end_time || '9999-12-31') || 0) - (Date.parse(b.end_time || '9999-12-31') || 0));
           }
 
-          let cardsHtml = items.map((e) => ElectionCards.card(e, App.state.address)).join('');
+          let cardsHtml = items.map((e) => Cards.card(e, App.state.address)).join('');
 
           // Thêm thẻ CTA "Tạo Hòm Phiếu Mới" ở cuối lưới
           cardsHtml += `
@@ -90,78 +94,79 @@
 
       // Phân trang
       if ($('pager')) {
-        ElectionCards.pager($('pager'), d.page, d.pages, (n) => {
-          st.page = n;
-          load();
-          const target = $('explore-ballots');
-          if (target) target.scrollIntoView({ behavior: 'smooth' });
-        });
-      }
+          Cards.pager($('pager'), d.page, d.pages, (n) => {
+            st.page = n;
+            load();
+            const target = $('explore-ballots');
+            if (target) target.scrollIntoView({ behavior: 'smooth' });
+          });
+        }
 
       if ($('paginationSummary')) {
-        const start = d.total > 0 ? (d.page - 1) * d.page_size + 1 : 0;
-        const end = Math.min(d.total, d.page * d.page_size);
-        $('paginationSummary').innerHTML = d.total > 0 
-          ? `Hiển thị <span class="font-bold text-on-surface">${start} - ${end}</span> trên tổng số <span class="font-bold text-on-surface">${d.total}</span> hòm phiếu`
-          : '0 hòm phiếu';
-      }
+          const start = d.total > 0 ? Math.min(d.total, (d.page - 1) * d.page_size + 1) : 0;
+          const end = Math.min(d.total, d.page * d.page_size);
+          $('paginationSummary').innerHTML = d.total > 0
+            ? `Hiển thị <span class="font-bold text-on-surface">${start} - ${end}</span> trên tổng số <span class="font-bold text-on-surface">${d.total}</span> hòm phiếu`
+            : '0 hòm phiếu';
+        }
 
-    } catch (e) {
-      if ($('electionGrid')) {
-        $('electionGrid').innerHTML = `
+      } catch (e) {
+        if ($('electionGrid')) {
+          $('electionGrid').innerHTML = `
           <div class="col-span-full p-space-lg rounded-2xl bg-[#FEF2F2] border border-[#FCA5A5] text-[#991B1B] flex items-center gap-3">
             <span class="material-symbols-outlined text-[24px] text-[#DC2626]">error</span>
             <span class="font-medium">Không thể kết nối máy chủ: ${App.esc(e.message)}</span>
           </div>`;
+        }
       }
     }
-  }
 
   // 3. Bắt sự kiện chuyển Tab trạng thái
   const tabButtons = document.querySelectorAll('.filter-tab-btn');
-  tabButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      tabButtons.forEach(b => {
-        b.classList.remove('bg-primary-container', 'text-on-primary', 'shadow-sm');
-        b.classList.add('bg-surface-container-low', 'text-on-surface');
+    tabButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        tabButtons.forEach(b => {
+          b.classList.remove('bg-primary-container', 'text-on-primary', 'shadow-sm');
+          b.classList.add('bg-surface-container-low', 'text-on-surface');
+        });
+        btn.classList.add('bg-primary-container', 'text-on-primary', 'shadow-sm');
+        btn.classList.remove('bg-surface-container-low', 'text-on-surface');
+
+        st.status = btn.dataset.status || 'all';
+        st.page = 1;
+        load();
       });
-      btn.classList.add('bg-primary-container', 'text-on-primary', 'shadow-sm');
-      btn.classList.remove('bg-surface-container-low', 'text-on-surface');
-
-      st.status = btn.dataset.status || 'all';
-      st.page = 1;
-      load();
     });
-  });
 
-  // 4. Bộ lọc Thể loại
-  if ($('typeFilter')) {
-    $('typeFilter').addEventListener('change', (e) => {
-      st.kind = e.target.value === 'all' ? '' : e.target.value;
-      st.page = 1;
-      load();
-    });
-  }
+    // 4. Bộ lọc Thể loại
+    if ($('typeFilter')) {
+      $('typeFilter').addEventListener('change', (e) => {
+        st.kind = e.target.value === 'all' ? '' : e.target.value;
+        st.page = 1;
+        load();
+      });
+    }
 
-  // 5. Ô tìm kiếm (Debounced)
-  if ($('searchInput')) {
-    $('searchInput').addEventListener('input', App.debounce((e) => {
-      st.q = e.target.value.trim();
-      st.page = 1;
-      load();
-    }, 350));
-  }
+    // 5. Ô tìm kiếm (Debounced)
+    if ($('searchInput')) {
+      $('searchInput').addEventListener('input', App.debounce((e) => {
+        st.q = e.target.value.trim();
+        st.page = 1;
+        load();
+      }, 350));
+    }
 
-  // 6. Dropdown Sắp xếp
-  if ($('sortFilter')) {
-    $('sortFilter').addEventListener('change', (e) => {
-      st.sort = e.target.value;
-      load();
-    });
-  }
+    // 6. Dropdown Sắp xếp
+    if ($('sortFilter')) {
+      $('sortFilter').addEventListener('change', (e) => {
+        st.sort = e.target.value;
+        st.page = 1;
+        load();
+      });
+    }
 
-  // Khởi động
-  await updateStats();
-  await load();
-  App.watch('all', App.debounce(() => { updateStats(); load(); }, 800));
-})();
+    // Khởi động
+    await updateStats();
+    await load();
+    App.watch('all', App.debounce(() => { updateStats(); load(); }, 800));
+  }) ();
