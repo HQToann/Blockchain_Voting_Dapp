@@ -26,10 +26,10 @@
 
   // ---------------------------------------------------------------- badge helpers (dùng cho trang style.css cũ nếu có)
   const STATUS = {
-    open:     { label: 'Đang mở',      icon: 'lock_open',        color: '#16a34a', bg: '#f0fdf4', border: '#bbf7d0' },
-    upcoming: { label: 'Sắp diễn ra',  icon: 'calendar_today',   color: '#d97706', bg: '#fef3c7', border: '#fde68a' },
-    ended:    { label: 'Đã kết thúc',  icon: 'flag',              color: '#475569', bg: '#f1f5f9', border: '#cbd5e1' },
-    closed:   { label: 'Đã đóng sớm', icon: 'do_not_disturb_on', color: '#dc2626', bg: '#fef2f2', border: '#fecaca' },
+    open: { label: 'Đang mở', icon: 'lock_open', color: '#16a34a', bg: '#f0fdf4', border: '#bbf7d0' },
+    upcoming: { label: 'Sắp diễn ra', icon: 'calendar_today', color: '#d97706', bg: '#fef3c7', border: '#fde68a' },
+    ended: { label: 'Đã kết thúc', icon: 'flag', color: '#475569', bg: '#f1f5f9', border: '#cbd5e1' },
+    closed: { label: 'Đã đóng sớm', icon: 'do_not_disturb_on', color: '#dc2626', bg: '#fef2f2', border: '#fecaca' },
   };
   App.statusText = (s) => STATUS[s] ? STATUS[s].label : s;
   App.statusBadge = (s) => {
@@ -136,9 +136,11 @@
       if (e.code !== 4902) throw e;
       await window.ethereum.request({
         method: 'wallet_addEthereumChain',
-        params: [{ chainId: hexChain(), chainName: App.cfg.chain_name, rpcUrls: [App.cfg.rpc_url],
-                   nativeCurrency: { name: App.cfg.currency, symbol: App.cfg.currency, decimals: 18 },
-                   blockExplorerUrls: [App.cfg.explorer_url] }],
+        params: [{
+          chainId: hexChain(), chainName: App.cfg.chain_name, rpcUrls: [App.cfg.rpc_url],
+          nativeCurrency: { name: App.cfg.currency, symbol: App.cfg.currency, decimals: 18 },
+          blockExplorerUrls: [App.cfg.explorer_url]
+        }],
       });
     }
   };
@@ -251,11 +253,26 @@
     const btnMob = App.$('btnMobileNav');
     const menuMob = App.$('mobileNavMenu');
     if (btnMob && menuMob) {
-      btnMob.addEventListener('click', () => {
-        menuMob.classList.toggle('hidden');
-      });
-    }
+        btnMob.addEventListener('click', (ev) => {
+          ev.stopPropagation();
+          menuMob.classList.toggle('hidden');
+        });
+
+        // Tự động đóng menu khi nhấp vào bất kỳ link điều hướng nào
+        menuMob.querySelectorAll('a').forEach((link) => {
+          link.addEventListener('click', () => {
+            menuMob.classList.add('hidden');
+          });
+        });
+
+        // Tự động đóng menu khi nhấp ra ngoài
+        document.addEventListener('click', (ev) => {
+          if (!menuMob.contains(ev.target) && !btnMob.contains(ev.target)) {
+            menuMob.classList.add('hidden');
+          }
+        });
+      }
 
     return App;
-  };
-})();
+    };
+  }) ();

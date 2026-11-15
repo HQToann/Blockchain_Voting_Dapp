@@ -15,7 +15,7 @@ import secrets
 
 from django.conf import settings
 from django.core.cache import cache
-from django.db.models import Count, Q
+from django.db.models import Count, Q, Sum
 from django.http import JsonResponse
 from django.utils import timezone
 from django.views.decorators.csrf import ensure_csrf_cookie
@@ -117,6 +117,50 @@ def health(request):
         }
     )
 
+@require_GET
+def platform_stats(request):
+    now = timezone.now()
+    base_qs = Election.objects.filter(is_hidden=False)
+
+    total_elections = base_qs.count()
+    open_elections = base_qs.filter(closed_by_owner=False, start_time__lte=now).filter(Q(end_time__isnull=True) | Q(end_time__gt=now)).count()
+    upcoming_elections = base_qs.filter(closed_by_owner=False, start_time__gt=now).count()
+    ended_elections = base_qs.filter(Q(closed_by_owner=True) | Q(end_time__lte=now)).count()
+
+    total_votes = VoteRecord.objects.filter(election__is_hidden=False).count()
+    total_voters = VoteRecord.objects.filter(election__is_hidden=False).values('voter_address').distinct().count()
+
+    data = {
+        'total_elections': total_elections,
+        'open_elections': open_elections,
+        'upcoming_elections': upcoming_elections,
+        'ended_elections': ended_elections,
+        'total_votes': total_votes,
+        'total_voters': total_voters,
+    }
+
+    address = request.GET.get('address')
+    if address and is_address(address):
+        addr_cs = to_checksum(address)
+        owner_qs = base_qs.filter(owner_address=addr_cs)
+        owner_total = owner_qs.count()
+        owner_open = owner_qs.filter(closed_by_owner=False, start_time__lte=now).filter(Q(end_time__isnull=True) | Q(end_time__gt=now)).count()
+        owner_ended = owner_qs.filter(Q(closed_by_owner=True) | Q(end_time__lte=now)).count()
+
+        user_votes = VoteRecord.objects.filter(election__is_hidden=False, voter_address=addr_cs)
+        voted_total = user_votes.values('election_id').distinct().count()
+        last_vote = user_votes.order_by('-created_at').first()
+
+        data['user'] = {
+            'owner_total': owner_total,
+            'owner_open': owner_open,
+            'owner_ended': owner_ended,
+            'voted_total': voted_total,
+            'recent_voted_time': _iso(last_vote.created_at) if last_vote else None,
+        }
+
+    return JsonResponse(data)
+
 # Đăng nhập bằng chữ ký ví (chỉ phục vụ upload IPFS)
 def login_message(request, nonce):
     """Thông điệp ký. Có cả domain + chain để chữ ký không dùng lại được ở nơi khác."""
@@ -197,11 +241,8 @@ def _apply_status_filter(qs, status, now):
         return qs.filter(closed_by_owner=False, start_time__lte=now).filter(Q(end_time__isnull=True) | Q(end_time__gt=now))
     if status == 'upcoming':
         return qs.filter(closed_by_owner=False, start_time__gt=now)
-    if status == 'ended':
-        return qs.filter(closed_by_owner=False, end_time__lte=now)
-    if status == 'closed':
-        return qs.filter(closed_by_owner=True)
-    if status == 'finished':      # đã kết thúc theo bất kỳ cách nào
+    if status in ('ended', 'closed', 'finished'):
+        # Tất cả hòm phiếu đã kết thúc (dù do hết thời gian hay chủ đóng sớm)
         return qs.filter(Q(closed_by_owner=True) | Q(end_time__lte=now))
     return qs
 
@@ -230,6 +271,14 @@ def elections_list(request):
         if ADDRESS_RE.match(q):
             cond |= Q(contract_addr__iexact=q) | Q(owner_address__iexact=q)
         qs = qs.filter(cond)
+
+    sort = request.GET.get('sort', 'newest')
+    if sort == 'most_votes':
+        qs = qs.order_by('-total_voters', '-id')
+    elif sort == 'closing_soon':
+        qs = qs.order_by('end_time', '-id')
+    else:
+        qs = qs.order_by('-id')
 
     page_size = _int_param(request, 'page_size', 12, 1, 50)
     page = _int_param(request, 'page', 1, 1, 10_000)

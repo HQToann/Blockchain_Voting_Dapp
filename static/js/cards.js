@@ -1,115 +1,144 @@
 /**
  * Thư viện Giao diện Thẻ & Phân trang dùng chung (VoteChain UI Cards)
- * Đã chuẩn hóa thiết kế Tailwind CSS mới nhất (Mobile-First)
+ * Chuẩn hóa thiết kế Material 3 & Tailwind CSS
  */
 window.ElectionCards = (function () {
   'use strict';
-  const { esc, short, fmtDate, fmtDuration } = App;
+  // Safe helper fallbacks in case App is not fully initialized
+  const esc = (s) => (window.App && typeof window.App.esc === 'function')
+    ? window.App.esc(s)
+    : String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+  const short = (a) => (window.App && typeof window.App.short === 'function')
+    ? window.App.short(a)
+    : (a ? a.slice(0, 6) + '…' + a.slice(-4) : '');
+
+  const fmtDate = (iso) => (window.App && typeof window.App.fmtDate === 'function')
+    ? window.App.fmtDate(iso)
+    : (iso ? new Date(iso).toLocaleString('vi-VN') : '—');
+
+  const fmtDuration = (ms) => {
+    if (window.App && typeof window.App.fmtDuration === 'function') return window.App.fmtDuration(ms);
+    if (!ms || ms <= 0) return '0 giây';
+    const s = Math.floor(ms / 1000), d = Math.floor(s / 86400), h = Math.floor((s % 86400) / 3600), m = Math.floor((s % 3600) / 60);
+    return d ? `${d} ngày ${h} giờ` : h ? `${h} giờ ${m} phút` : m ? `${m} phút ${s % 60} giây` : `${s} giây`;
+  };
+
+  const sameAddr = (a, b) => (window.App && typeof window.App.sameAddr === 'function')
+    ? window.App.sameAddr(a, b)
+    : (!!a && !!b && a.toLowerCase() === b.toLowerCase());
 
   // 1. Thẻ Hòm Phiếu Khám Phá (Dùng trên trang Chủ / Khám Phá)
   function card(e, me) {
-    const isOwner = me && App.sameAddr(me, e.owner);
+    const isOwner = me && sameAddr(me, e.owner);
     const rule = e.max_choices > 1 ? `chọn từ 1 đến ${e.max_choices}` : 'chọn 1';
-    
-    // Đảm bảo không bị crash nếu dữ liệu address chưa load kịp
-    const safeAddress = e.address || e.contract_addr || '0x0000000000000000000000000000000000000000';
-    const pollId = `#${safeAddress.slice(2, 6).toUpperCase()}-${safeAddress.slice(-4).toUpperCase()}`;
+    const pollId = `#${e.address.slice(2, 6).toUpperCase()}-${e.address.slice(-4).toUpperCase()}`;
 
-    let statusBadge = '';
-    let btnHtml = '';
-    
-    // Xử lý Trạng thái & Nút bấm (ĐÃ ĐỔI <button> THÀNH <div> ĐỂ TRÌNH DUYỆT KHÔNG CHẶN THẺ <a> BÊN NGOÀI)
+    let statusHtml = '';
     if (e.status === 'open') {
       const remaining = e.end_time ? fmtDuration(Date.parse(e.end_time) - Date.now()) : 'Không hẹn giờ';
-      statusBadge = `
-        <span class="px-2.5 py-1 rounded-full bg-[#ECFDF5] text-[#065F46] font-semibold flex items-center gap-1.5 text-xs shadow-sm">
-          <span class="w-1.5 h-1.5 rounded-full bg-[#10B981] animate-pulse"></span>
+      statusHtml = `
+        <span class="px-2.5 py-1 rounded-full bg-[#ECFDF5] text-[#065F46] font-semibold flex items-center gap-1.5 text-xs">
+          <span class="w-2 h-2 rounded-full bg-[#10B981] animate-pulse"></span>
           Đang mở • Còn ${esc(remaining)}
         </span>
       `;
-      btnHtml = `
-        <div class="w-full py-2.5 rounded-xl bg-primary text-on-primary font-headline-sm text-sm flex items-center justify-center gap-2 group-hover:opacity-90 transition-colors shadow-md shadow-primary/20">
-          <span class="material-symbols-outlined text-[16px]">how_to_vote</span>Bỏ phiếu ngay
-        </div>
-      `;
     } else if (e.status === 'upcoming') {
-      statusBadge = `
-        <span class="px-2.5 py-1 rounded-full bg-[#FFFBEB] text-[#92400E] font-semibold flex items-center gap-1.5 text-xs shadow-sm">
-          <span class="w-1.5 h-1.5 rounded-full bg-[#F59E0B]"></span>
+      statusHtml = `
+        <span class="px-2.5 py-1 rounded-full bg-[#FFFBEB] text-[#92400E] font-semibold flex items-center gap-1.5 text-xs">
+          <span class="w-2 h-2 rounded-full bg-[#F59E0B]"></span>
           Sắp diễn ra
         </span>
       `;
-      btnHtml = `
-        <div class="w-full py-2.5 rounded-xl bg-surface-container-high text-on-surface font-headline-sm text-sm flex items-center justify-center gap-2 group-hover:bg-surface-variant transition-colors">
-          <span class="material-symbols-outlined text-[16px] text-primary">schedule</span>Xem chi tiết
-        </div>
-      `;
     } else {
-      statusBadge = `
-        <span class="px-2.5 py-1 rounded-full bg-surface-container-high text-on-surface font-semibold flex items-center gap-1.5 text-xs shadow-sm">
+      statusHtml = `
+        <span class="px-2.5 py-1 rounded-full bg-surface-container-high text-on-surface-variant font-semibold flex items-center gap-1.5 text-xs">
+          <span class="w-2 h-2 rounded-full bg-outline"></span>
           Đã kết thúc
         </span>
       `;
-      btnHtml = `
-        <div class="w-full py-2.5 rounded-xl bg-primary-container/20 text-primary font-headline-sm text-sm flex items-center justify-center gap-2 group-hover:bg-primary group-hover:text-on-primary transition-colors">
-          <span class="material-symbols-outlined text-[16px]">visibility</span>Xem kết quả
-        </div>
-      `;
     }
 
-    const kindLabel = e.kind === 1 ? 'Lấy ý kiến cộng đồng' : 'Bầu cử ứng viên';
-    const kindColor = e.kind === 1 ? 'text-secondary' : 'text-primary';
+    const kindLabel = e.kind === 1 ? 'LẤY Ý KIẾN CỘNG ĐỒNG' : 'BẦU CỬ ỨNG VIÊN';
 
     let extraBadges = '';
     if (e.is_private) {
-      extraBadges += `<span class="bg-secondary-fixed-dim text-on-secondary-fixed-variant text-[9px] font-bold px-1.5 py-0.5 rounded shadow-sm">Riêng tư</span>`;
+      extraBadges += `<span class="px-2 py-0.5 rounded-md bg-purple-50 text-purple-700 text-[11px] font-semibold border border-purple-200">Riêng tư</span> `;
     }
     if (isOwner) {
-      extraBadges += `<span class="bg-amber-100 text-amber-800 text-[9px] font-bold px-1.5 py-0.5 rounded shadow-sm">Của bạn</span>`;
+      extraBadges += `<span class="px-2 py-0.5 rounded-md bg-amber-50 text-amber-700 text-[11px] font-semibold border border-amber-200">Của bạn</span>`;
+    }
+
+    let actionBtn = '';
+    if (e.status === 'open') {
+      actionBtn = `
+        <a class="w-full py-2.5 rounded-xl bg-primary-container text-on-primary font-headline-sm text-headline-sm flex items-center justify-center gap-2 hover:bg-primary transition-colors shadow-sm" href="/election/${esc(e.address)}/">
+          <span class="material-symbols-outlined text-[18px]">how_to_vote</span>
+          Bỏ phiếu ngay
+        </a>
+      `;
+    } else if (e.status === 'upcoming') {
+      actionBtn = `
+        <a class="w-full py-2.5 rounded-xl bg-surface-container-high text-on-surface font-headline-sm text-headline-sm flex items-center justify-center gap-2 hover:bg-surface-variant transition-colors" href="/election/${esc(e.address)}/">
+          <span class="material-symbols-outlined text-[18px] text-primary">schedule</span>
+          Xem chi tiết
+        </a>
+      `;
+    } else {
+      actionBtn = `
+        <a class="w-full py-2.5 rounded-xl bg-surface-container-high text-on-surface font-headline-sm text-headline-sm flex items-center justify-center gap-2 hover:bg-surface-variant transition-colors" href="/election/${esc(e.address)}/">
+          <span class="material-symbols-outlined text-[18px] text-tertiary">query_stats</span>
+          Xem kết quả
+        </a>
+      `;
     }
 
     const votersCount = e.total_voters || 0;
     const optsCount = e.option_count || 0;
-    const progressPercent = votersCount > 0 ? Math.min(100, Math.max(10, votersCount * 5)) : 0;
-
+    
     return `
-      <a href="/election/${esc(safeAddress)}/" class="text-decoration-none rounded-2xl bg-surface-container-lowest p-5 shadow-sm border border-surface-container-high/60 hover:shadow-lg hover:-translate-y-1 hover:border-primary/50 transition-all flex flex-col justify-between space-y-4 h-full cursor-pointer group block">
-        <div class="space-y-3">
+      <div class="rounded-2xl bg-surface-container-lowest p-space-lg shadow-sm hover:shadow-md transition-all flex flex-col justify-between space-y-space-md border border-slate-100">
+        <div class="space-y-space-sm">
           <div class="flex items-center justify-between text-xs">
-            ${statusBadge}
-            <span class="font-label-code text-label-code text-outline group-hover:text-primary transition-colors">${pollId}</span>
+            ${statusHtml}
+            <span class="font-label-code text-label-code text-outline">${pollId}</span>
           </div>
+
           <div>
-            <div class="flex items-center gap-2">
-              <div class="font-label-tag text-[10px] ${kindColor} uppercase font-bold tracking-wider">${kindLabel}</div>
+            <div class="flex items-center gap-1.5 flex-wrap">
+              <span class="font-label-tag text-label-tag text-primary uppercase font-bold text-xs">${kindLabel}</span>
               ${extraBadges}
             </div>
-            <h4 class="font-headline-sm text-base text-on-surface font-bold mt-1 line-clamp-1 group-hover:text-primary transition-colors" title="${esc(e.name)}">${esc(e.name)}</h4>
-            <p class="font-body-sm text-xs text-on-surface-variant line-clamp-2 mt-1">
-              Gồm <b>${optsCount}</b> lựa chọn (${rule}). Tạo bởi ví ${esc(short(e.owner))}.
+            <h4 class="font-headline-sm text-headline-sm text-on-surface font-bold mt-1 line-clamp-1" title="${esc(e.name)}">${esc(e.name)}</h4>
+            <p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2 mt-1">
+              Gồm <b>${optsCount}</b> lựa chọn (${rule}). Tạo bởi ví <span class="font-label-code text-xs text-primary">${esc(short(e.owner))}</span>.
             </p>
           </div>
-          <div class="space-y-1 pt-1 mt-auto">
-            <div class="flex items-center justify-between font-label-code text-[11px] text-xs">
-              <span class="text-on-surface-variant">Tiến độ: <span class="font-bold text-on-surface">${votersCount}</span> cử tri đã bỏ phiếu</span>
+
+          <div class="space-y-1 pt-1">
+            <div class="flex items-center justify-between font-label-code text-label-code text-xs">
+              <span class="text-on-surface-variant flex items-center gap-1">
+                <span class="material-symbols-outlined text-[15px] text-outline">group</span>
+                Tiến độ: <b class="text-on-surface font-semibold">${votersCount}</b> cử tri đã bỏ phiếu
+              </span>
             </div>
-            <div class="w-full h-2 bg-surface-container rounded-full overflow-hidden mb-2">
-              <div class="h-full bg-primary rounded-full transition-all" style="width: ${progressPercent}%"></div>
+            <div class="w-full h-2 bg-surface-container rounded-full overflow-hidden">
+              <div class="h-full bg-primary rounded-full transition-all" style="width: ${votersCount > 0 ? Math.min(100, Math.max(15, votersCount * 10)) : 0}%"></div>
             </div>
           </div>
         </div>
-        <div class="pt-2 mt-auto">
-          ${btnHtml}
+
+        <div class="pt-space-sm border-t border-surface-container">
+          ${actionBtn}
         </div>
-      </a>
+      </div>
     `;
   }
 
   // 2. Thẻ Hòm Phiếu Cá Nhân (Dùng trên trang Hòm Phiếu Của Tôi)
   function myCard(e, me, isVotedTab) {
-    const explorerUrl = App.cfg.explorer_url || 'https://sepolia.etherscan.io';
-    const isOwner = me && App.sameAddr(me, e.owner);
-
+    const explorerUrl = (window.App && window.App.cfg && window.App.cfg.explorer_url) || 'https://sepolia.etherscan.io';
+    const isOwner = me && sameAddr(me, e.owner);
     let statusBadge = '';
     let timeLabel = '';
     if (e.status === 'open') {
@@ -394,7 +423,7 @@ window.ElectionCards = (function () {
           <tbody class="divide-y divide-surface-container-high">
             ${votes.map((v) => `
               <tr class="hover:bg-surface-container-low/50 transition-colors">
-                <td class="p-3 font-label-code">${App.addrLink(v.voter)}</td>
+                <td class="p-3 font-label-code">${(window.App && typeof window.App.addrLink === 'function') ? window.App.addrLink(v.voter) : short(v.voter)}</td>
                 <td class="p-3 font-semibold text-on-surface">${v.choice_labels.map(esc).join(', ')}</td>
                 <td class="p-3 text-on-surface-variant">${esc(fmtDate(v.time))}</td>
                 <td class="p-3 text-right font-label-code">
@@ -435,12 +464,12 @@ window.ElectionCards = (function () {
           <tbody class="divide-y divide-surface-container-high">
             ${entries.map((w) => `
               <tr class="hover:bg-surface-container-low/50 transition-colors">
-                <td class="p-3 font-label-code">${App.addrLink(w.address)}</td>
+                <td class="p-3 font-label-code">${(window.App && typeof window.App.addrLink === 'function') ? window.App.addrLink(w.address) : short(w.address)}</td>
                 <td class="p-3">
                   ${w.voted
-                    ? '<span class="inline-flex items-center gap-1 text-tertiary font-bold"><span class="material-symbols-outlined text-[16px]">check_circle</span> Đã bỏ phiếu</span>'
-                    : '<span class="inline-flex items-center gap-1 text-amber-600 font-medium"><span class="material-symbols-outlined text-[16px]">schedule</span> Chưa bỏ</span>'
-                  }
+        ? '<span class="inline-flex items-center gap-1 text-tertiary font-bold"><span class="material-symbols-outlined text-[16px]">check_circle</span> Đã bỏ phiếu</span>'
+        : '<span class="inline-flex items-center gap-1 text-amber-600 font-medium"><span class="material-symbols-outlined text-[16px]">schedule</span> Chưa bỏ</span>'
+      }
                 </td>
                 <td class="p-3 text-right">
                   ${canRemove && !w.voted ? `
@@ -518,34 +547,77 @@ window.ElectionCards = (function () {
 
   // 7. Render thanh phân trang chung
   function pager(el, page, pages, go) {
-    if (pages <= 1) { el.innerHTML = ''; return; }
+    if (!el) return;
+    const cur = Math.max(1, parseInt(page, 10) || 1);
+    const total = Math.max(1, parseInt(pages, 10) || 1);
 
-    let pageButtons = '';
-    for (let p = 1; p <= pages; p++) {
-      if (p === 1 || p === pages || (p >= page - 1 && p <= page + 1)) {
-        const active = p === page;
-        pageButtons += `
-          <button type="button" class="w-9 h-9 rounded-xl flex items-center justify-center font-label-code text-label-code transition-colors cursor-pointer ${active ? 'bg-primary-container text-on-primary font-bold shadow-sm' : 'bg-surface-container-low text-on-surface hover:bg-surface-container-high'}" data-p="${p}">
-            ${p}
-          </button>
-        `;
-      } else if (p === page - 2 || p === page + 2) {
-        pageButtons += `<span class="px-1 text-outline">…</span>`;
-      }
+    if (total <= 1) {
+      el.innerHTML = '';
+      return;
     }
 
+    // Tạo danh sách trang hiển thị (chuẩn UI tối đa 7 nút, hiển thị dấu "…" đối xứng hợp lý)
+    let items = [];
+    if (total <= 7) {
+      items = Array.from({ length: total }, (_, i) => i + 1);
+    } else if (cur <= 4) {
+      items = [1, 2, 3, 4, 5, '…', total];
+    } else if (cur >= total - 3) {
+      items = [1, '…', total - 4, total - 3, total - 2, total - 1, total];
+    } else {
+      items = [1, '…', cur - 1, cur, cur + 1, '…', total];
+    }
+
+    const pageButtons = items.map((item) => {
+      if (item === '…') {
+        return `<span class="w-9 h-9 flex items-center justify-center text-outline select-none font-label-code text-sm">…</span>`;
+      }
+      const active = item === cur;
+      return `
+        <button type="button"
+          class="w-9 h-9 rounded-xl flex items-center justify-center font-label-code text-label-code transition-colors select-none ${active
+          ? 'bg-primary-container text-on-primary font-bold shadow-sm cursor-default'
+          : 'bg-surface-container-low text-on-surface hover:bg-surface-container-high cursor-pointer'
+        }"
+          ${active ? 'aria-current="page"' : ''}
+          aria-label="${active ? `Trang hiện tại ${item}` : `Đến trang ${item}`}"
+          data-p="${item}">
+          ${item}
+        </button>
+      `;
+    }).join('');
+
     el.innerHTML = `
-      <div class="flex items-center gap-space-xs">
-        <button type="button" class="w-9 h-9 rounded-xl flex items-center justify-center bg-surface-container-low text-on-surface hover:bg-surface-container-high disabled:opacity-40 disabled:pointer-events-none transition-colors cursor-pointer" ${page <= 1 ? 'disabled' : ''} data-p="${page - 1}">
+      <div class="flex items-center gap-space-xs" role="navigation" aria-label="Phân trang">
+        <button type="button"
+          class="w-9 h-9 rounded-xl flex items-center justify-center bg-surface-container-low text-on-surface hover:bg-surface-container-high disabled:opacity-40 disabled:pointer-events-none transition-colors cursor-pointer select-none"
+          ${cur <= 1 ? 'disabled' : ''}
+          aria-label="Trang trước"
+          title="Trang trước"
+          data-p="${cur - 1}">
           <span class="material-symbols-outlined text-[18px]">chevron_left</span>
         </button>
         ${pageButtons}
-        <button type="button" class="w-9 h-9 rounded-xl flex items-center justify-center bg-surface-container-low text-on-surface hover:bg-surface-container-high disabled:opacity-40 disabled:pointer-events-none transition-colors cursor-pointer" ${page >= pages ? 'disabled' : ''} data-p="${page + 1}">
+        <button type="button"
+          class="w-9 h-9 rounded-xl flex items-center justify-center bg-surface-container-low text-on-surface hover:bg-surface-container-high disabled:opacity-40 disabled:pointer-events-none transition-colors cursor-pointer select-none"
+          ${cur >= total ? 'disabled' : ''}
+          aria-label="Trang sau"
+          title="Trang sau"
+          data-p="${cur + 1}">
           <span class="material-symbols-outlined text-[18px]">chevron_right</span>
         </button>
       </div>
     `;
-    el.querySelectorAll('button[data-p]').forEach((b) => b.addEventListener('click', () => go(+b.dataset.p)));
+
+    el.querySelectorAll('button[data-p]').forEach((b) => {
+      b.addEventListener('click', () => {
+        if (b.disabled) return;
+        const target = parseInt(b.dataset.p, 10);
+        if (target && target !== cur && target >= 1 && target <= total) {
+          go(target);
+        }
+      });
+    });
   }
 
   return { card, myCard, candidateCard, votersTable, whitelistTable, detailBadges, pager };
