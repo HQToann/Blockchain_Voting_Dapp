@@ -84,7 +84,7 @@ def config(request):
         'currency': settings.CURRENCY_SYMBOL,
         'factory_address': get_factory_address(),
         'ipfs_gateway': settings.IPFS_GATEWAY,
-        'ipfs_enabled': bool(os.getenv('PINATA_JWT')),
+       'ipfs_enabled': bool(getattr(settings, 'PINATA_JWT', os.getenv('PINATA_JWT'))),
         'limits': {
             'max_options': 50, 'min_options': 2, 'max_name_bytes': 200, 'max_label_bytes': 100,
             'max_whitelist_batch': 200, 'max_image_bytes': settings.MAX_IMAGE_BYTES,
@@ -309,12 +309,17 @@ def election_whitelist(request, address):
     })
 
 # Xác minh một giao dịch bỏ phiếu (công khai, chỉ đọc)
+_cached_w3 = None
 def get_http_w3():
+    global _cached_w3
+    if _cached_w3 is not None:
+        return _cached_w3
     url = os.getenv('INFURA_RPC_URL') or os.getenv('RPC_URL', '')
     if not url:
         return None
-    return Web3(Web3.HTTPProvider(url, request_kwargs={'timeout': 10}))
-
+    _cached_w3 = Web3(Web3.HTTPProvider(url, request_kwargs={'timeout': 10}))
+    return _cached_w3
+    
 def _vote_payload(v):
     e = v.election
     labels = {o.option_id: o.label for o in e.options.all()}

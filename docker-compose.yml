@@ -17,23 +17,28 @@ services:
       retries: 5
     # Mở port 5432 ra ngoài để bạn vẫn có thể dùng DataGrip / pgAdmin kết nối vào xem DB
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5433:5432"
 
   redis:
     image: redis:7-alpine
     container_name: election_redis
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
     volumes:
       - redis_data:/data
     ports:
-      - "6379:6379"
+      - "127.0.0.1:6379:6379"
 
   web:
     build: .
     container_name: election_web
     restart: unless-stopped
     # Chạy lệnh migrate trước khi bật Server Daphne
-    command: sh -c "python manage.py migrate && daphne -b 0.0.0.0 -p 8000 core.asgi:application"
+    command: sh -c "python manage.py makemigrations election && python manage.py migrate && daphne -b 0.0.0.0 -p 8000 core.asgi:application"    
     ports:
       - "8000:8000"
     env_file:
@@ -44,7 +49,7 @@ services:
       db:
         condition: service_healthy
       redis:
-        condition: service_started
+        condition: service_healthy
 
   indexer:
     build: .
@@ -57,7 +62,7 @@ services:
       db:
         condition: service_healthy
       redis:
-        condition: service_started
+        condition: service_healthy
 
 volumes:
   postgres_data:

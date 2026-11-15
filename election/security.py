@@ -15,8 +15,8 @@ def get_client_ip(request):
     xff = request.META.get('HTTP_X_FORWARDED_FOR', '')
     if n > 0 and xff:
         parts = [p.strip() for p in xff.split(',') if p.strip()]
-        if parts:
-            return parts[-n] if len(parts) >= n else parts[0]
+        if parts and len(parts) >= n:
+            return parts[-n]
     return request.META.get('REMOTE_ADDR', '0.0.0.0')
 
 
