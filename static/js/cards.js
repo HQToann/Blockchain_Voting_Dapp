@@ -95,7 +95,7 @@ window.ElectionCards = (function () {
 
     const votersCount = e.total_voters || 0;
     const optsCount = e.option_count || 0;
-
+    
     return `
       <div class="rounded-2xl bg-surface-container-lowest p-space-lg shadow-sm hover:shadow-md transition-all flex flex-col justify-between space-y-space-md border border-slate-100">
         <div class="space-y-space-sm">
@@ -139,7 +139,6 @@ window.ElectionCards = (function () {
   function myCard(e, me, isVotedTab) {
     const explorerUrl = (window.App && window.App.cfg && window.App.cfg.explorer_url) || 'https://sepolia.etherscan.io';
     const isOwner = me && sameAddr(me, e.owner);
-
     let statusBadge = '';
     let timeLabel = '';
     if (e.status === 'open') {

@@ -120,7 +120,7 @@ def _on_election_created(w3, evt, log):
         return []
 
     labels = election_contract(w3, addr).functions.getOptions().call()
-    uri = a['metadataURI'] or ''
+    uri = a.get('metadataURI') or a.get('_metadataURI', '')
     meta = load_metadata(uri) if uri else None
     end = int(a['endTime'])
 

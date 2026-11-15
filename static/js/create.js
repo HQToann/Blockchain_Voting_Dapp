@@ -326,7 +326,6 @@
       $('title-counter').textContent = `${$('name').value.length} / 90 ký tự`;
     });
   }
-
   if ($('desc') && $('desc-counter')) {
     $('desc').addEventListener('input', () => {
       $('desc-counter').textContent = `${$('desc').value.length} / 500`;

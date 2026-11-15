@@ -1,268 +1,101 @@
 {% load static %}
-<!DOCTYPE html>
-<html class="h-full" lang="vi">
 
-<head>
-  <meta charset="utf-8">
-  <meta content="width=device-width, initial-scale=1.0" name="viewport">
-  <title>VoteChain - Thiết Lập Hòm Phiếu Bầu Mới</title>
-  <link rel="icon" type="image/x-icon" href="{% static 'img/favicon.ico' %}">
+{% block title %}VoteChain - Thiết Lập Hòm Phiếu Bầu Mới{% endblock %}
 
-  <!-- Google Fonts: Plus Jakarta Sans, JetBrains Mono, Material Symbols Outlined -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
-    rel="stylesheet">
-  <link
-    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
-    rel="stylesheet">
+{% block nav_create %}text-primary bg-surface-container-low font-bold{% endblock %}
 
-  <!-- Tailwind CDN & Exact Design System Config -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script id="tailwind-config">
-    tailwind.config = {
-      darkMode: "class",
-      theme: {
-        extend: {
-          "colors": {
-            "on-tertiary-container": "#bdffdb",
-            "primary-fixed-dim": "#b4c5ff",
-            "on-secondary-fixed-variant": "#2f2ebe",
-            "on-error-container": "#93000a",
-            "background": "#faf8ff",
-            "on-tertiary-fixed-variant": "#005236",
-            "on-primary-container": "#eeefff",
-            "on-secondary-container": "#fffbff",
-            "on-primary-fixed": "#00174b",
-            "error": "#ba1a1a",
-            "surface-container-highest": "#dae2fd",
-            "surface-container-low": "#f2f3ff",
-            "on-secondary": "#ffffff",
-            "primary-fixed": "#dbe1ff",
-            "on-tertiary": "#ffffff",
-            "primary": "#004ac6",
-            "surface-container-high": "#e2e7ff",
-            "on-surface": "#131b2e",
-            "on-surface-variant": "#434655",
-            "on-tertiary-fixed": "#002113",
-            "tertiary-fixed-dim": "#4edea3",
-            "primary-container": "#2563eb",
-            "on-error": "#ffffff",
-            "error-container": "#ffdad6",
-            "inverse-surface": "#283044",
-            "on-primary": "#ffffff",
-            "surface-bright": "#faf8ff",
-            "surface-dim": "#d2d9f4",
-            "on-background": "#131b2e",
-            "surface": "#faf8ff",
-            "outline": "#737686",
-            "outline-variant": "#c3c6d7",
-            "secondary-fixed": "#e1e0ff",
-            "secondary-container": "#6063ee",
-            "on-primary-fixed-variant": "#003ea8",
-            "secondary-fixed-dim": "#c0c1ff",
-            "inverse-primary": "#b4c5ff",
-            "secondary": "#4648d4",
-            "inverse-on-surface": "#eef0ff",
-            "surface-variant": "#dae2fd",
-            "on-secondary-fixed": "#07006c",
-            "tertiary-fixed": "#6ffbbe",
-            "surface-container-lowest": "#ffffff",
-            "surface-container": "#eaedff",
-            "tertiary": "#006242",
-            "surface-tint": "#0053db",
-            "tertiary-container": "#007d55"
-          },
-          "borderRadius": {
-            "DEFAULT": "0.25rem",
-            "lg": "0.5rem",
-            "xl": "0.75rem",
-            "2xl": "1rem",
-            "3xl": "1.5rem",
-            "full": "9999px"
-          },
-          "spacing": {
-            "space-sm": "0.5rem",
-            "margin": "2rem",
-            "space-xl": "2.25rem",
-            "gutter": "1rem",
-            "space-xs": "0.25rem",
-            "gutter-mobile": "0.75rem",
-            "space-md": "1rem",
-            "space-lg": "1.5rem",
-            "margin-mobile": "1rem"
-          },
-          "fontFamily": {
-            "headline-md": ["Plus Jakarta Sans", "sans-serif"],
-            "headline-xl-mobile": ["Plus Jakarta Sans", "sans-serif"],
-            "label-tag": ["Plus Jakarta Sans", "sans-serif"],
-            "body-md": ["Plus Jakarta Sans", "sans-serif"],
-            "body-sm": ["Plus Jakarta Sans", "sans-serif"],
-            "headline-lg-mobile": ["Plus Jakarta Sans", "sans-serif"],
-            "headline-xl": ["Plus Jakarta Sans", "sans-serif"],
-            "label-code": ["JetBrains Mono", "monospace"],
-            "headline-sm": ["Plus Jakarta Sans", "sans-serif"],
-            "headline-lg": ["Plus Jakarta Sans", "sans-serif"],
-            "body-lg": ["Plus Jakarta Sans", "sans-serif"]
-          },
-          "fontSize": {
-            "headline-md": ["1.25rem", { "lineHeight": "1.75rem", "fontWeight": "600" }],
-            "headline-xl-mobile": ["1.625rem", { "lineHeight": "2.125rem", "fontWeight": "700" }],
-            "label-tag": ["0.6875rem", { "lineHeight": "1rem", "fontWeight": "700" }],
-            "body-md": ["0.875rem", { "lineHeight": "1.375rem", "fontWeight": "400" }],
-            "body-sm": ["0.75rem", { "lineHeight": "1.125rem", "fontWeight": "400" }],
-            "headline-lg-mobile": ["1.375rem", { "lineHeight": "1.875rem", "fontWeight": "700" }],
-            "headline-xl": ["2.25rem", { "lineHeight": "2.75rem", "fontWeight": "800" }],
-            "label-code": ["0.8125rem", { "lineHeight": "1.125rem", "fontWeight": "500" }],
-            "headline-sm": ["1rem", { "lineHeight": "1.5rem", "fontWeight": "600" }],
-            "headline-lg": ["1.75rem", { "lineHeight": "2.25rem", "fontWeight": "700" }],
-            "body-lg": ["1rem", { "lineHeight": "1.625rem", "fontWeight": "400" }]
-          }
-        }
-      }
-    };
-  </script>
+{% block content %}
+<!-- Banner Lỗi kết nối máy chủ nếu có -->
+<div id="banner" class="max-w-5xl mx-auto px-4 sm:px-8 pt-4 w-full"></div>
 
-  <style>
-    @layer base {
+<div class="max-w-5xl mx-auto w-full px-4 sm:px-8 py-6 sm:py-10 space-y-6 sm:space-y-10">
 
-      html,
-      body {
-        margin: 0;
-        padding: 0;
-        font-family: 'Plus Jakarta Sans', sans-serif;
-      }
+  <!-- Breadcrumbs & Standard Tag -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-on-surface-variant text-body-sm">
+    <nav class="flex items-center gap-1.5 font-medium">
+      <a class="hover:text-primary transition-colors flex items-center gap-1 text-decoration-none" href="/">
+        <span class="material-symbols-outlined text-[16px]">arrow_back</span>
+        Khám phá
+      </a>
+      <span class="text-outline">/</span>
+      <span class="text-on-surface font-semibold">Khởi tạo hợp đồng mới</span>
+    </nav>
 
-      body {
-        overscroll-behavior: none;
-      }
+    <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container-high text-primary font-label-code text-xs sm:text-sm font-semibold self-start sm:self-auto w-fit">
+      <span class="w-2 h-2 rounded-full bg-primary animate-pulse shrink-0"></span>
+      <span class="truncate">Sepolia • ERC-1202 Standard</span>
+    </div>
+  </div>
 
-      main> :first-child {
-        margin-top: 0 !important;
-      }
+  <!-- Hero Banner Header -->
+  <section class="rounded-2xl sm:rounded-3xl bg-surface-container-lowest p-5 sm:p-10 border border-surface-container-high shadow-sm relative overflow-hidden">
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-6 sm:gap-10 items-center relative z-10">
 
-      main> :last-child {
-        margin-bottom: 0 !important;
-      }
-    }
-
-    .material-symbols-outlined {
-      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-      vertical-align: middle;
-      line-height: 1;
-    }
-
-    .material-symbols-outlined.fill-current {
-      font-variation-settings: 'FILL' 1;
-    }
-  </style>
-  <link rel="stylesheet" href="{% static 'css/style.css' %}">
-</head>
-
-<body class="bg-surface font-body-md text-body-md text-on-surface antialiased min-h-screen flex flex-col">
-
-  <!-- ========================================================================= -->
-  <!-- TOP NAVIGATION HEADER                                                     -->
-  <!-- ========================================================================= -->
-  <header
-    class="fixed top-0 left-0 right-0 z-50 bg-surface-container-lowest/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] border-b border-surface-container-high/60">
-    <div class="h-20 max-w-7xl mx-auto px-margin flex items-center justify-between gap-space-md">
-
-      <!-- Brand Logo & Network Status -->
-      <div class="flex items-center gap-space-md shrink-0">
-        <a class="flex items-center gap-space-xs group" href="/">
-          <div
-            class="w-10 h-10 rounded-xl bg-primary-container flex items-center justify-center shadow-[0_4px_12px_rgba(37,99,235,0.25)] group-hover:scale-105 transition-transform">
-            <span class="material-symbols-outlined text-on-primary text-[24px]">how_to_vote</span>
-          </div>
-          <div class="flex flex-col">
-            <div class="flex items-center gap-space-xs">
-              <span class="font-headline-sm text-headline-sm text-on-surface tracking-tight font-bold">VoteChain</span>
-              <span class="material-symbols-outlined text-primary text-[18px]">verified</span>
-            </div>
-            <span
-              class="font-label-tag text-label-tag text-on-surface-variant uppercase tracking-wider hidden sm:block">Decentralized
-              Governance</span>
-          </div>
-        </a>
-        <div class="hidden xl:flex items-center gap-space-xs px-space-sm py-1 rounded-full bg-surface-container-low">
-          <span class="w-2 h-2 rounded-full bg-tertiary-container animate-pulse"></span>
-          <span class="font-label-code text-label-code text-tertiary font-medium">Sepolia Testnet</span>
+      <!-- Left Column -->
+      <div class="md:col-span-8 space-y-3 sm:space-y-4">
+        <div class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-primary-fixed text-on-primary-fixed font-label-tag text-[10px] sm:text-xs uppercase tracking-wider font-bold">
+          <span class="material-symbols-outlined text-[14px] sm:text-[16px]">how_to_vote</span>
+          Tạo cuộc bỏ phiếu phi tập trung
         </div>
+        <h1 class="font-headline-xl text-3xl sm:text-4xl lg:text-[2.25rem] text-on-surface font-extrabold tracking-tight leading-tight">
+          Thiết Lập Hòm Phiếu Bầu Mới
+        </h1>
+        <p class="font-body-md text-sm sm:text-base text-on-surface-variant leading-relaxed max-w-xl">
+          Triển khai hợp đồng bầu cử an toàn, bất biến trên Blockchain với dữ liệu minh bạch hoàn toàn. Mỗi lá phiếu
+          được bảo chứng bằng chữ ký mật mã cá nhân.
+        </p>
       </div>
 
-      <!-- Desktop Navigation Menu -->
-      <nav
-        class="hidden md:flex items-center gap-space-xs bg-surface-container-lowest px-space-xs py-1.5 rounded-2xl shadow-[0_2px_12px_rgba(0,0,0,0.03)] border border-surface-container-high">
-        <a class="text-on-surface-variant font-headline-sm text-headline-sm px-space-md py-space-sm rounded-xl hover:bg-surface-container-high hover:text-on-surface transition-colors"
-          href="/">
-          Khám phá
-        </a>
-        <a class="text-primary font-headline-sm text-headline-sm px-space-md py-space-sm rounded-xl bg-surface-container-low font-bold transition-colors"
-          href="/create/">
-          Tạo hòm phiếu
-        </a>
-        <a class="text-on-surface-variant font-headline-sm text-headline-sm px-space-md py-space-sm rounded-xl hover:bg-surface-container-high hover:text-on-surface transition-colors"
-          href="/my/">
-          Hòm phiếu của tôi
-        </a>
-        <a class="text-on-surface-variant font-headline-sm text-headline-sm px-space-md py-space-sm rounded-xl hover:bg-surface-container-high hover:text-on-surface transition-colors"
-          href="/verify/">
-          Xác minh phiếu
-        </a>
-      </nav>
-
-      <!-- Gas & Wallet Info -->
-      <div class="flex items-center gap-space-sm shrink-0">
-        <div
-          class="hidden sm:flex items-center gap-space-xs px-space-sm py-space-xs rounded-xl bg-surface-container-low">
-          <span class="material-symbols-outlined text-outline text-[18px]">local_gas_station</span>
-          <span id="gasPrice" class="font-label-code text-label-code text-on-surface-variant font-medium">15 Gwei</span>
-        </div>
-        <button id="btnWallet" type="button"
-          class="flex items-center gap-space-xs px-space-sm py-space-xs rounded-xl bg-surface-container-lowest shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:bg-surface-container-low transition-all cursor-pointer border border-outline-variant/30">
-          <span id="walletDot" class="w-2.5 h-2.5 rounded-full bg-outline"></span>
-          <span id="walletAddress" class="font-label-code text-label-code text-on-surface font-semibold">Kết nối
-            ví</span>
-          <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0 text-on-primary">
-            <span class="material-symbols-outlined text-[18px]">account_balance_wallet</span>
+      <!-- Right Column: Contract Owner Badge -->
+      <div class="md:col-span-4">
+        <div class="p-4 sm:p-5 rounded-2xl bg-surface-container-low border border-surface-container-high/60 space-y-2 shadow-sm">
+          <div class="flex items-center justify-between text-outline font-label-tag text-[10px] sm:text-xs uppercase tracking-wider">
+            <span>Chủ sở hữu hợp đồng</span>
+            <span class="material-symbols-outlined text-[16px] text-primary cursor-pointer hover:opacity-80" id="btnCopyOwner" title="Sao chép địa chỉ">content_copy</span>
           </div>
-        </button>
-
-        <!-- Mobile Menu Toggle Button -->
-        <button id="btnMobileNav" type="button"
-          class="md:hidden flex items-center justify-center w-10 h-10 rounded-xl bg-surface-container-low text-on-surface hover:bg-surface-container-high transition-colors cursor-pointer border border-surface-container-high"
-          aria-label="Toggle Menu">
-          <span class="material-symbols-outlined text-[24px]">menu</span>
-        </button>
+          <div class="flex items-center gap-1.5 font-label-code text-sm sm:text-base font-bold text-on-surface break-all">
+            <span class="w-2 h-2 rounded-full bg-tertiary-container shrink-0"></span>
+            <span id="ownerAddress">0x... (Chưa kết nối ví)</span>
+          </div>
+          <div class="font-body-sm text-[11px] sm:text-xs text-on-surface-variant pt-2 border-t border-surface-container-high">
+            Quyền: Quản lý Whitelist / Lịch trình
+          </div>
+        </div>
       </div>
 
     </div>
+  </section>
 
-    <!-- Mobile Navigation Dropdown -->
-    <div id="mobileNavMenu"
-      class="hidden md:hidden border-t border-surface-container-high bg-surface-container-lowest/95 backdrop-blur-xl px-margin py-space-md shadow-lg flex flex-col gap-space-xs">
-      <a class="px-space-md py-space-sm rounded-xl font-headline-sm text-headline-sm flex items-center gap-2 text-on-surface-variant hover:bg-surface-container-high transition-colors"
-        href="/">
-        <span class="material-symbols-outlined text-[20px]">explore</span>
-        Khám phá
-      </a>
-      <a class="px-space-md py-space-sm rounded-xl font-headline-sm text-headline-sm flex items-center gap-2 bg-surface-container-low text-primary font-bold transition-colors"
-        href="/create/">
-        <span class="material-symbols-outlined text-[20px]">add_box</span>
-        Tạo hòm phiếu
-      </a>
-      <a class="px-space-md py-space-sm rounded-xl font-headline-sm text-headline-sm flex items-center gap-2 text-on-surface-variant hover:bg-surface-container-high transition-colors"
-        href="/my/">
-        <span class="material-symbols-outlined text-[20px]">inventory_2</span>
-        Hòm phiếu của tôi
-      </a>
-      <a class="px-space-md py-space-sm rounded-xl font-headline-sm text-headline-sm flex items-center gap-2 text-on-surface-variant hover:bg-surface-container-high transition-colors"
-        href="/verify/">
-        <span class="material-symbols-outlined text-[20px]">verified</span>
-        Xác minh phiếu
-      </a>
+  <!-- Cảnh báo khi chưa kết nối ví -->
+  <div id="needWallet" class="hidden p-4 sm:p-5 rounded-2xl bg-[#FFFBEB] border border-[#FDE68A] text-[#92400E] flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-6 shadow-sm">
+    <div class="flex items-start sm:items-center gap-3">
+      <span class="material-symbols-outlined text-[24px] text-[#D97706] shrink-0 mt-0.5 sm:mt-0">wallet</span>
+      <span class="text-sm sm:text-base leading-relaxed">Bạn cần kết nối ví MetaMask để tạo hòm phiếu. Phí gas triển khai do ví của bạn chi trả trên Sepolia.</span>
+    </div>
+    <button id="btnConnectAlert" type="button" class="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-[#D97706] text-white font-headline-sm text-sm sm:text-base font-semibold hover:opacity-90 shrink-0 border-0 cursor-pointer text-center">
+      Kết nối ví ngay
+    </button>
+  </div>
+
+  <!-- SECTION 01: THÔNG TIN TỔNG QUAN -->
+  <section class="rounded-2xl sm:rounded-3xl bg-surface-container-lowest p-5 sm:p-10 border border-surface-container-high shadow-sm space-y-6 sm:space-y-8">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 sm:pb-5 border-b border-surface-container-high">
+      <div class="flex items-center gap-4">
+        <div class="w-10 h-10 rounded-xl bg-primary text-on-primary font-headline-sm text-lg font-bold flex items-center justify-center shrink-0">
+          01
+        </div>
+        <div>
+          <h2 class="font-headline-md text-xl sm:text-2xl text-on-surface font-bold">
+            Thông tin tổng quan
+          </h2>
+          <p class="font-body-sm text-sm text-on-surface-variant mt-0.5">
+            Thiết lập tiêu đề, mô tả và lịch trình
+          </p>
+        </div>
+      </div>
+      <span class="px-3 py-1 rounded-full bg-surface-container-low text-primary font-label-tag text-[10px] sm:text-xs uppercase font-bold tracking-wider w-fit">
+        Bắt buộc
+      </span>
     </div>
   </header>
 
@@ -551,6 +384,7 @@
           </div>
 
         </div>
+      </div>
 
       </section>
 
@@ -591,99 +425,135 @@
             + Thêm ứng viên mới
           </button>
         </div>
+        <input id="name" type="text" maxlength="90" class="w-full bg-surface-container-low border border-transparent focus:border-primary focus:bg-surface-container-lowest px-4 py-3 rounded-xl font-body-md text-sm sm:text-base text-on-surface outline-none transition-all" placeholder="VD: Bầu ban cán sự đại diện nhiệm kỳ 2026">
+      </div>
 
-        <!-- Quy tắc số lượng lựa chọn (Max Choices) -->
-        <div
-          class="p-space-md rounded-2xl bg-surface-container-low flex flex-col sm:flex-row items-start sm:items-center justify-between gap-space-sm">
-          <div>
-            <label for="maxChoices" class="font-headline-sm text-headline-sm text-on-surface font-bold text-sm block">
-              Số lựa chọn tối đa mỗi cử tri được chọn
-            </label>
-            <span id="maxHint" class="font-body-sm text-body-sm text-on-surface-variant text-xs">
-              Mỗi cử tri chỉ chọn đúng 1 trong số các lựa chọn.
+      <!-- Mô tả -->
+      <div class="space-y-2">
+        <div class="flex items-center justify-between font-headline-sm text-sm sm:text-base text-on-surface font-semibold">
+          <label for="desc">Mô tả mục đích &amp; thể lệ</label>
+          <span class="font-label-code text-outline text-[10px] sm:text-xs" id="desc-counter">0 / 500</span>
+        </div>
+        <textarea id="desc" rows="4" maxlength="500" class="w-full bg-surface-container-low border border-transparent focus:border-primary focus:bg-surface-container-lowest p-4 rounded-xl font-body-md text-sm sm:text-base text-on-surface outline-none transition-all resize-y" placeholder="Bối cảnh, thể lệ, quyền hạn và cam kết của cuộc bỏ phiếu..."></textarea>
+      </div>
+
+      <!-- Lịch trình -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 pt-2">
+        <!-- Bắt đầu -->
+        <div class="p-4 sm:p-5 rounded-2xl bg-surface-container-low/70 border border-surface-container-high space-y-3 sm:space-y-4">
+          <div class="flex items-center justify-between">
+            <span class="font-headline-sm text-sm sm:text-base text-on-surface font-semibold flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-[18px] text-primary">schedule</span> Bắt đầu
             </span>
+            <span class="px-2.5 py-0.5 rounded-full bg-[#ECFDF5] text-[#065F46] font-label-tag text-[9px] sm:text-[10px] font-bold">GMT+7</span>
           </div>
-          <input id="maxChoices" type="number" min="1" value="1"
-            class="w-20 bg-surface-container-lowest border border-outline-variant/60 focus:border-primary px-3 py-2 rounded-xl font-label-code text-center font-bold text-on-surface outline-none">
-        </div>
-
-        <!-- Candidate Cards Container (Populated by create.js) -->
-        <div id="optionsContainer" class="space-y-space-md"></div>
-
-        <!-- Add Option Buttons & Template -->
-        <div class="space-y-space-xs">
-          <button id="addOptBottom" type="button"
-            class="w-full py-3 rounded-2xl border-2 border-dashed border-primary/30 hover:border-primary hover:bg-primary/5 text-primary font-headline-sm text-headline-sm font-bold flex items-center justify-center gap-2 transition-all">
-            <span class="material-symbols-outlined text-[20px]">add_circle</span>
-            + Thêm lựa chọn khác vào danh sách
-          </button>
-
-          <!-- Nút điền mẫu tự động khi chọn Bỏ phiếu vấn đề -->
-          <button id="tplYesNo" type="button"
-            class="hidden w-full py-3 rounded-2xl bg-secondary-fixed/50 hover:bg-secondary-fixed text-on-secondary-fixed font-headline-sm text-headline-sm font-bold flex items-center justify-center gap-2 transition-all">
-            <span class="material-symbols-outlined text-[20px] text-secondary">auto_fix_high</span>
-            Điền mẫu tự động: Đồng ý / Phản đối / Phiếu trắng
-          </button>
-        </div>
-
-      </section>
-
-      <!-- ===================================================================== -->
-      <!-- SECTION 03: QUYỀN THAM GIA BÌNH CHỌN (WHITELIST)                      -->
-      <!-- ===================================================================== -->
-      <section
-        class="rounded-3xl bg-surface-container-lowest p-space-xl border border-surface-container-high shadow-sm space-y-space-lg">
-
-        <!-- Section Header -->
-        <div class="flex items-start justify-between gap-space-md pb-space-sm border-b border-surface-container-high">
-          <div class="flex items-center gap-space-md">
-            <div
-              class="w-9 h-9 rounded-xl bg-primary text-on-primary font-headline-sm text-headline-sm font-bold flex items-center justify-center shrink-0">
-              03
-            </div>
-            <div>
-              <h2 class="font-headline-md text-headline-md text-on-surface font-bold">
-                Quyền tham gia bình chọn
-              </h2>
-              <p class="font-body-sm text-body-sm text-on-surface-variant">
-                Tùy chọn công khai cho mọi người hoặc giới hạn theo danh sách chỉ định
-              </p>
-            </div>
+          <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 text-sm font-medium">
+            <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="startMode" value="now" checked class="text-primary w-4 h-4 shrink-0"><span>Mở ngay khi tạo</span></label>
+            <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="startMode" value="at" class="text-primary w-4 h-4 shrink-0"><span>Hẹn giờ</span></label>
+          </div>
+          <div id="startAtBox" class="hidden">
+            <input id="startAt" type="datetime-local" class="w-full bg-surface-container-lowest border border-outline-variant/50 focus:border-primary px-3 py-2 rounded-xl font-label-code text-sm text-on-surface outline-none">
           </div>
         </div>
 
-        <!-- Whitelist Toggle Banner -->
-        <div
-          class="p-space-md rounded-2xl bg-surface-container-low border border-surface-container-high flex items-center justify-between gap-space-md">
-          <div class="flex items-center gap-space-md">
-            <div
-              class="w-10 h-10 rounded-xl bg-primary-container text-on-primary flex items-center justify-center shrink-0 shadow-sm">
-              <span class="material-symbols-outlined text-[22px]">badge</span>
-            </div>
-            <div class="space-y-0.5">
-              <div class="flex items-center gap-2">
-                <span class="font-headline-sm text-headline-sm text-on-surface font-bold text-sm">
-                  Giới hạn danh sách người tham gia (Whitelist)
-                </span>
-                <span
-                  class="px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant font-label-tag text-label-tag text-[10px]">
-                  Tùy chọn
-                </span>
-              </div>
-              <p class="font-body-sm text-body-sm text-on-surface-variant text-xs">
-                Chỉ những địa chỉ ví có tên trong danh sách mới có thể bỏ phiếu on-chain.
-              </p>
-            </div>
+        <!-- Kết thúc -->
+        <div class="p-4 sm:p-5 rounded-2xl bg-surface-container-low/70 border border-surface-container-high space-y-3 sm:space-y-4">
+          <div class="flex items-center justify-between">
+            <span class="font-headline-sm text-sm sm:text-base text-on-surface font-semibold flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-[18px] text-error">event_busy</span> Kết thúc
+            </span>
+            <span class="px-2.5 py-0.5 rounded-full bg-[#FEF2F2] text-[#991B1B] font-label-tag text-[9px] sm:text-[10px] font-bold">Khóa hòm phiếu</span>
           </div>
-
-          <!-- Toggle Switch -->
-          <label class="relative inline-flex items-center cursor-pointer shrink-0">
-            <input type="checkbox" id="whitelist-toggle" class="sr-only peer">
-            <div
-              class="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-container">
-            </div>
-          </label>
+          <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 text-sm font-medium">
+            <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="endMode" value="none" checked class="text-primary w-4 h-4 shrink-0"><span>Đóng thủ công</span></label>
+            <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="endMode" value="at" class="text-primary w-4 h-4 shrink-0"><span>Hẹn giờ</span></label>
+          </div>
+          <div id="endAtBox" class="hidden">
+            <input id="endAt" type="datetime-local" class="w-full bg-surface-container-lowest border border-outline-variant/50 focus:border-primary px-3 py-2 rounded-xl font-label-code text-sm text-on-surface outline-none">
+          </div>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 02: ỨNG VIÊN & LỰA CHỌN -->
+  <section class="rounded-2xl sm:rounded-3xl bg-surface-container-lowest p-5 sm:p-10 border border-surface-container-high shadow-sm space-y-6 sm:space-y-8">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 sm:pb-5 border-b border-surface-container-high">
+      <div class="flex items-start sm:items-center gap-4">
+        <div class="w-10 h-10 rounded-xl bg-primary text-on-primary font-headline-sm text-lg font-bold flex items-center justify-center shrink-0">
+          02
+        </div>
+        <div>
+          <div class="flex flex-col sm:flex-row sm:items-center gap-2">
+            <h2 id="optTitle" class="font-headline-md text-xl sm:text-2xl text-on-surface font-bold">
+              Danh sách lựa chọn
+            </h2>
+            <span id="optCount" class="px-2.5 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed font-label-tag text-[10px] sm:text-[11px] font-semibold w-fit">2 lựa chọn</span>
+          </div>
+          <p class="font-body-sm text-xs sm:text-sm text-on-surface-variant mt-0.5">Định danh an toàn qua mã Hash</p>
+        </div>
+      </div>
+      <button id="addOpt" type="button" class="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-surface-container-low text-primary hover:bg-surface-container-high font-headline-sm text-sm sm:text-base font-semibold flex items-center justify-center gap-1.5 transition-colors shadow-sm cursor-pointer border-0">
+        <span class="material-symbols-outlined text-[18px]">person_add</span> Thêm ứng viên mới
+      </button>
+    </div>
+
+    <!-- Số lựa chọn tối đa -->
+    <div class="p-4 sm:p-5 rounded-2xl bg-surface-container-low flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border border-surface-container-high/60">
+      <div>
+        <label for="maxChoices" class="font-headline-sm text-sm sm:text-base text-on-surface font-bold block">Số lựa chọn tối đa cho mỗi cử tri</label>
+        <span id="maxHint" class="font-body-sm text-xs sm:text-sm text-on-surface-variant mt-1 block">Mỗi cử tri chỉ chọn đúng 1 trong 2 lựa chọn.</span>
+      </div>
+      <input id="maxChoices" type="number" min="1" value="1" class="w-full sm:w-24 bg-surface-container-lowest border border-outline-variant/60 focus:border-primary px-3 py-2 rounded-xl font-label-code text-center font-bold text-on-surface outline-none shadow-sm">
+    </div>
+
+    <!-- Options Container -->
+    <div id="optionsContainer" class="space-y-4 sm:space-y-5"></div>
+
+    <!-- Nút thêm lựa chọn đáy -->
+    <div class="space-y-3">
+      <button id="addOptBottom" type="button" class="w-full py-3.5 rounded-2xl border-2 border-dashed border-primary/30 hover:border-primary hover:bg-primary/5 text-primary font-headline-sm text-sm sm:text-base font-bold flex items-center justify-center gap-2 transition-all cursor-pointer">
+        <span class="material-symbols-outlined text-[20px]">add_circle</span> Thêm lựa chọn khác vào danh sách
+      </button>
+
+      <button id="tplYesNo" type="button" class="hidden w-full py-3.5 rounded-2xl bg-secondary-fixed/50 hover:bg-secondary-fixed text-on-secondary-fixed font-headline-sm text-sm sm:text-base font-bold flex items-center justify-center gap-2 transition-all cursor-pointer border-0">
+        <span class="material-symbols-outlined text-[20px] text-secondary">auto_fix_high</span> Điền mẫu: Đồng ý / Phản đối
+      </button>
+    </div>
+  </section>
+
+  <!-- SECTION 03: WHITELIST -->
+  <section class="rounded-2xl sm:rounded-3xl bg-surface-container-lowest p-5 sm:p-10 border border-surface-container-high shadow-sm space-y-6 sm:space-y-8">
+    <div class="flex items-center gap-4 pb-4 sm:pb-5 border-b border-surface-container-high">
+      <div class="w-10 h-10 rounded-xl bg-primary text-on-primary font-headline-sm text-lg font-bold flex items-center justify-center shrink-0">
+        03
+      </div>
+      <div>
+        <h2 class="font-headline-md text-xl sm:text-2xl text-on-surface font-bold">Quyền tham gia</h2>
+        <p class="font-body-sm text-xs sm:text-sm text-on-surface-variant mt-0.5">Giới hạn người được phép bỏ phiếu</p>
+      </div>
+    </div>
+
+    <!-- Toggle Box -->
+    <div class="p-4 sm:p-5 rounded-2xl bg-surface-container-low border border-surface-container-high flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div class="flex items-start gap-4">
+        <div class="w-10 h-10 rounded-xl bg-primary-container text-on-primary flex items-center justify-center shrink-0 shadow-sm mt-1 sm:mt-0">
+          <span class="material-symbols-outlined text-[22px]">badge</span>
+        </div>
+        <div class="space-y-1">
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="font-headline-sm text-sm sm:text-base text-on-surface font-bold">Giới hạn danh sách (Whitelist)</span>
+            <span class="px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant font-label-tag text-[9px] sm:text-[10px] uppercase">Tùy chọn</span>
+          </div>
+          <p class="font-body-sm text-xs sm:text-sm text-on-surface-variant">Chỉ những ví có tên trong danh sách mới có thể bỏ phiếu on-chain.</p>
+        </div>
+      </div>
+      <label class="relative inline-flex items-center cursor-pointer shrink-0 self-end sm:self-auto">
+        <input type="checkbox" id="whitelist-toggle" class="sr-only peer">
+        <div class="w-11 h-6 bg-outline-variant/50 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-container">
+        </div>
+      </label>
+    </div>
 
         <!-- Whitelist Address Box (Shown only when toggle is active) -->
         <div id="whitelist-box" class="space-y-space-xs hidden">
