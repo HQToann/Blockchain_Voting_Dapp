@@ -5,6 +5,7 @@
 (async () => {
   await App.init();
   const $ = App.$;
+  const Cards = window.ElectionCards || {};
   const ADDR = location.pathname.split('/').filter(Boolean)[1];
   const isNew = new URLSearchParams(location.search).get('new') === '1';
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -73,8 +74,8 @@
     if ($('crumbTitle')) $('crumbTitle').textContent = E.name;
     if ($('syncWarning')) $('syncWarning').classList.toggle('hidden', !E.indexer.lagging);
 
-    // Render Badges bằng ElectionCards
-    $('badges').innerHTML = ElectionCards.detailBadges(E, live, isOwner);
+    // Render Badges bằng Cards
+    $('badges').innerHTML = Cards.detailBadges ? Cards.detailBadges(E, live, isOwner) : '';
 
     // Meta line (Chủ sở hữu, Hòm phiếu contract, Thời gian tạo)
     const explorerUrl = App.cfg.explorer_url || 'https://sepolia.etherscan.io';
@@ -113,13 +114,13 @@
       </div>
       <div>
         ${k === 1
-          ? 'Mỗi cử tri chỉ được chọn <b>đúng 1</b> lựa chọn duy nhất.'
-          : `Mỗi cử tri được phép chọn <b>từ 1 đến ${k}</b> lựa chọn khác nhau.`
-        }
+        ? 'Mỗi cử tri chỉ được chọn <b>đúng 1</b> lựa chọn duy nhất.'
+        : `Mỗi cử tri được phép chọn <b>từ 1 đến ${k}</b> lựa chọn khác nhau.`
+      }
         ${E.is_private
-          ? '<br><span class="text-amber-800 font-medium flex items-center gap-1 mt-1"><span class="material-symbols-outlined text-[16px] text-amber-600">lock</span> Hòm phiếu riêng tư: Chỉ các địa chỉ ví nằm trong danh sách Whitelist được cấp quyền mới có thể bỏ phiếu.</span>'
-          : ''
-        }
+        ? '<br><span class="text-amber-800 font-medium flex items-center gap-1 mt-1"><span class="material-symbols-outlined text-[16px] text-amber-600">lock</span> Hòm phiếu riêng tư: Chỉ các địa chỉ ví nằm trong danh sách Whitelist được cấp quyền mới có thể bỏ phiếu.</span>'
+        : ''
+      }
       </div>
     `;
     $('ruleBox').innerHTML = ruleHtml;
@@ -267,7 +268,7 @@
     // Tìm ứng viên đang có nhiều phiếu nhất để gắn cờ "Đang dẫn đầu"
     const maxVotes = Math.max(0, ...E.options.map((o) => o.votes));
 
-    // Render danh sách thẻ ứng viên Material 3 bằng ElectionCards
+    // Render danh sách thẻ ứng viên Material 3 bằng Cards
     $('options').innerHTML = E.options.map((o) => {
       const isLeader = maxVotes > 0 && o.votes === maxVotes;
       const sel = selected.has(o.id);
@@ -275,16 +276,16 @@
       const noun = E.kind === 1 ? 'PHƯƠNG ÁN' : 'ỨNG VIÊN';
       const myVoted = elig.voted && myChoices && myChoices.choices.includes(o.id);
 
-      return ElectionCards.candidateCard(o, {
-        isLeader,
-        sel,
-        canPick,
-        full,
-        noun,
-        kind: E.kind,
-        myVoted,
-        contractAddress: E.address
-      });
+        return Cards.candidateCard ? Cards.candidateCard(o, {
+          isLeader,
+          sel,
+          canPick,
+          full,
+          noun,
+          kind: E.kind,
+          myVoted,
+          contractAddress: E.address
+      }) : '';
     }).join('');
 
     // Cập nhật Nhãn Ứng viên Đã Chọn trên Sticky Control Panel
@@ -632,9 +633,9 @@
     const el = $('pane-voters');
     try {
       const d = await App.api(`/api/elections/${ADDR}/voters/?page=${pages.voters}&page_size=15`);
-      el.innerHTML = ElectionCards.votersTable(d.votes) + (d.votes && d.votes.length ? '<div class="pager mt-4 flex justify-center" id="vPager"></div>' : '');
+      el.innerHTML = (Cards.votersTable ? Cards.votersTable(d.votes) : '') + (d.votes && d.votes.length ? '<div class="pager mt-4 flex justify-center" id="vPager"></div>' : '');
       const pg = $('vPager');
-      if (pg) ElectionCards.pager(pg, d.page, d.pages, (n) => { pages.voters = n; loadVoters(); });
+      if (pg && Cards.pager) Cards.pager(pg, d.page, d.pages, (n) => { pages.voters = n; loadVoters(); });
     } catch (e) {
       el.innerHTML = `<div class="bg-red-50 text-error p-3 rounded-xl font-body-sm">${App.esc(e.message)}</div>`;
     }
@@ -645,9 +646,9 @@
     try {
       const d = await App.api(`/api/elections/${ADDR}/whitelist/?page=${pages.whitelist}&page_size=50`);
       const canRemove = App.sameAddr(App.state.address, E.owner) && ['open', 'upcoming'].includes(liveStatus());
-      el.innerHTML = ElectionCards.whitelistTable(d.entries, d.total, canRemove) + (d.entries && d.entries.length ? '<div class="pager mt-4 flex justify-center" id="wPager"></div>' : '');
+      el.innerHTML = (Cards.whitelistTable ? Cards.whitelistTable(d.entries, d.total, canRemove) : '') + (d.entries && d.entries.length ? '<div class="pager mt-4 flex justify-center" id="wPager"></div>' : '');
       const pg = $('wPager');
-      if (pg) ElectionCards.pager(pg, d.page, d.pages, (n) => { pages.whitelist = n; loadWhitelist(); });
+      if (pg && Cards.pager) Cards.pager(pg, d.page, d.pages, (n) => { pages.whitelist = n; loadWhitelist(); });
 
       el.querySelectorAll('[data-rm]').forEach((b) => b.addEventListener('click', async () => {
         try {
