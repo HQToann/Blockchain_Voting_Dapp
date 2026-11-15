@@ -1,17 +1,20 @@
+<!-- Kế thừa khung giao diện chung từ file base.html -->
 {% extends 'base.html' %}
 {% load static %}
 
+<!-- Tiêu đề hiển thị trên thẻ (tab) của trình duyệt -->
 {% block title %}Khám phá hòm phiếu — VoteChain{% endblock %}
 
+<!-- Kích hoạt trạng thái sáng (active) cho nút Trang chủ trên thanh điều hướng -->
 {% block nav_home %}active bg-surface-container-low font-bold text-primary{% endblock %}
 
 {% block content %}
 <div class="flex flex-col w-full">
 
-  <!-- Thông báo hệ thống -->
+  <!-- Vùng hiển thị các thông báo lỗi hoặc thành công của hệ thống -->
   <div id="banner" class="max-w-7xl mx-auto px-4 sm:px-8 pt-4 w-full"></div>
 
-  <!-- Ambient Glow Background Decoration -->
+  <!-- Hiệu ứng ánh sáng nền trang trí (Ambient Glow) -->
   <div class="relative w-full overflow-hidden bg-surface pb-10 sm:pb-space-xl">
     <div class="pointer-events-none absolute -top-40 right-10 w-[550px] h-[550px] bg-primary/5 rounded-full blur-3xl"></div>
     <div class="pointer-events-none absolute top-96 -left-32 w-[480px] h-[480px] bg-secondary/5 rounded-full blur-3xl"></div>
@@ -19,12 +22,12 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-8 space-y-6 sm:space-y-space-xl pt-6 sm:pt-space-lg">
 
       <!-- ===================================================================== -->
-      <!-- 1. HERO HEADER SECTION                                                -->
+      <!-- 1. PHẦN GIỚI THIỆU CHÍNH (HERO HEADER SECTION)                        -->
       <!-- ===================================================================== -->
       <section class="relative rounded-2xl sm:rounded-3xl bg-surface-container-low p-5 sm:p-space-xl overflow-hidden shadow-sm">
         <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-space-xl items-center">
 
-          <!-- Left Column: Copy & Actions -->
+          <!-- Cột trái: Nội dung giới thiệu và Các nút bấm hành động -->
           <div class="lg:col-span-8 space-y-3 sm:space-y-space-md">
             <div class="inline-flex items-center gap-1 sm:gap-space-xs px-3 sm:px-space-md py-1 rounded-full bg-primary-fixed text-on-primary-fixed font-label-tag text-[10px] sm:text-label-tag uppercase tracking-wider font-bold">
               <span class="material-symbols-outlined text-[14px] sm:text-[16px]">security</span>
@@ -40,6 +43,7 @@
               tập trung (ECDSA) và lưu trữ vĩnh viễn trên sổ cái Ethereum Sepolia.
             </p>
 
+            <!-- Cụm nút bấm Tạo hòm phiếu và Xem quy tắc -->
             <div class="flex flex-col sm:flex-row items-center gap-3 sm:gap-space-md pt-2 sm:pt-space-xs mt-2 sm:mt-4">
               <a class="w-full sm:w-auto px-6 sm:px-space-xl py-3.5 rounded-xl bg-primary-container text-on-primary font-headline-sm text-sm sm:text-headline-sm flex items-center justify-center gap-2 shadow-[0_10px_25px_-5px_rgba(37,99,235,0.3)] hover:opacity-95 transition-all text-decoration-none font-bold" href="/create/">
                 <span class="material-symbols-outlined text-[18px] sm:text-[20px]">add_box</span>
@@ -51,7 +55,7 @@
               </a>
             </div>
 
-            <!-- Sync Warning Alert Box -->
+            <!-- Hộp cảnh báo khi quá trình đồng bộ Blockchain bị chậm -->
             <div id="syncWarning" class="flex items-start gap-3 sm:gap-space-sm p-3 sm:p-space-md rounded-2xl bg-[#FFFBEB] text-[#92400E] shadow-sm max-w-2xl hidden mt-4">
               <span class="material-symbols-outlined text-[20px] sm:text-[22px] text-[#D97706] shrink-0 mt-0.5 animate-spin" style="animation-duration: 4s;">sync</span>
               <div class="font-body-md text-xs sm:text-body-md">
@@ -61,7 +65,7 @@
             </div>
           </div>
 
-          <!-- Right Column: Live Metric Showcase -->
+          <!-- Cột phải: Bảng thống kê dữ liệu trực tiếp (Live Metrics) -->
           <div class="lg:col-span-4 flex flex-col gap-4 sm:gap-space-md mt-6 lg:mt-0">
             <div class="p-4 sm:p-space-lg rounded-2xl bg-surface-container-lowest shadow-sm space-y-3 border border-surface-container-high/60">
               <div class="flex items-center justify-between text-on-surface-variant font-body-sm text-xs sm:text-body-sm font-semibold">
@@ -69,6 +73,7 @@
                 <span class="font-label-code text-[10px] sm:text-label-code text-tertiary font-bold">On-chain Sepolia</span>
               </div>
               <div id="statTotalVotes" class="font-headline-xl text-3xl sm:text-headline-xl text-on-surface font-black">5</div>
+              <!-- Thanh tiến trình minh hoạ 100% minh bạch -->
               <div class="w-full bg-surface-container h-2.5 rounded-full overflow-hidden mt-2">
                 <div class="bg-primary h-full rounded-full w-[100%]"></div>
               </div>
@@ -78,6 +83,7 @@
               </div>
             </div>
 
+            <!-- Thống kê phụ: Số hòm phiếu và Số cử tri -->
             <div class="grid grid-cols-2 gap-3 sm:gap-space-sm">
               <div class="p-3 sm:p-space-md rounded-2xl bg-surface-container-lowest shadow-sm flex flex-col border border-surface-container-high/60">
                 <span class="font-label-tag text-[9px] sm:text-label-tag text-on-surface-variant uppercase tracking-wider font-bold">Hòm phiếu hoạt động</span>
@@ -95,7 +101,7 @@
       </section>
 
       <!-- ===================================================================== -->
-      <!-- 2. CORE PRINCIPLES & RULES                                            -->
+      <!-- 2. PHẦN QUY TẮC VÀ BẢO MẬT (CORE PRINCIPLES & RULES)                 -->
       <!-- ===================================================================== -->
       <section class="space-y-4 sm:space-y-space-md mt-8 sm:mt-12" id="rules-section">
         <div class="flex flex-col md:flex-row md:items-end justify-between gap-2 sm:gap-space-sm">
@@ -107,7 +113,7 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-space-md">
-          <!-- Rule 1 -->
+          <!-- Quy tắc 1: Kháng lặp phiếu -->
           <div class="p-5 sm:p-space-lg rounded-2xl bg-surface-container-lowest shadow-sm flex flex-col justify-between space-y-4 sm:space-y-space-md border border-surface-container-high/60 hover:shadow-md transition-shadow">
             <div class="space-y-3 sm:space-y-space-sm">
               <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-primary-fixed flex items-center justify-center text-primary">
@@ -121,7 +127,7 @@
             </div>
           </div>
 
-          <!-- Rule 2 -->
+          <!-- Quy tắc 2: Bảo mật quyền cử tri -->
           <div class="p-5 sm:p-space-lg rounded-2xl bg-surface-container-lowest shadow-sm flex flex-col justify-between space-y-4 sm:space-y-space-md border border-surface-container-high/60 hover:shadow-md transition-shadow">
             <div class="space-y-3 sm:space-y-space-sm">
               <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-secondary-fixed flex items-center justify-center text-secondary">
@@ -135,7 +141,7 @@
             </div>
           </div>
 
-          <!-- Rule 3 -->
+          <!-- Quy tắc 3: Minh bạch dữ liệu -->
           <div class="p-5 sm:p-space-lg rounded-2xl bg-surface-container-lowest shadow-sm flex flex-col justify-between space-y-4 sm:space-y-space-md border border-surface-container-high/60 hover:shadow-md transition-shadow">
             <div class="space-y-3 sm:space-y-space-sm">
               <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-tertiary-fixed flex items-center justify-center text-tertiary">
@@ -152,12 +158,12 @@
       </section>
 
       <!-- ===================================================================== -->
-      <!-- 3. BALLOTS DIRECTORY, FILTER & SORTING BAR                            -->
+      <!-- 3. KHU VỰC DANH SÁCH HÒM PHIẾU VÀ BỘ LỌC (BALLOTS DIRECTORY)          -->
       <!-- ===================================================================== -->
       <section class="space-y-4 sm:space-y-space-md pt-6 sm:pt-space-sm" id="explore-ballots">
         <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 p-3 sm:p-space-md rounded-2xl bg-surface-container-lowest shadow-sm border border-surface-container-high/60">
 
-          <!-- Status Tabs -->
+          <!-- Thanh menu chọn trạng thái (Tất cả, Đang mở, Sắp diễn ra...) -->
           <div id="statusChips" class="flex items-center gap-1 sm:gap-space-xs p-1.5 bg-surface-container-low rounded-xl border border-surface-container-high/60 overflow-x-auto no-scrollbar w-full lg:w-auto">
             <button class="chip active px-3 sm:px-space-md py-2 sm:py-2.5 rounded-lg font-headline-sm text-xs sm:text-headline-sm font-semibold transition-all border-0 cursor-pointer text-on-surface-variant whitespace-nowrap" data-status="all" style="margin:0;">
               Tất cả <span id="tabCountAll"></span>
@@ -173,10 +179,10 @@
             </button>
           </div>
 
-          <!-- Controls: Category & Search & Sort -->
+          <!-- Các công cụ: Lọc loại, Sắp xếp và Tìm kiếm -->
           <div class="flex flex-wrap sm:flex-nowrap items-center justify-between lg:justify-end gap-2 sm:gap-3 w-full lg:w-auto mt-2 lg:mt-0">
             
-            <!-- Type Filter -->
+            <!-- Trình đơn lọc theo loại hòm phiếu (Bầu cử ứng viên / Lấy ý kiến) -->
             <div class="relative w-[calc(50%-0.25rem)] sm:w-auto">
               <select id="typeFilter" class="w-full appearance-none bg-surface-container-low text-on-surface font-headline-sm text-xs sm:text-sm font-semibold pl-3 pr-8 py-2.5 rounded-xl border border-transparent outline-none hover:bg-surface-container-high cursor-pointer transition-colors">
                 <option value="all">Mọi hòm phiếu</option>
@@ -186,7 +192,7 @@
               <span class="material-symbols-outlined absolute right-2.5 top-1/2 -translate-y-1/2 text-outline pointer-events-none text-[16px] sm:text-[20px]">expand_more</span>
             </div>
 
-            <!-- Sort Filter (Sẽ ngang hàng với Type Filter trên Mobile) -->
+            <!-- Trình đơn sắp xếp (Mới nhất, Nhiều vote nhất...) -->
             <div class="relative w-[calc(50%-0.25rem)] sm:w-auto block">
               <select id="sortFilter" class="w-full appearance-none bg-surface-container-low text-on-surface font-headline-sm text-xs sm:text-sm font-semibold pl-3 pr-8 py-2.5 rounded-xl border border-transparent outline-none hover:bg-surface-container-high cursor-pointer transition-colors">
                 <option value="newest">Mới nhất</option>
@@ -196,7 +202,7 @@
               <span class="material-symbols-outlined absolute right-2.5 top-1/2 -translate-y-1/2 text-outline pointer-events-none text-[16px] sm:text-[20px]">swap_vert</span>
             </div>
 
-            <!-- Ô tìm kiếm thu gọn có hiệu ứng mở rộng -->
+            <!-- Ô tìm kiếm mã Hợp đồng (có hiệu ứng mở rộng khi click) -->
             <div class="relative w-full sm:w-auto mt-2 sm:mt-0 group flex items-center justify-end">
               <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[18px] sm:text-[20px] pointer-events-none z-10">search</span>
               <input id="searchInput" type="text" placeholder="Tìm kiếm mã Hợp đồng..." class="w-full sm:w-48 xl:focus:w-64 bg-surface-container-lowest text-on-surface pl-9 pr-3 py-2.5 rounded-xl font-body-md text-xs sm:text-sm font-semibold border border-surface-container-high outline-none focus:border-primary transition-all shadow-sm">
@@ -205,10 +211,10 @@
           </div>
         </div>
 
-        <!-- CÁC CARD TẠO BỞI JS SẼ HIỂN THỊ VÀO ĐÂY (Đã mở khoá dữ liệu động 100%) -->
+        <!-- Khung chứa các thẻ hòm phiếu (Sẽ được file JS tự động đổ dữ liệu vào đây) -->
         <div id="electionGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-space-md mt-6" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));"></div>
 
-        <!-- Pagination Controls -->
+        <!-- Thanh điều hướng phân trang (Chuyển trang tiếp theo / Quay lại) -->
         <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 sm:pt-space-lg">
           <div id="paginationSummary" class="font-body-sm text-xs sm:text-body-sm text-on-surface-variant">
             Đang tải hòm phiếu...
@@ -223,6 +229,7 @@
 </div>
 {% endblock %}
 
+<!-- Khối nhúng Script JS và tinh chỉnh CSS riêng cho trang chủ -->
 {% block scripts %}
 <style>
   /* Bắt ép style cho nút tab đang được kích hoạt từ JS cũ */
