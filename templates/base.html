@@ -151,7 +151,7 @@
                 </a>
             </nav>
 
-            <!-- Wallet Info (Chỉ giữ lại nút kết nối ví) -->
+            <!-- Wallet Info & Mobile Toggle -->
             <div class="flex items-center gap-space-sm shrink-0">
                 <button id="btnWallet" type="button"
                     class="flex items-center gap-space-xs px-space-sm py-space-xs rounded-xl bg-surface-container-lowest shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:bg-surface-container-low transition-all cursor-pointer border border-outline-variant/30">
@@ -163,8 +163,40 @@
                         <span class="material-symbols-outlined text-[18px]">account_balance_wallet</span>
                     </div>
                 </button>
+
+                <!-- Mobile Menu Toggle Button -->
+                <button id="btnMobileNav" type="button"
+                    class="md:hidden flex items-center justify-center w-10 h-10 rounded-xl bg-surface-container-low text-on-surface hover:bg-surface-container-high transition-colors cursor-pointer border border-surface-container-high"
+                    aria-label="Toggle Menu">
+                    <span class="material-symbols-outlined text-[24px]">menu</span>
+                </button>
             </div>
 
+        </div>
+
+        <!-- Mobile Navigation Dropdown -->
+        <div id="mobileNavMenu"
+            class="hidden md:hidden border-t border-surface-container-high bg-surface-container-lowest/95 backdrop-blur-xl px-margin py-space-md shadow-lg flex flex-col gap-space-xs">
+            <a class="px-space-md py-space-sm rounded-xl font-headline-sm text-headline-sm flex items-center gap-2 {% block mob_nav_home %}text-on-surface-variant hover:bg-surface-container-high{% endblock %} transition-colors"
+                href="/">
+                <span class="material-symbols-outlined text-[20px]">explore</span>
+                Khám phá
+            </a>
+            <a class="px-space-md py-space-sm rounded-xl font-headline-sm text-headline-sm flex items-center gap-2 {% block mob_nav_create %}text-on-surface-variant hover:bg-surface-container-high{% endblock %} transition-colors"
+                href="/create/">
+                <span class="material-symbols-outlined text-[20px]">add_box</span>
+                Tạo hòm phiếu
+            </a>
+            <a class="px-space-md py-space-sm rounded-xl font-headline-sm text-headline-sm flex items-center gap-2 {% block mob_nav_my %}text-on-surface-variant hover:bg-surface-container-high{% endblock %} transition-colors"
+                href="/my/">
+                <span class="material-symbols-outlined text-[20px]">inventory_2</span>
+                Hòm phiếu của tôi
+            </a>
+            <a class="px-space-md py-space-sm rounded-xl font-headline-sm text-headline-sm flex items-center gap-2 {% block mob_nav_verify %}text-on-surface-variant hover:bg-surface-container-high{% endblock %} transition-colors"
+                href="/verify/">
+                <span class="material-symbols-outlined text-[20px]">verified</span>
+                Xác minh phiếu
+            </a>
         </div>
     </header>
 
@@ -200,6 +232,7 @@
     <script src="{% static 'vendor/ethers.umd.min.js' %}"></script>
     <script src="{% static 'js/abi.js' %}"></script>
     <script src="{% static 'js/common.js' %}"></script>
+    <script src="{% static 'js/cards.js' %}"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
