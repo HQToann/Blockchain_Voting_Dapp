@@ -380,12 +380,21 @@
           t.addEventListener('click', () => {
             document.querySelectorAll('.tab-btn').forEach((x) => {
               const active = x === t;
+              const badge = x.querySelector('.count-badge');
               if (active) {
-                x.classList.add('active', 'bg-surface-container-lowest', 'text-primary', 'font-bold', 'shadow-sm');
-                x.classList.remove('text-on-surface-variant', 'font-medium', 'bg-transparent');
+                x.classList.add('active', 'bg-white', 'text-primary', 'font-bold', 'shadow-xs', 'border', 'border-slate-200/80');
+                x.classList.remove('text-slate-600', 'hover:text-slate-900', 'font-semibold', 'bg-transparent', 'border-0');
+                if (badge) {
+                  badge.classList.add('bg-blue-100', 'text-blue-700');
+                  badge.classList.remove('bg-slate-200', 'text-slate-700');
+                }
               } else {
-                x.classList.remove('active', 'bg-surface-container-lowest', 'text-primary', 'font-bold', 'shadow-sm');
-                x.classList.add('text-on-surface-variant', 'font-medium', 'bg-transparent');
+                x.classList.remove('active', 'bg-white', 'text-primary', 'font-bold', 'shadow-xs', 'border', 'border-slate-200/80');
+                x.classList.add('text-slate-600', 'hover:text-slate-900', 'font-semibold', 'bg-transparent', 'border-0');
+                if (badge) {
+                  badge.classList.remove('bg-blue-100', 'text-blue-700');
+                  badge.classList.add('bg-slate-200', 'text-slate-700');
+                }
               }
             });
 
@@ -411,12 +420,21 @@
           btn.addEventListener('click', () => {
             document.querySelectorAll('.filter-pill').forEach((b) => {
               const active = b === btn;
+              const badge = b.querySelector('.count-badge');
               if (active) {
-                b.classList.add('active', 'bg-primary', 'text-on-primary', 'font-semibold');
-                b.classList.remove('bg-surface-container-low', 'text-on-surface-variant', 'font-medium');
+                b.classList.add('active', 'text-white', 'bg-primary');
+                b.classList.remove('text-slate-600', 'hover:text-slate-900', 'hover:bg-slate-200/70');
+                if (badge) {
+                  badge.classList.add('bg-white/20', 'text-white');
+                  badge.classList.remove('bg-slate-200', 'text-slate-700');
+                }
               } else {
-                b.classList.remove('active', 'bg-primary', 'text-on-primary', 'font-semibold');
-                b.classList.add('bg-surface-container-low', 'text-on-surface-variant', 'font-medium');
+                b.classList.remove('active', 'text-white', 'bg-primary');
+                b.classList.add('text-slate-600', 'hover:text-slate-900', 'hover:bg-slate-200/70');
+                if (badge) {
+                  badge.classList.remove('bg-white/20', 'text-white');
+                  badge.classList.add('bg-slate-200', 'text-slate-700');
+                }
               }
             });
 

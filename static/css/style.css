@@ -202,6 +202,19 @@ a.bg-surface-container-lowest:active,
 }
 
 /* 6. CHIPS, FILTER PILLS & TAB BUTTONS */
+.chip,
+.filter-pill {
+    transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.count-badge {
+    transition: background-color 0.18s ease, color 0.18s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-variant-numeric: tabular-nums;
+}
+
 .chip:not(.active):hover,
 .filter-pill:not(.active):hover {
     background-color: #e2e8f0 !important;

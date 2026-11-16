@@ -29,11 +29,11 @@
       if ($('statOpenElections')) $('statOpenElections').textContent = `${openCount} đang mở`;
       if ($('statTotalVoters')) $('statTotalVoters').textContent = totalVoters.toLocaleString('vi-VN');
 
-      // Cập nhật số đếm trên các Tab trạng thái
-      if ($('tabCountAll')) $('tabCountAll').textContent = `(${totalElections})`;
-      if ($('tabCountOpen')) $('tabCountOpen').textContent = `(Live - ${openCount})`;
-      if ($('tabCountUpcoming')) $('tabCountUpcoming').textContent = `(${s.upcoming_elections || 0})`;
-      if ($('tabCountEnded')) $('tabCountEnded').textContent = `(${s.ended_elections || 0})`;
+      // Cập nhật số đếm trên các Tab trạng thái (dạng badge gọn gàng)
+      if ($('tabCountAll')) $('tabCountAll').textContent = totalElections;
+      if ($('tabCountOpen')) $('tabCountOpen').textContent = openCount;
+      if ($('tabCountUpcoming')) $('tabCountUpcoming').textContent = s.upcoming_elections || 0;
+      if ($('tabCountEnded')) $('tabCountEnded').textContent = s.ended_elections || 0;
     } catch (err) {
       console.warn('Lỗi cập nhật thống kê:', err);
     }

@@ -318,6 +318,7 @@
         kind: E.kind,
         myVoted: !!myVoted,
         hasVoted: !!elig.voted,
+        isEnded: !open && live !== 'upcoming',
         contractAddress: E.address
       }) : '';
     }).join('');
@@ -365,22 +366,118 @@
 
   // ---------------------------------------------------------------- 6. Render Tab Kết Quả Chi Tiết
   function renderResults() {
-    const max = Math.max(0, ...E.options.map((o) => o.votes));
-    const items = E.options.map((o) => {
-      const isLeader = max > 0 && o.votes === max;
-      return `
-        <div class="bg-surface-container-low rounded-xl p-3.5 sm:p-space-md border ${isLeader ? 'border-primary-container/60 bg-primary-container/[0.02]' : 'border-surface-container-high/60'} flex flex-col gap-2">
-          <div class="flex justify-between items-center font-headline-sm text-sm sm:text-body-md">
-            <span class="text-on-surface font-semibold flex items-center gap-1.5 truncate">
-              ${isLeader ? '<span class="material-symbols-outlined text-amber-500 text-[18px] shrink-0">trophy</span>' : ''}
-              <span class="truncate">${App.esc(o.label)}</span>
-            </span>
-            <span class="${isLeader ? 'text-primary font-bold' : 'text-on-surface-variant'} font-label-code text-xs sm:text-label-code shrink-0">
-              ${o.votes} phiếu (${o.percent}%)
-            </span>
+    const isEnded = (elig.connected && elig.chainStatus !== undefined) ? elig.chainStatus === 2 : liveStatus() === 'ended';
+    // Sắp xếp các lựa chọn theo số phiếu giảm dần để hiển thị trực quan và đúng chuẩn
+    const sortedOptions = [...(E.options || [])].sort((a, b) => b.votes - a.votes || a.id - b.id);
+    const max = Math.max(0, ...sortedOptions.map((o) => o.votes));
+
+    // 1. Banner vinh danh kết quả chung cuộc khi hòm phiếu đã kết thúc
+    let winnerBanner = '';
+    if (isEnded && max > 0) {
+      const winners = sortedOptions.filter((o) => o.votes === max);
+      if (winners.length === 1) {
+        const w = winners[0];
+        winnerBanner = `
+          <div class="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent border border-amber-300/80 flex items-center justify-between gap-4 shadow-xs">
+            <div class="flex items-center gap-3.5">
+              <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-500 text-white flex items-center justify-center shadow-md shadow-amber-500/20 shrink-0">
+                <span class="material-symbols-outlined text-[26px]">emoji_events</span>
+              </div>
+              <div>
+                <div class="text-[11px] font-bold text-amber-800 uppercase tracking-wider font-label-tag flex items-center gap-1">
+                  <span>KẾT QUẢ CHUNG CUỘC • HÒM PHIẾU ĐÃ ĐÓNG</span>
+                </div>
+                <h3 class="text-base sm:text-lg font-bold text-slate-900 mt-0.5">
+                  <span class="text-amber-700 font-extrabold">${App.esc(w.label)}</span> đã đắc cử với ${w.votes} phiếu (${w.percent}%)
+                </h3>
+              </div>
+            </div>
+            <div class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-100/80 text-amber-900 font-label-tag text-xs font-bold border border-amber-200 shrink-0">
+              <span class="material-symbols-outlined text-[15px] text-amber-600">verified</span>
+              <span>Đã chốt kết quả</span>
+            </div>
           </div>
-          <div class="w-full h-2.5 rounded-full bg-surface-container-high overflow-hidden">
-            <div class="h-full ${isLeader ? 'bg-primary-container' : 'bg-surface-container-highest'} rounded-full transition-all duration-500" style="width: ${Math.min(100, o.percent)}%"></div>
+        `;
+      } else {
+        const winnerNames = winners.map((w) => App.esc(w.label)).join(', ');
+        winnerBanner = `
+          <div class="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent border border-amber-300/80 flex items-center justify-between gap-4 shadow-xs">
+            <div class="flex items-center gap-3.5">
+              <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-500 text-white flex items-center justify-center shadow-md shrink-0">
+                <span class="material-symbols-outlined text-[26px]">emoji_events</span>
+              </div>
+              <div>
+                <div class="text-[11px] font-bold text-amber-800 uppercase tracking-wider font-label-tag">
+                  KẾT QUẢ CHUNG CUỘC • ĐỒNG HẠNG NHẤT
+                </div>
+                <h3 class="text-base sm:text-lg font-bold text-slate-900 mt-0.5">
+                  Hòa phiếu: <span class="text-amber-700 font-extrabold">${winnerNames}</span> (${max} phiếu)
+                </h3>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    // 2. Danh sách từng ứng viên với xếp hạng, ảnh đại diện, thanh tiến trình
+    const items = sortedOptions.map((o, idx) => {
+      const isLeader = max > 0 && o.votes === max;
+      const rank = idx + 1;
+      const leaderLabel = isEnded ? 'Đắc cử' : 'Đang dẫn đầu';
+      const initial = App.esc(o.label.charAt(0).toUpperCase());
+
+      return `
+        <div class="rounded-2xl p-4 sm:p-space-md border transition-all duration-200 flex flex-col gap-3 ${isLeader ? 'bg-gradient-to-r from-amber-50/70 via-white to-amber-50/30 border-amber-300/90 shadow-sm' : 'bg-surface-container-lowest border-slate-200/90 shadow-2xs hover:border-slate-300'}">
+          <div class="flex items-center justify-between gap-3 flex-wrap">
+            <div class="flex items-center gap-3 min-w-0">
+              <!-- Số thứ tự xếp hạng / Huy hiệu cúp -->
+              ${isLeader ? `
+                <div class="w-8 h-8 rounded-xl bg-amber-500 text-white flex items-center justify-center shadow-xs shrink-0" title="${leaderLabel}">
+                  <span class="material-symbols-outlined text-[18px]">emoji_events</span>
+                </div>
+              ` : `
+                <div class="w-8 h-8 rounded-xl bg-slate-100 text-slate-600 font-bold font-label-code text-xs flex items-center justify-center border border-slate-200 shrink-0">
+                  #${rank}
+                </div>
+              `}
+
+              <!-- Ảnh đại diện / Avatar ứng viên -->
+              ${o.image_url ? `
+                <img src="${App.esc(o.image_url)}" alt="${App.esc(o.label)}" class="w-9 h-9 rounded-xl object-cover border border-slate-200 shrink-0 bg-slate-100" onerror="this.style.display='none'" />
+              ` : `
+                <div class="w-9 h-9 rounded-xl bg-slate-100 text-primary font-bold text-sm flex items-center justify-center border border-slate-200 shrink-0">
+                  ${initial}
+                </div>
+              `}
+
+              <!-- Tên ứng viên & Badge -->
+              <div class="flex items-center gap-2 min-w-0 flex-wrap">
+                <span class="font-headline-sm text-sm sm:text-base font-bold text-slate-900 truncate">
+                  ${App.esc(o.label)}
+                </span>
+                ${isLeader ? `
+                  <span class="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 font-label-tag text-[11px] font-bold flex items-center gap-1 border border-amber-200 shrink-0">
+                    <span class="material-symbols-outlined text-[13px] text-amber-600">stars</span>
+                    <span>${leaderLabel}</span>
+                  </span>
+                ` : ''}
+              </div>
+            </div>
+
+            <!-- Số lượng phiếu & Phần trăm -->
+            <div class="flex items-baseline gap-1.5 shrink-0 ml-auto font-label-code">
+              <span class="text-sm sm:text-base font-bold ${isLeader ? 'text-amber-700 font-black' : 'text-slate-900'}">${o.votes}</span>
+              <span class="text-xs text-slate-500">phiếu</span>
+              <span class="px-2 py-0.5 rounded-lg text-xs font-bold ${isLeader ? 'bg-amber-100 text-amber-900 border border-amber-200' : 'bg-slate-100 text-slate-700 border border-slate-200'}">
+                ${o.percent}%
+              </span>
+            </div>
+          </div>
+
+          <!-- Thanh tiến trình kết quả -->
+          <div class="w-full h-3 rounded-full bg-slate-100 overflow-hidden border border-slate-200/60 p-0.5">
+            <div class="h-full rounded-full transition-all duration-700 ${isLeader ? 'bg-gradient-to-r from-amber-500 to-amber-400' : 'bg-primary'}" style="width: ${Math.min(100, Math.max(o.percent > 0 ? 3 : 0, o.percent))}%"></div>
           </div>
         </div>
       `;
@@ -458,7 +555,8 @@
 
     $('pane-results').innerHTML = `
       ${summaryHtml}
-      <div class="flex flex-col gap-space-sm pt-2">
+      ${winnerBanner}
+      <div class="flex flex-col gap-3 pt-2">
         ${items || '<div class="p-6 text-center text-on-surface-variant font-body-sm bg-surface-container-low rounded-xl">Chưa có ứng viên hoặc dữ liệu kết quả nào.</div>'}
       </div>
       ${E.max_choices > 1 ? '<p class="font-body-sm text-body-sm text-on-surface-variant text-center mt-2 flex items-center justify-center gap-1"><span class="material-symbols-outlined text-[16px] text-outline">info</span> Tổng tỷ lệ phần trăm có thể vượt 100% do cử tri được chọn nhiều lựa chọn.</p>' : ''}

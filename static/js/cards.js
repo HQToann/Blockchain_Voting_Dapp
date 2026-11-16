@@ -335,8 +335,9 @@ var ElectionCards = window.ElectionCards = (function () {
 
   // 3. Thẻ Ứng Viên / Lựa Chọn Bỏ Phiếu (Dùng trên trang Chi Tiết)
   function candidateCard(o, ctx) {
-    const { isLeader, sel, canPick, full, noun, kind, myVoted, hasVoted, contractAddress } = ctx;
+    const { isLeader, sel, canPick, full, noun, kind, myVoted, hasVoted, isEnded, contractAddress } = ctx;
     const initial = esc(o.label.charAt(0).toUpperCase());
+    const leaderLabel = isEnded ? 'Đắc cử' : 'Đang dẫn đầu';
 
     // Xác định giao diện thẻ: Nếu là người cử tri đã vote thì làm NỔI BẬT hoàn toàn
     let cardClasses = 'candidate-card rounded-2xl p-space-lg transition-all duration-300 relative ';
@@ -360,8 +361,8 @@ var ElectionCards = window.ElectionCards = (function () {
             </span>
           ` : ''}
           ${isLeader ? `
-            <span class="px-2.5 py-1 rounded-full ${myVoted ? 'bg-emerald-700/90 text-white' : 'bg-primary-container text-on-primary'} font-label-tag text-[11px] font-bold flex items-center gap-1 shadow-sm">
-              <span class="material-symbols-outlined text-[14px]">stars</span> Đang dẫn đầu
+            <span class="px-2.5 py-1 rounded-full ${myVoted ? 'bg-emerald-700/90 text-white' : (isEnded ? 'bg-amber-500 text-white shadow-amber-500/20' : 'bg-primary-container text-on-primary')} font-label-tag text-[11px] font-bold flex items-center gap-1 shadow-sm">
+              <span class="material-symbols-outlined text-[14px]">${isEnded ? 'emoji_events' : 'stars'}</span> ${leaderLabel}
             </span>
           ` : ''}
         </div>

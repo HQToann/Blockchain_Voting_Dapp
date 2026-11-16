@@ -29,7 +29,7 @@
 
     <!-- Nhãn trạng thái hợp đồng và ví -->
     <div class="flex items-center gap-2 sm:gap-space-xs flex-wrap">
-      <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container-lowest shadow-sm border border-surface-container-high/60">
+      <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container-lowest shadow-sm border border-slate-200">
         <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-tertiary-container animate-pulse shrink-0"></span>
         <span class="font-label-code text-[10px] sm:text-label-code text-on-surface font-medium">Hợp đồng Sepolia</span>
         <span class="text-outline text-xs">|</span>
@@ -154,36 +154,36 @@
     <div class="flex flex-col gap-4 sm:gap-space-md">
       
       <!-- Thanh Menu chọn Tab ngang -->
-      <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 sm:gap-space-sm bg-surface-container-low p-1.5 rounded-2xl border border-surface-container-high/60">
-        <div class="flex flex-row items-center gap-1 overflow-x-auto no-scrollbar pb-1 lg:pb-0 w-full lg:w-auto">
+      <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 sm:gap-space-sm bg-slate-100 p-1.5 rounded-2xl border border-slate-200/90 shadow-2xs">
+        <div class="flex flex-row items-center gap-1.5 overflow-x-auto no-scrollbar pb-1 lg:pb-0 w-full lg:w-auto">
           <!-- Tab 1: Những hòm phiếu do ví này làm Owner -->
-          <button class="tab-btn active flex-1 lg:flex-none inline-flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-space-md py-2.5 rounded-xl bg-surface-container-lowest text-primary font-headline-sm text-xs sm:text-sm font-bold shadow-sm whitespace-nowrap transition-all cursor-pointer border-0" data-tab="owner">
+          <button class="tab-btn active flex-1 lg:flex-none inline-flex items-center justify-center gap-1.5 sm:gap-2 px-3.5 sm:px-space-md py-2 sm:py-2.5 rounded-xl bg-white text-primary font-headline-sm text-xs sm:text-sm font-bold shadow-xs whitespace-nowrap transition-all cursor-pointer border border-slate-200/80" data-tab="owner">
             <span class="material-symbols-outlined text-[18px]">how_to_vote</span>
             <span>Hòm phiếu tôi tạo</span>
-            <span id="tabCountOwner" class="px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed font-label-code text-[10px] sm:text-label-tag font-bold">0</span>
+            <span id="tabCountOwner" class="count-badge px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 font-label-code text-[11px] font-bold leading-none">0</span>
           </button>
 
           <!-- Tab 2: Lịch sử những hòm phiếu ví này đã bầu -->
-          <button class="tab-btn flex-1 lg:flex-none inline-flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-space-md py-2.5 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container/60 font-headline-sm text-xs sm:text-sm font-medium whitespace-nowrap transition-all cursor-pointer border-0 bg-transparent" data-tab="voted">
+          <button class="tab-btn flex-1 lg:flex-none inline-flex items-center justify-center gap-1.5 sm:gap-2 px-3.5 sm:px-space-md py-2 sm:py-2.5 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-200/60 font-headline-sm text-xs sm:text-sm font-semibold whitespace-nowrap transition-all cursor-pointer border-0 bg-transparent" data-tab="voted">
             <span class="material-symbols-outlined text-[18px]">how_to_reg</span>
             <span>Lịch sử bỏ phiếu</span>
-            <span id="tabCountVoted" class="px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant font-label-code text-[10px] sm:text-label-tag">0</span>
+            <span id="tabCountVoted" class="count-badge px-2 py-0.5 rounded-full bg-slate-200 text-slate-700 font-label-code text-[11px] font-bold leading-none">0</span>
           </button>
         </div>
 
         <!-- Nhãn hiển thị chế độ (Creator Mode / Voter Mode) -->
         <div class="flex items-center justify-center lg:justify-end gap-2 px-2 mt-1 lg:mt-0 w-full lg:w-auto">
-          <span class="font-body-sm text-xs sm:text-body-sm text-on-surface-variant">Chế độ xem:</span>
-          <span id="modePill" class="px-2.5 py-1 rounded-lg bg-surface-container-highest text-on-surface font-label-code text-[10px] sm:text-label-code font-semibold">Creator Mode</span>
+          <span class="font-body-sm text-xs sm:text-body-sm text-on-surface-variant font-medium">Chế độ xem:</span>
+          <span id="modePill" class="px-2.5 py-1 rounded-lg bg-surface-container-high text-on-surface font-label-code text-[10px] sm:text-label-code font-bold">Creator Mode</span>
         </div>
       </div>
 
       <!-- Thanh công cụ: Tìm kiếm và Lọc theo Trạng thái -->
-      <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 sm:gap-space-sm bg-surface-container-lowest p-3 sm:p-space-sm rounded-2xl shadow-sm border border-surface-container-high/60">
+      <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 sm:gap-space-sm bg-surface-container-lowest p-3 sm:p-space-sm rounded-2xl shadow-sm border border-slate-200">
         <!-- Ô nhập tìm kiếm -->
         <div class="relative flex-1 w-full lg:min-w-[280px] flex items-center">
-          <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-outline text-[18px] sm:text-[20px] pointer-events-none">search</span>
-          <input id="searchInput" type="text" placeholder="Tìm tên hòm phiếu, ứng viên, mã #ID, địa chỉ ví..." class="w-full pl-10 pr-10 py-2.5 rounded-xl bg-surface-container-low font-body-md text-xs sm:text-sm text-on-surface placeholder:text-outline focus:outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary-container border border-surface-container-high/60 transition-all">
+          <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-primary text-[18px] sm:text-[20px] pointer-events-none">search</span>
+          <input id="searchInput" type="text" placeholder="Tìm tên hòm phiếu, ứng viên, mã #ID, địa chỉ ví..." class="w-full pl-10 pr-10 py-2.5 rounded-xl bg-surface-container-low font-body-md text-xs sm:text-sm text-on-surface placeholder:text-outline focus:outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary border border-transparent focus:border-primary shadow-inner transition-all">
           <button id="clearSearchBtn" type="button" title="Xóa tìm kiếm"
             class="hidden absolute right-2.5 w-6 h-6 rounded-md bg-surface-container-high hover:bg-surface-container-highest text-on-surface-variant hover:text-on-surface flex items-center justify-center transition-colors border-0 cursor-pointer">
             <span class="material-symbols-outlined text-[14px]">close</span>
@@ -191,15 +191,19 @@
         </div>
 
         <!-- Các nút bộ lọc: Tất cả / Đang diễn ra / Đã kết thúc -->
-        <div class="flex items-center gap-2 overflow-x-auto pb-1 lg:pb-0 w-full lg:w-auto">
-          <button id="filterAll" class="filter-pill active px-3 sm:px-3.5 py-2 rounded-xl bg-primary text-on-primary font-headline-sm text-[11px] sm:text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer border-0" data-status="all">
-            Tất cả (<span id="filterAllCount">0</span>)
+        <div id="statusFilterGroup" class="inline-flex items-center gap-1 p-1 bg-slate-100 rounded-xl border border-slate-200/90 shadow-2xs overflow-x-auto no-scrollbar max-w-full">
+          <button id="filterAll" class="filter-pill active inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all border-0 cursor-pointer text-white bg-primary whitespace-nowrap focus:outline-none" data-status="all">
+            <span>Tất cả</span>
+            <span id="filterAllCount" class="count-badge px-2 py-0.5 rounded-full text-[11px] font-bold leading-none bg-white/20 text-white">0</span>
           </button>
-          <button id="filterOpen" class="filter-pill px-3 sm:px-3.5 py-2 rounded-xl bg-surface-container-low text-on-surface-variant hover:text-on-surface font-headline-sm text-[11px] sm:text-xs font-medium whitespace-nowrap transition-colors cursor-pointer border-0" data-status="open">
-            Đang diễn ra (<span id="filterOpenCount">0</span>)
+          <button id="filterOpen" class="filter-pill inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all border-0 cursor-pointer text-slate-600 hover:text-slate-900 hover:bg-slate-200/70 whitespace-nowrap focus:outline-none" data-status="open">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span>Đang diễn ra</span>
+            <span id="filterOpenCount" class="count-badge px-2 py-0.5 rounded-full text-[11px] font-bold leading-none bg-slate-200 text-slate-700">0</span>
           </button>
-          <button id="filterEnded" class="filter-pill px-3 sm:px-3.5 py-2 rounded-xl bg-surface-container-low text-on-surface-variant hover:text-on-surface font-headline-sm text-[11px] sm:text-xs font-medium whitespace-nowrap transition-colors cursor-pointer border-0" data-status="ended">
-            Đã kết thúc (<span id="filterEndedCount">0</span>)
+          <button id="filterEnded" class="filter-pill inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all border-0 cursor-pointer text-slate-600 hover:text-slate-900 hover:bg-slate-200/70 whitespace-nowrap focus:outline-none" data-status="ended">
+            <span>Đã kết thúc</span>
+            <span id="filterEndedCount" class="count-badge px-2 py-0.5 rounded-full text-[11px] font-bold leading-none bg-slate-200 text-slate-700">0</span>
           </button>
         </div>
       </div>

@@ -194,18 +194,23 @@
           <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 pt-1 border-t border-surface-container-high/40">
             
             <!-- Trái: Thanh menu chọn trạng thái (Tất cả, Đang mở, Sắp diễn ra...) -->
-            <div id="statusChips" class="flex items-center gap-1 sm:gap-space-xs p-1 bg-surface-container-low rounded-xl border border-surface-container-high/60 overflow-x-auto no-scrollbar w-full lg:w-auto">
-              <button class="chip active px-3 sm:px-space-md py-1.5 sm:py-2 rounded-lg font-headline-sm text-xs sm:text-headline-sm font-semibold transition-all border-0 cursor-pointer text-white bg-primary whitespace-nowrap focus:outline-none" data-status="all" style="margin:0;">
-                Tất cả <span id="tabCountAll"></span>
+            <div id="statusChips" class="inline-flex items-center gap-1 p-1 bg-slate-100 rounded-xl border border-slate-200/90 shadow-2xs overflow-x-auto no-scrollbar max-w-full">
+              <button class="chip active inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all border-0 cursor-pointer text-white bg-primary whitespace-nowrap focus:outline-none" data-status="all" style="margin:0;">
+                <span>Tất cả</span>
+                <span id="tabCountAll" class="count-badge px-2 py-0.5 rounded-full text-[11px] font-bold leading-none">0</span>
               </button>
-              <button class="chip px-3 sm:px-space-md py-1.5 sm:py-2 rounded-lg font-headline-sm text-xs sm:text-headline-sm font-semibold transition-all border-0 cursor-pointer bg-transparent text-on-surface-variant hover:text-on-surface flex items-center gap-1.5 whitespace-nowrap focus:outline-none" data-status="open" style="margin:0;">
-                <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-tertiary-container animate-pulse"></span> Đang mở <span id="tabCountOpen"></span>
+              <button class="chip inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all border-0 cursor-pointer bg-transparent text-slate-600 hover:text-slate-900 whitespace-nowrap focus:outline-none" data-status="open" style="margin:0;">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>
+                <span>Đang mở</span>
+                <span id="tabCountOpen" class="count-badge px-2 py-0.5 rounded-full text-[11px] font-semibold leading-none">0</span>
               </button>
-              <button class="chip px-3 sm:px-space-md py-1.5 sm:py-2 rounded-lg font-headline-sm text-xs sm:text-headline-sm font-semibold transition-all border-0 cursor-pointer bg-transparent text-on-surface-variant hover:text-on-surface whitespace-nowrap focus:outline-none" data-status="upcoming" style="margin:0;">
-                Sắp diễn ra <span id="tabCountUpcoming"></span>
+              <button class="chip inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all border-0 cursor-pointer bg-transparent text-slate-600 hover:text-slate-900 whitespace-nowrap focus:outline-none" data-status="upcoming" style="margin:0;">
+                <span>Sắp diễn ra</span>
+                <span id="tabCountUpcoming" class="count-badge px-2 py-0.5 rounded-full text-[11px] font-semibold leading-none">0</span>
               </button>
-              <button class="chip px-3 sm:px-space-md py-1.5 sm:py-2 rounded-lg font-headline-sm text-xs sm:text-headline-sm font-semibold transition-all border-0 cursor-pointer bg-transparent text-on-surface-variant hover:text-on-surface whitespace-nowrap focus:outline-none" data-status="finished" style="margin:0;">
-                Đã kết thúc <span id="tabCountEnded"></span>
+              <button class="chip inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all border-0 cursor-pointer bg-transparent text-slate-600 hover:text-slate-900 whitespace-nowrap focus:outline-none" data-status="finished" style="margin:0;">
+                <span>Đã kết thúc</span>
+                <span id="tabCountEnded" class="count-badge px-2 py-0.5 rounded-full text-[11px] font-semibold leading-none">0</span>
               </button>
             </div>
 
@@ -213,22 +218,22 @@
             <div class="flex items-center gap-2 sm:gap-3 w-full lg:w-auto justify-end">
               <!-- Trình đơn lọc theo loại hòm phiếu -->
               <div class="relative flex-1 sm:flex-initial">
-                <select id="typeFilter" class="w-full sm:w-auto appearance-none bg-surface-container-low text-on-surface font-headline-sm text-xs sm:text-sm font-semibold pl-3 pr-8 py-2 rounded-xl border border-surface-container-high/60 outline-none hover:bg-surface-container-high cursor-pointer transition-colors">
+                <select id="typeFilter" class="w-full sm:w-auto appearance-none bg-slate-100 hover:bg-slate-200/70 text-slate-700 font-semibold pl-3.5 pr-8 py-2 rounded-xl border border-slate-200/90 outline-none text-xs sm:text-sm cursor-pointer transition-all shadow-2xs">
                   <option value="all">Mọi thể loại</option>
                   <option value="0">Bầu cử ứng viên</option>
                   <option value="1">Lấy ý kiến</option>
                 </select>
-                <span class="material-symbols-outlined absolute right-2.5 top-1/2 -translate-y-1/2 text-outline pointer-events-none text-[16px] sm:text-[18px]">expand_more</span>
+                <span class="material-symbols-outlined absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-[16px] sm:text-[18px]">expand_more</span>
               </div>
 
               <!-- Trình đơn sắp xếp -->
               <div class="relative flex-1 sm:flex-initial">
-                <select id="sortFilter" class="w-full sm:w-auto appearance-none bg-surface-container-low text-on-surface font-headline-sm text-xs sm:text-sm font-semibold pl-3 pr-8 py-2 rounded-xl border border-surface-container-high/60 outline-none hover:bg-surface-container-high cursor-pointer transition-colors">
+                <select id="sortFilter" class="w-full sm:w-auto appearance-none bg-slate-100 hover:bg-slate-200/70 text-slate-700 font-semibold pl-3.5 pr-8 py-2 rounded-xl border border-slate-200/90 outline-none text-xs sm:text-sm cursor-pointer transition-all shadow-2xs">
                   <option value="newest">Mới nhất</option>
                   <option value="most_votes">Nhiều phiếu nhất</option>
                   <option value="closing_soon">Sắp kết thúc</option>
                 </select>
-                <span class="material-symbols-outlined absolute right-2.5 top-1/2 -translate-y-1/2 text-outline pointer-events-none text-[16px] sm:text-[18px]">swap_vert</span>
+                <span class="material-symbols-outlined absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-[16px] sm:text-[18px]">swap_vert</span>
               </div>
             </div>
 
@@ -279,10 +284,15 @@
 <!-- Khối nhúng Script JS và tinh chỉnh CSS riêng cho trang chủ -->
 {% block scripts %}
 <style>
+  #statusChips {
+    background-color: #f1f5f9 !important;
+    border: 1px solid #e2e8f0 !important;
+  }
   #statusChips .chip {
     outline: none !important;
     user-select: none;
     -webkit-tap-highlight-color: transparent;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   }
   #statusChips .chip:focus,
   #statusChips .chip:focus-visible {
@@ -290,27 +300,40 @@
     box-shadow: none !important;
   }
   #statusChips .chip.active {
-    background-color: var(--color-primary-container, #2563eb) !important;
-    color: var(--color-on-primary, #ffffff) !important;
-    box-shadow: 0 1px 3px rgba(37, 99, 235, 0.25) !important;
+    background-color: #2563eb !important;
+    color: #ffffff !important;
+    box-shadow: 0 1px 3px 0 rgba(37, 99, 235, 0.3) !important;
     font-weight: 700 !important;
+  }
+  #statusChips .chip.active .count-badge {
+    background-color: rgba(255, 255, 255, 0.22) !important;
+    color: #ffffff !important;
   }
 
   #statusChips .chip:not(.active) {
     background-color: transparent !important;
-    color: var(--color-on-surface-variant, #434655) !important;
-    font-weight: 600 !important;
+    color: #475569 !important;
+    font-weight: 500 !important;
+  }
+  #statusChips .chip:not(.active) .count-badge {
+    background-color: #e2e8f0 !important;
+    color: #475569 !important;
   }
 
   #statusChips .chip:not(.active):hover {
-    background-color: #e2e8f0 !important;
+    background-color: rgba(255, 255, 255, 0.9) !important;
     color: #0f172a !important;
-    transform: translateY(-1px);
+    transform: translateY(-1px) !important;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+  }
+  #statusChips .chip:not(.active):hover .count-badge {
+    background-color: #cbd5e1 !important;
+    color: #0f172a !important;
   }
   #statusChips .chip.active:hover {
     background-color: #1d4ed8 !important;
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35) !important;
-    transform: translateY(-1px);
+    box-shadow: 0 3px 8px 0 rgba(37, 99, 235, 0.35) !important;
+    transform: translateY(-1px) !important;
   }
 
   .container {
