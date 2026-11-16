@@ -164,26 +164,26 @@
         </div>
 
         <!-- Khung tìm kiếm & bộ lọc trung tâm -->
-        <div class="p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl bg-surface-container-lowest shadow-sm border border-slate-200 space-y-3.5">
+        <div class="p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-white shadow-sm border border-slate-200 space-y-3.5">
           
           <!-- Hàng 1: Thanh tìm kiếm toàn năng nổi bật -->
           <div class="relative flex items-center w-full">
-            <div class="absolute left-3.5 sm:left-4 text-primary flex items-center pointer-events-none">
-              <span class="material-symbols-outlined text-[22px] sm:text-[24px]">search</span>
+            <div class="absolute left-3.5 sm:left-4 text-blue-600 flex items-center pointer-events-none">
+              <span class="material-symbols-outlined text-[20px] sm:text-[22px]">search</span>
             </div>
             <input id="searchInput" type="text"
               placeholder="Tìm theo tên cuộc bầu cử, tên ứng viên, mô tả hoặc mã hòm phiếu (#ID, 0x...)..."
-              class="w-full pl-11 sm:pl-12 pr-24 sm:pr-28 py-3 sm:py-3.5 rounded-xl bg-surface-container-low text-on-surface placeholder:text-outline font-body-md text-xs sm:text-sm font-semibold border border-transparent focus:border-primary focus:bg-surface-container-lowest outline-none transition-all shadow-inner focus:shadow-md">
+              class="w-full pl-10 sm:pl-12 pr-24 sm:pr-28 py-3 rounded-xl bg-slate-50/80 hover:bg-white focus:bg-white text-slate-800 placeholder:text-slate-400 font-body-md text-xs sm:text-sm font-semibold border border-slate-200/90 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/15 outline-none transition-all shadow-2xs focus:shadow-md">
             
-            <div class="absolute right-2.5 sm:right-3 flex items-center gap-1.5">
+            <div class="absolute right-2 sm:right-2.5 flex items-center gap-1.5">
               <!-- Nút xóa nhanh từ khóa (X) -->
               <button id="clearSearchBtn" type="button" title="Xóa từ khóa tìm kiếm"
-                class="hidden w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-on-surface-variant hover:text-on-surface flex items-center justify-center transition-colors border-0 cursor-pointer">
+                class="hidden w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-slate-200/70 hover:bg-slate-200 text-slate-600 hover:text-slate-900 flex items-center justify-center transition-colors border-0 cursor-pointer">
                 <span class="material-symbols-outlined text-[16px] sm:text-[18px]">close</span>
               </button>
               <!-- Nút bấm tìm kiếm -->
               <button id="btnSearchSubmit" type="button" title="Tìm kiếm ngay"
-                class="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg bg-primary hover:bg-primary/90 text-white font-headline-sm text-xs sm:text-sm font-bold flex items-center gap-1 transition-all border-0 cursor-pointer shadow-sm">
+                class="px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-lg bg-primary hover:bg-blue-700 text-white font-headline-sm text-xs sm:text-sm font-bold flex items-center gap-1.5 transition-all border-0 cursor-pointer shadow-sm hover:shadow hover:-translate-y-0.5 active:translate-y-0">
                 <span class="hidden sm:inline">Tìm</span>
                 <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
               </button>
@@ -191,63 +191,66 @@
           </div>
 
           <!-- Hàng 2: Bộ lọc trạng thái (Chips) & Trình đơn phân loại/sắp xếp -->
-          <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 pt-1 border-t border-surface-container-high/40">
+          <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 pt-1.5 border-t border-slate-100">
             
             <!-- Trái: Thanh menu chọn trạng thái (Tất cả, Đang mở, Sắp diễn ra...) -->
-            <div id="statusChips" class="inline-flex items-center gap-1 p-1 bg-slate-100 rounded-xl border border-slate-200/90 shadow-2xs overflow-x-auto no-scrollbar max-w-full">
-              <button class="chip active inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all border-0 cursor-pointer text-white bg-primary whitespace-nowrap focus:outline-none" data-status="all" style="margin:0;">
+            <div id="statusChips" class="inline-flex items-center gap-1 p-1 bg-slate-100/90 rounded-xl border border-slate-200/90 shadow-2xs overflow-x-auto no-scrollbar max-w-full">
+              <button class="chip active inline-flex items-center gap-1 px-3 sm:px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all border-0 cursor-pointer whitespace-nowrap focus:outline-none" data-status="all" style="margin:0;">
                 <span>Tất cả</span>
-                <span id="tabCountAll" class="count-badge px-2 py-0.5 rounded-full text-[11px] font-bold leading-none">0</span>
+                <span id="tabCountAll" class="count-badge">0</span>
               </button>
-              <button class="chip inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all border-0 cursor-pointer bg-transparent text-slate-600 hover:text-slate-900 whitespace-nowrap focus:outline-none" data-status="open" style="margin:0;">
+              <button class="chip inline-flex items-center gap-1 px-3 sm:px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all border-0 cursor-pointer whitespace-nowrap focus:outline-none" data-status="open" style="margin:0;">
                 <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>
                 <span>Đang mở</span>
-                <span id="tabCountOpen" class="count-badge px-2 py-0.5 rounded-full text-[11px] font-semibold leading-none">0</span>
+                <span id="tabCountOpen" class="count-badge">0</span>
               </button>
-              <button class="chip inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all border-0 cursor-pointer bg-transparent text-slate-600 hover:text-slate-900 whitespace-nowrap focus:outline-none" data-status="upcoming" style="margin:0;">
+              <button class="chip inline-flex items-center gap-1 px-3 sm:px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all border-0 cursor-pointer whitespace-nowrap focus:outline-none" data-status="upcoming" style="margin:0;">
                 <span>Sắp diễn ra</span>
-                <span id="tabCountUpcoming" class="count-badge px-2 py-0.5 rounded-full text-[11px] font-semibold leading-none">0</span>
+                <span id="tabCountUpcoming" class="count-badge">0</span>
               </button>
-              <button class="chip inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all border-0 cursor-pointer bg-transparent text-slate-600 hover:text-slate-900 whitespace-nowrap focus:outline-none" data-status="finished" style="margin:0;">
+              <button class="chip inline-flex items-center gap-1 px-3 sm:px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all border-0 cursor-pointer whitespace-nowrap focus:outline-none" data-status="finished" style="margin:0;">
                 <span>Đã kết thúc</span>
-                <span id="tabCountEnded" class="count-badge px-2 py-0.5 rounded-full text-[11px] font-semibold leading-none">0</span>
+                <span id="tabCountEnded" class="count-badge">0</span>
               </button>
             </div>
 
             <!-- Phải: Các trình đơn lọc Thể loại và Sắp xếp -->
-            <div class="flex items-center gap-2 sm:gap-3 w-full lg:w-auto justify-end">
+            <div class="flex items-center gap-2 sm:gap-2.5 w-full lg:w-auto justify-end">
               <!-- Trình đơn lọc theo loại hòm phiếu -->
               <div class="relative flex-1 sm:flex-initial">
-                <select id="typeFilter" class="w-full sm:w-auto appearance-none bg-slate-100 hover:bg-slate-200/70 text-slate-700 font-semibold pl-3.5 pr-8 py-2 rounded-xl border border-slate-200/90 outline-none text-xs sm:text-sm cursor-pointer transition-all shadow-2xs">
+                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-[18px]">category</span>
+                <select id="typeFilter" class="w-full sm:w-auto appearance-none bg-white hover:bg-slate-50 text-slate-700 font-semibold pl-9 pr-8 py-2 rounded-xl border border-slate-200/90 hover:border-slate-300 outline-none text-xs sm:text-sm cursor-pointer transition-all shadow-2xs focus:border-primary focus:ring-2 focus:ring-primary/15">
                   <option value="all">Mọi thể loại</option>
                   <option value="0">Bầu cử ứng viên</option>
                   <option value="1">Lấy ý kiến</option>
                 </select>
-                <span class="material-symbols-outlined absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-[16px] sm:text-[18px]">expand_more</span>
+                <span class="material-symbols-outlined absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-[16px]">expand_more</span>
               </div>
 
               <!-- Trình đơn sắp xếp -->
               <div class="relative flex-1 sm:flex-initial">
-                <select id="sortFilter" class="w-full sm:w-auto appearance-none bg-slate-100 hover:bg-slate-200/70 text-slate-700 font-semibold pl-3.5 pr-8 py-2 rounded-xl border border-slate-200/90 outline-none text-xs sm:text-sm cursor-pointer transition-all shadow-2xs">
+                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-[18px]">swap_vert</span>
+                <select id="sortFilter" class="w-full sm:w-auto appearance-none bg-white hover:bg-slate-50 text-slate-700 font-semibold pl-9 pr-8 py-2 rounded-xl border border-slate-200/90 hover:border-slate-300 outline-none text-xs sm:text-sm cursor-pointer transition-all shadow-2xs focus:border-primary focus:ring-2 focus:ring-primary/15">
                   <option value="newest">Mới nhất</option>
                   <option value="most_votes">Nhiều phiếu nhất</option>
                   <option value="closing_soon">Sắp kết thúc</option>
                 </select>
-                <span class="material-symbols-outlined absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-[16px] sm:text-[18px]">swap_vert</span>
+                <span class="material-symbols-outlined absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-[16px]">expand_more</span>
               </div>
             </div>
 
           </div>
 
           <!-- Hàng 3: Gợi ý tìm kiếm nhanh (Quick search pills) -->
-          <div class="flex items-center gap-1.5 sm:gap-2 flex-wrap pt-0.5 font-body-sm text-[11px] sm:text-xs text-on-surface-variant">
-            <span class="flex items-center gap-1 font-semibold text-outline">
-              <span class="material-symbols-outlined text-[14px]">lightbulb</span> Gợi ý:
+          <div class="flex items-center gap-1.5 sm:gap-2 flex-wrap pt-0.5 font-body-sm text-[11px] sm:text-xs text-slate-500">
+            <span class="flex items-center gap-1 font-semibold text-slate-500">
+              <span class="material-symbols-outlined text-primary text-[16px]">trending_up</span>
+              <span>Gợi ý:</span>
             </span>
-            <button type="button" class="quick-search-tag px-2.5 py-1 rounded-lg bg-surface-container-low hover:bg-surface-container-high text-on-surface transition-colors border-0 cursor-pointer font-medium" data-query="Bầu ban cán sự">Bầu ban cán sự</button>
-            <button type="button" class="quick-search-tag px-2.5 py-1 rounded-lg bg-surface-container-low hover:bg-surface-container-high text-on-surface transition-colors border-0 cursor-pointer font-medium" data-query="Lấy ý kiến">Lấy ý kiến</button>
-            <button type="button" class="quick-search-tag px-2.5 py-1 rounded-lg bg-surface-container-low hover:bg-surface-container-high text-on-surface transition-colors border-0 cursor-pointer font-medium" data-query="Test">Test</button>
-            <button type="button" class="quick-search-tag px-2.5 py-1 rounded-lg bg-surface-container-low hover:bg-surface-container-high text-on-surface transition-colors border-0 cursor-pointer font-medium" data-query="HQT">Ứng viên HQT</button>
+            <button type="button" class="quick-search-tag px-3 py-1 rounded-lg bg-slate-100/90 hover:bg-blue-50 text-slate-700 hover:text-blue-700 border border-slate-200/80 hover:border-blue-200 transition-all font-medium cursor-pointer shadow-2xs hover:-translate-y-0.5" data-query="Bầu ban cán sự">Bầu ban cán sự</button>
+            <button type="button" class="quick-search-tag px-3 py-1 rounded-lg bg-slate-100/90 hover:bg-blue-50 text-slate-700 hover:text-blue-700 border border-slate-200/80 hover:border-blue-200 transition-all font-medium cursor-pointer shadow-2xs hover:-translate-y-0.5" data-query="Lấy ý kiến">Lấy ý kiến</button>
+            <button type="button" class="quick-search-tag px-3 py-1 rounded-lg bg-slate-100/90 hover:bg-blue-50 text-slate-700 hover:text-blue-700 border border-slate-200/80 hover:border-blue-200 transition-all font-medium cursor-pointer shadow-2xs hover:-translate-y-0.5" data-query="Test">Test</button>
+            <button type="button" class="quick-search-tag px-3 py-1 rounded-lg bg-slate-100/90 hover:bg-blue-50 text-slate-700 hover:text-blue-700 border border-slate-200/80 hover:border-blue-200 transition-all font-medium cursor-pointer shadow-2xs hover:-translate-y-0.5" data-query="HQT">Ứng viên HQT</button>
           </div>
 
         </div>
