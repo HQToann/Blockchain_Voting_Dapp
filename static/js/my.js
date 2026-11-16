@@ -252,6 +252,17 @@
                   const val = btn.dataset.copy;
                   navigator.clipboard?.writeText(val);
                   App.toast('Đã sao chép địa chỉ Contract!', 'ok', 2000);
+                  const icon = btn.querySelector('.material-symbols-outlined');
+                  if (icon && !btn.dataset.copying) {
+                    btn.dataset.copying = 'true';
+                    icon.textContent = 'check';
+                    icon.classList.add('text-emerald-600');
+                    setTimeout(() => {
+                      icon.textContent = 'content_copy';
+                      icon.classList.remove('text-emerald-600');
+                      delete btn.dataset.copying;
+                    }, 1800);
+                  }
                 });
               });
 
@@ -262,6 +273,23 @@
                   const url = btn.dataset.url;
                   navigator.clipboard?.writeText(url);
                   App.toast('Đã sao chép liên kết chia sẻ bầu cử vào bộ nhớ tạm!', 'ok', 2500);
+
+                  const icon = btn.querySelector('.material-symbols-outlined');
+                  const label = btn.querySelector('.btn-share-label') || btn.querySelector('span:last-child');
+                  if (icon && label && !btn.dataset.copying) {
+                    btn.dataset.copying = 'true';
+                    const origIcon = icon.textContent;
+                    const origText = label.textContent;
+                    icon.textContent = 'check';
+                    label.textContent = 'Đã chép!';
+                    btn.classList.add('text-emerald-700', 'bg-emerald-50', 'border-emerald-300');
+                    setTimeout(() => {
+                      icon.textContent = origIcon;
+                      label.textContent = origText;
+                      btn.classList.remove('text-emerald-700', 'bg-emerald-50', 'border-emerald-300');
+                      delete btn.dataset.copying;
+                    }, 2000);
+                  }
                 });
               });
 
@@ -352,9 +380,13 @@
           t.addEventListener('click', () => {
             document.querySelectorAll('.tab-btn').forEach((x) => {
               const active = x === t;
-              x.className = active
-                ? 'tab-btn active inline-flex items-center gap-2 px-space-md py-2.5 rounded-xl bg-surface-container-lowest text-primary font-headline-sm text-headline-sm font-bold shadow-sm whitespace-nowrap transition-all cursor-pointer'
-                : 'tab-btn inline-flex items-center gap-2 px-space-md py-2.5 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container/60 font-headline-sm text-headline-sm font-medium whitespace-nowrap transition-all cursor-pointer';
+              if (active) {
+                x.classList.add('active', 'bg-surface-container-lowest', 'text-primary', 'font-bold', 'shadow-sm');
+                x.classList.remove('text-on-surface-variant', 'font-medium', 'bg-transparent');
+              } else {
+                x.classList.remove('active', 'bg-surface-container-lowest', 'text-primary', 'font-bold', 'shadow-sm');
+                x.classList.add('text-on-surface-variant', 'font-medium', 'bg-transparent');
+              }
             });
 
             st.tab = t.dataset.tab;
@@ -379,9 +411,13 @@
           btn.addEventListener('click', () => {
             document.querySelectorAll('.filter-pill').forEach((b) => {
               const active = b === btn;
-              b.className = active
-                ? 'filter-pill active px-3.5 py-2 rounded-xl bg-primary text-on-primary font-headline-sm text-headline-sm text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer'
-                : 'filter-pill px-3.5 py-2 rounded-xl bg-surface-container-low text-on-surface-variant hover:text-on-surface font-headline-sm text-headline-sm text-xs font-medium whitespace-nowrap transition-colors cursor-pointer';
+              if (active) {
+                b.classList.add('active', 'bg-primary', 'text-on-primary', 'font-semibold');
+                b.classList.remove('bg-surface-container-low', 'text-on-surface-variant', 'font-medium');
+              } else {
+                b.classList.remove('active', 'bg-primary', 'text-on-primary', 'font-semibold');
+                b.classList.add('bg-surface-container-low', 'text-on-surface-variant', 'font-medium');
+              }
             });
 
             st.status = btn.dataset.status;

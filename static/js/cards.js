@@ -117,7 +117,7 @@ var ElectionCards = window.ElectionCards = (function () {
     const optsCount = e.option_count || 0;
     
     return `
-      <div class="rounded-2xl bg-surface-container-lowest p-space-lg shadow-sm hover:shadow-md transition-all flex flex-col justify-between space-y-space-md border border-slate-100">
+      <div class="rounded-2xl bg-surface-container-lowest p-space-lg shadow-sm hover:shadow-md hover:border-blue-300 transition-all flex flex-col justify-between space-y-space-md border border-slate-200/90 h-full">
         <div class="space-y-space-sm">
           <div class="flex items-center justify-between text-xs gap-2 min-w-0">
             ${statusHtml}
@@ -251,7 +251,7 @@ var ElectionCards = window.ElectionCards = (function () {
     const ruleText = e.max_choices > 1 ? `Chọn từ 1 đến ${e.max_choices} lựa chọn` : 'Chọn đúng 1 lựa chọn';
 
     return `
-      <div class="group relative overflow-hidden rounded-2xl bg-surface-container-lowest p-space-md md:p-space-lg shadow-sm hover:shadow-lg transition-all duration-300 border border-surface-container-high/60">
+      <div class="group relative overflow-hidden rounded-2xl bg-surface-container-lowest p-space-md md:p-space-lg shadow-sm hover:shadow-lg transition-all duration-300 border border-slate-200">
         <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary-container via-secondary-container to-tertiary-container"></div>
         <div class="flex flex-col gap-space-md">
           <div class="flex flex-wrap items-center justify-between gap-space-sm">
@@ -261,7 +261,7 @@ var ElectionCards = window.ElectionCards = (function () {
               ${roleBadge}
               ${e.is_private ? '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-purple-50 text-purple-700 font-label-tag text-label-tag font-semibold border border-purple-200"><span class="material-symbols-outlined text-[12px]">lock</span> Riêng tư</span>' : ''}
             </div>
-            <div class="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-surface-container-low text-on-surface-variant font-label-code text-label-code border border-surface-container-high/40">
+            <div class="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-slate-50 text-slate-600 font-label-code text-xs border border-slate-200/80">
               <span class="material-symbols-outlined text-[16px] text-outline">token</span>
               <span>Contract:</span>
               <span class="text-on-surface font-semibold">${short(e.address)}</span>
@@ -308,23 +308,23 @@ var ElectionCards = window.ElectionCards = (function () {
             </div>
           </div>
 
-          <div class="pt-space-xs flex flex-wrap items-center justify-between gap-space-sm border-t border-surface-container-high/40">
+          <div class="pt-3 sm:pt-3.5 flex flex-wrap items-center justify-between gap-3 border-t border-slate-100">
             <div class="flex flex-wrap items-center gap-2">
-              <a class="px-3.5 py-2 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-headline-sm text-headline-sm text-xs font-semibold flex items-center gap-1.5 transition-colors" href="/election/${esc(e.address)}/">
-                <span class="material-symbols-outlined text-[16px] text-primary">tune</span>
-                Chi tiết &amp; Quản lý
+              <a class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-blue-50/80 hover:bg-blue-100/80 text-primary hover:text-blue-700 text-xs font-semibold border border-blue-200/60 transition-all hover:shadow-xs hover:-translate-y-0.5 text-decoration-none" href="/election/${esc(e.address)}/">
+                <span class="material-symbols-outlined text-[16px] text-primary">${isOwner ? 'tune' : 'visibility'}</span>
+                <span>${isOwner ? 'Chi tiết &amp; Quản lý' : 'Xem chi tiết'}</span>
               </a>
-              <button type="button" class="btn-share px-3.5 py-2 rounded-lg bg-surface-container-low hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface font-headline-sm text-headline-sm text-xs font-medium flex items-center gap-1.5 transition-colors cursor-pointer" data-url="${window.location.origin}/election/${esc(e.address)}/">
-                <span class="material-symbols-outlined text-[16px]">share</span>
-                Chia sẻ link
+              <button type="button" class="btn-share inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-white hover:bg-slate-50 text-slate-700 hover:text-slate-900 text-xs font-medium border border-slate-200/90 shadow-2xs hover:border-slate-300 hover:shadow-xs hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer" data-url="${window.location.origin}/election/${esc(e.address)}/">
+                <span class="material-symbols-outlined text-[16px] text-slate-500">share</span>
+                <span class="btn-share-label">Chia sẻ link</span>
               </button>
-              <a class="px-3.5 py-2 rounded-lg bg-surface-container-low hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface font-headline-sm text-headline-sm text-xs font-medium flex items-center gap-1.5 transition-colors" href="${explorerUrl}/address/${esc(e.address)}" target="_blank" rel="noopener noreferrer">
-                <span class="material-symbols-outlined text-[16px] text-tertiary">open_in_new</span>
-                Xem sổ cái TxHash
+              <a class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-white hover:bg-slate-50 text-slate-700 hover:text-slate-900 text-xs font-medium border border-slate-200/90 shadow-2xs hover:border-slate-300 hover:shadow-xs hover:-translate-y-0.5 active:translate-y-0 transition-all text-decoration-none" href="${explorerUrl}/address/${esc(e.address)}" target="_blank" rel="noopener noreferrer">
+                <span class="material-symbols-outlined text-[16px] text-slate-500">open_in_new</span>
+                <span>Xem trên Etherscan</span>
               </a>
             </div>
-            <div class="flex items-center gap-2 text-on-surface-variant font-label-code text-body-sm">
-              <span class="material-symbols-outlined text-[16px] text-tertiary">verified</span>
+            <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/60 font-label-tag text-[11px] font-semibold">
+              <span class="material-symbols-outlined text-[14px] text-emerald-600">verified</span>
               <span>On-Chain Verified</span>
             </div>
           </div>
@@ -335,52 +335,75 @@ var ElectionCards = window.ElectionCards = (function () {
 
   // 3. Thẻ Ứng Viên / Lựa Chọn Bỏ Phiếu (Dùng trên trang Chi Tiết)
   function candidateCard(o, ctx) {
-    const { isLeader, sel, canPick, full, noun, kind, myVoted, contractAddress } = ctx;
+    const { isLeader, sel, canPick, full, noun, kind, myVoted, hasVoted, contractAddress } = ctx;
     const initial = esc(o.label.charAt(0).toUpperCase());
 
+    // Xác định giao diện thẻ: Nếu là người cử tri đã vote thì làm NỔI BẬT hoàn toàn
+    let cardClasses = 'candidate-card rounded-2xl p-space-lg transition-all duration-300 relative ';
+    if (myVoted) {
+      cardClasses += 'bg-gradient-to-br from-emerald-50 via-white to-teal-50/40 border-2 border-emerald-500 shadow-xl shadow-emerald-500/10 ring-4 ring-emerald-500/20 cursor-default';
+    } else if (hasVoted) {
+      cardClasses += 'bg-slate-50/50 border border-slate-200/60 shadow-none opacity-55 hover:opacity-80 cursor-default grayscale-[15%]';
+    } else if (sel) {
+      cardClasses += 'bg-primary-container/[0.02] border-primary-container/40 ring-2 ring-primary-container shadow-md cursor-pointer';
+    } else {
+      cardClasses += 'bg-surface-container-lowest border border-slate-200 shadow-sm hover:shadow-md hover:border-blue-300 ' + (canPick && !full ? 'cursor-pointer' : (full ? 'opacity-60 cursor-default' : 'cursor-default'));
+    }
+
     return `
-      <div class="candidate-card bg-surface-container-lowest rounded-2xl p-space-lg shadow-sm border transition-all duration-300 relative ${sel ? 'ring-2 ring-primary-container bg-primary-container/[0.02] border-primary-container/40' : 'border-surface-container-high/60 hover:shadow-md'} ${canPick && !full ? 'cursor-pointer' : (sel ? 'cursor-pointer' : 'cursor-default')} ${full || (!canPick && !sel && myVoted) ? 'opacity-60' : 'opacity-100'}" data-candidate-id="${o.id}" data-candidate-name="${esc(o.label)}">
-        ${isLeader ? `
-          <div class="absolute top-4 right-4 flex items-center gap-space-xs z-10">
-            <span class="px-2.5 py-1 rounded-full bg-primary-container text-on-primary font-label-tag text-label-tag font-bold flex items-center gap-1 shadow-sm">
-              <span class="material-symbols-outlined text-[14px]">check_circle</span> Đang dẫn đầu
+      <div class="${cardClasses}" data-candidate-id="${o.id}" data-candidate-name="${esc(o.label)}">
+        <!-- Huy hiệu góc trên bên phải -->
+        <div class="absolute top-3.5 right-3.5 sm:top-4 sm:right-4 flex items-center gap-1.5 z-10 flex-wrap justify-end">
+          ${myVoted ? `
+            <span class="px-3.5 py-1.5 rounded-full bg-emerald-600 text-white font-label-tag text-xs font-black flex items-center gap-1.5 shadow-md ring-2 ring-emerald-200">
+              <span class="material-symbols-outlined text-[16px]">how_to_reg</span> LÁ PHIẾU CỦA BẠN
             </span>
-          </div>
-        ` : ''}
+          ` : ''}
+          ${isLeader ? `
+            <span class="px-2.5 py-1 rounded-full ${myVoted ? 'bg-emerald-700/90 text-white' : 'bg-primary-container text-on-primary'} font-label-tag text-[11px] font-bold flex items-center gap-1 shadow-sm">
+              <span class="material-symbols-outlined text-[14px]">stars</span> Đang dẫn đầu
+            </span>
+          ` : ''}
+        </div>
 
         <div class="flex flex-col sm:flex-row items-start gap-space-lg">
           <div class="relative shrink-0">
             ${o.image_url ? `
-              <img class="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl object-cover shadow-sm bg-surface-container border border-surface-container-high/60" src="${esc(o.image_url)}" alt="${esc(o.label)}" loading="lazy" referrerpolicy="no-referrer" onerror="this.onerror=null; this.src=''; this.parentElement.innerHTML='<div class=\\'w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-surface-container-high flex items-center justify-center text-primary font-bold text-3xl shadow-sm border border-surface-container-high\\'>${initial}</div>';">
+              <img class="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl object-cover shadow-sm bg-surface-container border ${myVoted ? 'border-2 border-emerald-500 ring-4 ring-emerald-500/25 shadow-md' : 'border-surface-container-high/60'}" src="${esc(o.image_url)}" alt="${esc(o.label)}" loading="lazy" referrerpolicy="no-referrer" onerror="this.onerror=null; this.src=''; this.parentElement.innerHTML='<div class=\\'w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-surface-container-high flex items-center justify-center text-primary font-bold text-3xl shadow-sm border border-surface-container-high\\'>${initial}</div>';">
             ` : `
-              <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-surface-container-high flex items-center justify-center text-primary font-bold text-3xl shadow-sm border border-surface-container-high">
+              <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl ${myVoted ? 'bg-emerald-100 text-emerald-800 border-2 border-emerald-500 ring-4 ring-emerald-500/25 shadow-md' : 'bg-surface-container-high text-primary border border-surface-container-high'} flex items-center justify-center font-bold text-3xl shadow-sm">
                 ${initial}
               </div>
             `}
-            ${isLeader ? `
+            ${myVoted ? `
+              <div class="absolute -bottom-2 -right-2 w-8 h-8 rounded-full bg-emerald-600 text-white flex items-center justify-center shadow-md ring-2 ring-white" title="Lá phiếu bạn đã chọn">
+                <span class="material-symbols-outlined text-[18px]">verified</span>
+              </div>
+            ` : (isLeader ? `
               <div class="absolute -bottom-2 -right-2 w-8 h-8 rounded-full bg-primary-container text-on-primary flex items-center justify-center shadow-md">
                 <span class="material-symbols-outlined text-[18px]">verified</span>
               </div>
-            ` : ''}
+            ` : '')}
           </div>
 
           <div class="flex-1 flex flex-col gap-space-sm min-w-0 w-full">
             <div class="flex flex-col">
-              <span class="font-label-code text-label-code ${sel || isLeader ? 'text-primary font-bold' : 'text-outline font-semibold'}">
-                #${noun} ${String(o.id + 1).padStart(2, '0')}
+              <span class="font-label-code text-label-code ${myVoted ? 'text-emerald-700 font-extrabold' : (sel || isLeader ? 'text-primary font-bold' : 'text-outline font-semibold')}">
+                #${noun} ${String(o.id + 1).padStart(2, '0')} ${myVoted ? '• (Đã được bạn chọn)' : ''}
               </span>
-              <h3 class="font-headline-lg text-headline-lg text-on-surface font-bold leading-tight">
-                ${esc(o.label)}
+              <h3 class="font-headline-lg text-headline-lg ${myVoted ? 'text-emerald-950 font-black' : 'text-on-surface font-bold'} leading-tight flex items-center gap-2">
+                <span>${esc(o.label)}</span>
+                ${myVoted ? '<span class="material-symbols-outlined text-emerald-600 text-[24px]">verified</span>' : ''}
               </h3>
             </div>
 
             ${o.description ? `
-              <div class="bg-surface-container-low p-space-md rounded-xl flex flex-col gap-1 border border-surface-container-high/40">
-                <div class="flex items-center gap-1 ${isLeader ? 'text-primary' : 'text-secondary'} font-headline-sm text-body-md font-bold">
+              <div class="${myVoted ? 'bg-emerald-50/80 border-emerald-200/90' : 'bg-surface-container-low border-surface-container-high/40'} p-space-md rounded-xl flex flex-col gap-1 border">
+                <div class="flex items-center gap-1 ${myVoted ? 'text-emerald-700' : (isLeader ? 'text-primary' : 'text-secondary')} font-headline-sm text-body-md font-bold">
                   <span class="material-symbols-outlined text-[18px]">flag</span>
                   ${kind === 1 ? 'Nội dung chi tiết' : 'Cương lĩnh hành động'}
                 </div>
-                <p class="font-body-md text-body-md text-on-surface-variant leading-relaxed whitespace-pre-wrap">
+                <p class="font-body-md text-body-md ${myVoted ? 'text-emerald-950 font-medium' : 'text-on-surface-variant'} leading-relaxed whitespace-pre-wrap">
                   ${esc(o.description)}
                 </p>
               </div>
@@ -388,34 +411,36 @@ var ElectionCards = window.ElectionCards = (function () {
 
             <div class="flex flex-col gap-space-xs pt-space-xs">
               <div class="flex justify-between items-center font-headline-sm text-body-md">
-                <span class="text-on-surface font-semibold flex items-center gap-1">
-                  <span class="material-symbols-outlined text-primary text-[18px]">how_to_vote</span>
-                  Số phiếu ủng hộ: <strong class="text-primary font-bold ml-1">${o.votes} phiếu</strong>
+                <span class="${myVoted ? 'text-emerald-950 font-bold' : 'text-on-surface font-semibold'} flex items-center gap-1">
+                  <span class="material-symbols-outlined ${myVoted ? 'text-emerald-600' : 'text-primary'} text-[18px]">how_to_vote</span>
+                  Số phiếu ủng hộ: <strong class="${myVoted ? 'text-emerald-700 font-black' : 'text-primary font-bold'} ml-1">${o.votes} phiếu</strong>
                 </span>
-                <span class="font-label-code text-label-code text-primary font-bold">${o.percent}%</span>
+                <span class="font-label-code text-label-code ${myVoted ? 'text-emerald-700 font-black text-sm' : 'text-primary font-bold'}">${o.percent}%</span>
               </div>
-              <div class="w-full h-3 rounded-full bg-surface-container-high overflow-hidden">
-                <div class="h-full ${isLeader ? 'bg-gradient-to-r from-primary to-secondary' : 'bg-primary-container'} rounded-full transition-all duration-500" style="width: ${Math.min(100, o.percent)}%"></div>
+              <div class="w-full h-3 rounded-full ${myVoted ? 'bg-emerald-100' : 'bg-surface-container-high'} overflow-hidden">
+                <div class="h-full ${myVoted ? 'bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600' : (isLeader ? 'bg-gradient-to-r from-primary to-secondary' : 'bg-primary-container')} rounded-full transition-all duration-500" style="width: ${Math.min(100, o.percent)}%"></div>
               </div>
             </div>
 
-            <div class="pt-space-sm flex items-center justify-between gap-space-md flex-wrap">
+            <div class="pt-space-sm flex items-center justify-between gap-space-md flex-wrap border-t ${myVoted ? 'border-emerald-200/60' : 'border-surface-container/60'}">
               ${canPick ? `
                 <button class="candidate-select-btn w-full sm:w-auto px-space-lg py-space-sm rounded-xl font-headline-sm text-headline-sm font-bold flex items-center justify-center gap-space-xs transition-all shadow-sm ${sel ? 'bg-primary text-white hover:bg-blue-700 hover:shadow-md hover:-translate-y-0.5' : 'bg-surface-container-high text-on-surface hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200 border border-slate-200/80 hover:shadow-sm hover:-translate-y-0.5 cursor-pointer'}" type="button">
                   <span class="material-symbols-outlined text-[20px]">${sel ? 'radio_button_checked' : 'radio_button_unchecked'}</span>
                   ${sel ? 'Đã chọn ứng viên này' : 'Chọn ứng viên'}
                 </button>
               ` : (myVoted ? `
-                <span class="px-space-md py-1.5 rounded-xl bg-on-tertiary-container text-tertiary font-label-tag text-label-tag font-bold flex items-center gap-1">
-                  <span class="material-symbols-outlined text-[16px]">how_to_reg</span> Bạn đã bỏ phiếu cho lựa chọn này
-                </span>
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 text-white font-headline-sm text-xs sm:text-sm font-bold shadow-md shadow-emerald-600/20 ring-2 ring-emerald-300">
+                  <span class="material-symbols-outlined text-white text-[18px]">how_to_reg</span>
+                  <span>Bạn đã bỏ phiếu cho lựa chọn này</span>
+                </div>
               ` : `
-                <span class="font-body-sm text-body-sm text-outline flex items-center gap-1">
-                  <span class="material-symbols-outlined text-[16px]">lock</span> Không thể bình chọn
+                <span class="font-body-sm text-xs text-outline flex items-center gap-1.5 py-1.5 px-3 rounded-lg bg-surface-container-low border border-surface-container-high/40">
+                  <span class="material-symbols-outlined text-[16px] text-slate-400">block</span>
+                  <span>${hasVoted ? 'Không được bạn lựa chọn' : 'Không thể bình chọn'}</span>
                 </span>
               `)}
 
-              <a class="text-primary font-body-sm text-body-sm font-semibold flex items-center gap-1 hover:underline ml-auto" href="https://sepolia.etherscan.io/address/${esc(contractAddress)}" target="_blank" rel="noopener">
+              <a class="${myVoted ? 'text-emerald-700 hover:text-emerald-800' : 'text-primary hover:text-blue-700'} font-body-sm text-body-sm font-semibold flex items-center gap-1 hover:underline ml-auto" href="https://sepolia.etherscan.io/address/${esc(contractAddress)}" target="_blank" rel="noopener">
                 Xem Smart Contract
                 <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
               </a>
@@ -650,7 +675,7 @@ var ElectionCards = window.ElectionCards = (function () {
   // 8. Thẻ gợi ý tạo hòm phiếu mới (Hiển thị ở ô cuối cùng trong lưới khi người dùng xem hết hòm phiếu)
   function createPromptCard() {
     return `
-      <div class="rounded-2xl bg-gradient-to-br from-primary to-blue-700 text-white p-space-lg shadow-sm hover:shadow-md transition-all flex flex-col justify-between space-y-space-md border border-blue-600/30">
+      <div class="rounded-2xl bg-gradient-to-br from-primary to-blue-700 text-white p-space-lg shadow-sm hover:shadow-md transition-all flex flex-col justify-between space-y-space-md border border-blue-600/30 h-full">
         <div class="space-y-space-sm">
           <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center text-white shadow-xs">
             <span class="material-symbols-outlined text-[24px]">add</span>

@@ -267,3 +267,20 @@ a.bg-surface-container-lowest:active,
     background-color: #1e40af !important;
     transform: translateY(0) !important;
 }
+
+/* 10. MODAL XÁC NHẬN WEB3 & BỎ PHIẾU */
+#voteModal {
+    animation: modalFadeIn 0.2s ease-out;
+}
+#voteModal > div {
+    animation: modalZoomIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes modalFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+@keyframes modalZoomIn {
+    from { opacity: 0; transform: scale(0.96) translateY(6px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+}
+

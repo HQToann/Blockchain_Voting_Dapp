@@ -41,7 +41,7 @@
 
   // 2. Tải danh sách hòm phiếu thật từ API
   async function load() {
-    const p = new URLSearchParams({ status: st.status, page: st.page, page_size: 10 });
+    const p = new URLSearchParams({ status: st.status, page: st.page, page_size: 12 });
     if (st.kind) p.set('kind', st.kind);
     if (st.q) p.set('q', st.q);
     if (st.sort) p.set('sort', st.sort);
