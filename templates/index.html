@@ -43,11 +43,11 @@
 
             <!-- Cụm nút bấm Tạo hòm phiếu và Xem quy tắc -->
             <div class="flex flex-col sm:flex-row items-center gap-3 sm:gap-space-md pt-2 sm:pt-space-xs mt-2 sm:mt-4">
-              <a class="w-full sm:w-auto px-6 sm:px-space-xl py-3.5 rounded-xl bg-primary-container text-on-primary font-headline-sm text-sm sm:text-headline-sm flex items-center justify-center gap-2 shadow-[0_10px_25px_-5px_rgba(37,99,235,0.3)] hover:opacity-95 transition-all text-decoration-none font-bold" href="/create/">
+              <a class="w-full sm:w-auto px-6 sm:px-space-xl py-3.5 rounded-xl bg-primary text-white font-headline-sm text-sm sm:text-headline-sm flex items-center justify-center gap-2 shadow-[0_10px_25px_-5px_rgba(37,99,235,0.3)] hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-500/25 hover:-translate-y-0.5 active:translate-y-0 transition-all text-decoration-none font-bold" href="/create/">
                 <span class="material-symbols-outlined text-[18px] sm:text-[20px]">add_box</span>
                 Tạo hòm phiếu mới
               </a>
-              <a class="w-full sm:w-auto px-6 sm:px-space-lg py-3.5 rounded-xl bg-surface-container-lowest text-on-surface font-headline-sm text-sm sm:text-headline-sm flex items-center justify-center gap-2 hover:bg-surface-container-high transition-colors text-decoration-none font-bold border border-outline-variant/30" href="#rules-section">
+              <a class="w-full sm:w-auto px-6 sm:px-space-lg py-3.5 rounded-xl bg-surface-container-lowest text-on-surface font-headline-sm text-sm sm:text-headline-sm flex items-center justify-center gap-2 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-300 hover:shadow-sm hover:-translate-y-0.5 active:translate-y-0 transition-all text-decoration-none font-bold border border-outline-variant/30" href="#rules-section">
                 <span class="material-symbols-outlined text-primary text-[18px] sm:text-[20px]">policy</span>
                 Xem quy tắc bầu cử
               </a>
@@ -275,30 +275,6 @@
           <div id="pager" class="pager flex justify-center"></div>
         </div>
 
-        <!-- Khối gợi ý tạo hòm phiếu mới (Hiển thị ở cuối phân trang khi người dùng đã xem hết tất cả các hòm phiếu) -->
-        <div id="createSuggestionBanner" class="hidden mt-8 sm:mt-10 rounded-2xl sm:rounded-3xl p-6 sm:p-8 bg-primary text-on-primary shadow-sm hover:shadow-md transition-all flex flex-col md:flex-row items-center justify-between gap-6 bg-gradient-to-br from-primary to-primary-container">
-          <div class="flex flex-col sm:flex-row items-center sm:items-start gap-4 text-center sm:text-left">
-            <div class="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center shrink-0">
-              <span class="material-symbols-outlined text-white text-[28px]">add_box</span>
-            </div>
-            <div class="space-y-1.5">
-              <div class="flex items-center justify-center sm:justify-start gap-2">
-                <h4 class="font-headline-md text-xl sm:text-2xl font-bold text-white">Tạo Hòm Phiếu Mới</h4>
-                <span class="px-2.5 py-0.5 rounded-full bg-white/20 text-white font-label-tag text-[10px] font-bold uppercase tracking-wider">Gợi ý</span>
-              </div>
-              <p class="font-body-md text-sm sm:text-base text-white/90 max-w-2xl leading-relaxed">
-                Bạn đã xem hết các cuộc bầu cử hiện có. Hãy khởi tạo cuộc biểu quyết độc lập cho tổ chức hoặc câu lạc bộ của bạn trong 3 bước.
-              </p>
-            </div>
-          </div>
-          <div class="shrink-0 w-full sm:w-auto">
-            <a class="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-white text-primary font-headline-sm text-sm sm:text-base flex items-center justify-center gap-2 hover:bg-slate-50 transition-all shadow-md font-bold text-decoration-none" href="/create/">
-              <span>Khởi tạo ngay</span>
-              <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
-            </a>
-          </div>
-        </div>
-
       </section>
 
     </div>
@@ -333,8 +309,14 @@
   }
 
   #statusChips .chip:not(.active):hover {
-    background-color: rgba(0, 0, 0, 0.05) !important;
+    background-color: #e2e8f0 !important;
     color: #0f172a !important;
+    transform: translateY(-1px);
+  }
+  #statusChips .chip.active:hover {
+    background-color: #1d4ed8 !important;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35) !important;
+    transform: translateY(-1px);
   }
 
   .container {

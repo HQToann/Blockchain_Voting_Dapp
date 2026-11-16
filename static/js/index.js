@@ -106,7 +106,12 @@
               </div>`;
           }
         } else {
-          listEl.innerHTML = d.elections.map((e) => Cards.card(e, App.state.address)).join('');
+          let html = d.elections.map((e) => Cards.card(e, App.state.address)).join('');
+          // Gợi ý tạo hòm phiếu mới nằm ở ô cuối cùng của lưới khi người dùng đã xem hết tất cả các hòm phiếu (ở trang cuối)
+          if (d.page >= d.pages && typeof Cards.createPromptCard === 'function') {
+            html += Cards.createPromptCard();
+          }
+          listEl.innerHTML = html;
         }
       }
 
@@ -128,13 +133,6 @@
           : '0 hòm phiếu';
       }
 
-      // Hiển thị gợi ý tạo hòm phiếu mới khi người dùng đã xem hết tất cả các hòm phiếu (ở trang cuối)
-      const banner = $('createSuggestionBanner');
-      if (banner) {
-        const isEnd = d.elections && d.elections.length > 0 && d.page >= d.pages;
-        banner.classList.toggle('hidden', !isEnd);
-      }
-
     } catch (e) {
       if ($('electionGrid')) {
         $('electionGrid').innerHTML = `
@@ -143,7 +141,6 @@
           <span class="font-medium">Không thể kết nối máy chủ: ${App.esc(e.message)}</span>
         </div>`;
       }
-      if ($('createSuggestionBanner')) $('createSuggestionBanner').classList.add('hidden');
     }
   }
 

@@ -28,8 +28,16 @@ def _csv_env(name, default=''):
     return [x.strip() for x in os.environ.get(name, default).split(',') if x.strip()]
 
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost'] + _csv_env('ALLOWED_HOSTS')
+ALLOWED_HOSTS = ['*'] if DEBUG else (['127.0.0.1', 'localhost'] + _csv_env('ALLOWED_HOSTS'))
 CSRF_TRUSTED_ORIGINS = _csv_env('CSRF_TRUSTED_ORIGINS')
+if DEBUG:
+    CSRF_TRUSTED_ORIGINS = list(set(CSRF_TRUSTED_ORIGINS + [
+        'http://localhost:8000',
+        'http://127.0.0.1:8000',
+        'https://*.devtunnels.ms',
+        'https://*.ngrok-free.app',
+        'https://*.ngrok.io',
+    ]))
 
 # Số proxy đứng trước ứng dụng — dùng để lấy IP thật cho rate limit (local = 0)
 TRUSTED_PROXY_COUNT = int(os.environ.get('TRUSTED_PROXY_COUNT', 0))
