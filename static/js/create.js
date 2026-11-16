@@ -40,7 +40,7 @@
     return `
       <!-- Left: Avatar Upload Box -->
       <div class="flex flex-col items-center gap-1.5 shrink-0 mx-auto md:mx-0">
-        <label class="w-20 h-20 rounded-2xl overflow-hidden bg-surface-container-high border border-outline-variant/40 shadow-sm relative group cursor-pointer flex items-center justify-center text-outline">
+        <label class="w-20 h-20 rounded-2xl overflow-hidden bg-slate-100 hover:bg-slate-200/70 border border-slate-200/90 shadow-2xs relative group cursor-pointer flex items-center justify-center text-slate-400 transition-colors">
           <input type="file" class="o-file sr-only" accept="image/png,image/jpeg,image/webp">
           <img class="thumb w-full h-full object-cover hidden" alt="Ảnh ứng viên">
           <span class="placeholder-icon material-symbols-outlined text-[32px] group-hover:scale-110 transition-transform">account_circle</span>
@@ -48,7 +48,7 @@
             <span class="material-symbols-outlined text-[20px]">photo_camera</span>
           </div>
         </label>
-        <span class="font-label-tag text-label-tag text-outline text-[10px] uppercase font-bold tracking-wider">
+        <span class="font-label-tag text-label-tag text-slate-500 text-[10px] uppercase font-bold tracking-wider">
           Ảnh đại diện
         </span>
       </div>
@@ -58,28 +58,28 @@
         <div class="flex items-center justify-between gap-space-sm">
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-space-sm flex-1">
             <div class="space-y-1">
-              <label class="o-label-title font-headline-sm text-headline-sm text-on-surface font-semibold text-xs">Tên ứng viên #${id}</label>
-              <input type="text" class="o-label w-full bg-surface-container-lowest border border-outline-variant/50 focus:border-primary px-3 py-2 rounded-xl font-headline-sm text-headline-sm text-on-surface outline-none font-semibold text-sm transition-all" placeholder="Nhập họ và tên ứng viên..." value="${App.esc(label)}">
+              <label class="o-label-title font-headline-sm text-headline-sm text-slate-700 font-semibold text-xs">Tên ứng viên #${id}</label>
+              <input type="text" class="o-label w-full bg-white border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/15 px-3 py-2 rounded-xl font-headline-sm text-headline-sm text-slate-800 outline-none font-semibold text-sm transition-all shadow-2xs" placeholder="Nhập họ và tên ứng viên..." value="${App.esc(label)}">
             </div>
             <div class="space-y-1">
-              <label class="o-role-title font-headline-sm text-headline-sm text-on-surface font-semibold text-xs">Chức vụ / Đơn vị đề cử</label>
-              <input type="text" class="o-role w-full bg-surface-container-lowest border border-outline-variant/50 focus:border-primary px-3 py-2 rounded-xl font-body-md text-body-md text-on-surface outline-none text-sm transition-all" placeholder="VD: Lớp trưởng, Trưởng ban..." value="${App.esc(role)}">
+              <label class="o-role-title font-headline-sm text-headline-sm text-slate-700 font-semibold text-xs">Chức vụ / Đơn vị đề cử</label>
+              <input type="text" class="o-role w-full bg-white border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/15 px-3 py-2 rounded-xl font-body-md text-body-md text-slate-800 outline-none text-sm transition-all shadow-2xs" placeholder="VD: Lớp trưởng, Trưởng ban..." value="${App.esc(role)}">
             </div>
           </div>
 
           <div class="flex items-center gap-1.5 self-start pt-5">
-            <span class="o-id-badge px-2 py-0.5 rounded-md bg-surface-container-high text-primary font-label-code text-label-code font-bold text-xs">
+            <span class="o-id-badge px-2.5 py-0.5 rounded-md bg-blue-50 text-blue-700 font-label-code text-label-code font-bold text-xs border border-blue-200/60">
               ID: #${idStr}
             </span>
-            <button type="button" class="o-del text-outline hover:text-error transition-colors p-1 cursor-pointer" title="Xóa dòng này">
+            <button type="button" class="o-del text-slate-400 hover:text-error transition-colors p-1 cursor-pointer" title="Xóa dòng này">
               <span class="material-symbols-outlined text-[20px]">delete</span>
             </button>
           </div>
         </div>
 
         <div class="space-y-1 pt-1">
-          <label class="font-headline-sm text-headline-sm text-on-surface-variant font-medium text-xs">Cương lĩnh hành động tóm tắt</label>
-          <input type="text" class="o-desc w-full bg-surface-container-lowest border border-outline-variant/50 focus:border-primary px-3 py-2 rounded-xl font-body-sm text-body-sm text-on-surface outline-none transition-all" placeholder="Nêu các cam kết hoặc mục tiêu chính..." value="${App.esc(desc)}">
+          <label class="font-headline-sm text-headline-sm text-slate-700 font-semibold text-xs">Mô tả</label>
+          <input type="text" class="o-desc w-full bg-white border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/15 px-3 py-2 rounded-xl font-body-sm text-body-sm text-slate-800 outline-none transition-all shadow-2xs" placeholder="Nêu các cam kết hoặc mục tiêu chính..." value="${App.esc(desc)}">
         </div>
       </div>
     `;
@@ -134,7 +134,7 @@
   function addRow(label = '', role = '', desc = '', imageDataUrl = null, fileObj = null) {
     const id = ++rowSeq;
     const div = document.createElement('div');
-    div.className = 'candidate-row rounded-2xl p-space-md bg-surface-container-low/50 border border-surface-container-high hover:border-primary/40 transition-all flex flex-col md:flex-row items-start gap-space-md relative';
+    div.className = 'candidate-row rounded-2xl p-space-md bg-slate-50/80 border border-slate-200/90 hover:border-blue-300 transition-all flex flex-col md:flex-row items-start gap-space-md relative shadow-2xs';
     div.dataset.id = id;
     div.innerHTML = candidateRowHtml(id, label, role, desc);
 
@@ -957,7 +957,7 @@
 
               ${o.description ? `
                 <div class="p-3 rounded-xl bg-surface-container-low/60 border border-surface-container-high/40 text-on-surface-variant font-body-sm text-xs sm:text-sm leading-relaxed whitespace-pre-wrap">
-                  <span class="font-bold text-on-surface block mb-0.5">${isProposal ? 'Nội dung chi tiết:' : 'Cương lĩnh hành động:'}</span>
+                  <span class="font-bold text-on-surface block mb-0.5">${isProposal ? 'Nội dung chi tiết:' : 'Mô tả:'}</span>
                   ${App.esc(o.description)}
                 </div>
               ` : ''}

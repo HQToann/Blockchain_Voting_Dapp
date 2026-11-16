@@ -402,7 +402,7 @@ var ElectionCards = window.ElectionCards = (function () {
               <div class="${myVoted ? 'bg-emerald-50/80 border-emerald-200/90' : 'bg-surface-container-low border-surface-container-high/40'} p-space-md rounded-xl flex flex-col gap-1 border">
                 <div class="flex items-center gap-1 ${myVoted ? 'text-emerald-700' : (isLeader ? 'text-primary' : 'text-secondary')} font-headline-sm text-body-md font-bold">
                   <span class="material-symbols-outlined text-[18px]">flag</span>
-                  ${kind === 1 ? 'Nội dung chi tiết' : 'Cương lĩnh hành động'}
+                  ${kind === 1 ? 'Nội dung chi tiết' : 'Mô tả'}
                 </div>
                 <p class="font-body-md text-body-md ${myVoted ? 'text-emerald-950 font-medium' : 'text-on-surface-variant'} leading-relaxed whitespace-pre-wrap">
                   ${esc(o.description)}
