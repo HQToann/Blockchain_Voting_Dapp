@@ -70,17 +70,17 @@
   // 3. Render Thẻ Biên Lai Xác Minh Hoàn Chỉnh (Material 3 Inspection Card)
   function renderReceiptCard(d, choicesHtml, explorerUrl) {
     return `
-      <div class="w-full bg-surface-container-lowest rounded-2xl shadow-xl overflow-hidden flex flex-col border border-surface-container-high/80 animate-[slideIn_0.3s_ease-out]">
+      <div class="w-full bg-surface-container-lowest rounded-2xl shadow-xl overflow-hidden flex flex-col border border-slate-200 animate-[slideIn_0.3s_ease-out]">
         <!-- Header Thanh trạng thái xác nhận -->
-        <div class="bg-gradient-to-r from-surface-container-high via-surface-container to-surface-container-high px-space-lg py-space-md flex flex-wrap items-center justify-between gap-space-md border-b border-surface-container-high">
+        <div class="bg-gradient-to-r from-emerald-50 via-white to-emerald-50/50 px-space-lg py-space-md flex flex-wrap items-center justify-between gap-space-md border-b border-emerald-200/80">
           <div class="flex items-center gap-space-md">
-            <div class="w-12 h-12 rounded-2xl bg-tertiary-container text-on-tertiary flex items-center justify-center shadow-md shrink-0">
+            <div class="w-12 h-12 rounded-2xl bg-emerald-500 text-white flex items-center justify-center shadow-md shadow-emerald-500/20 shrink-0">
               <span class="material-symbols-outlined text-[30px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
             </div>
             <div class="flex flex-col">
               <div class="flex items-center gap-space-xs">
                 <span class="font-headline-md text-headline-md text-on-surface font-bold">Phiếu Hợp Lệ &amp; Đã Ghi Nhận</span>
-                <span class="px-2.5 py-0.5 rounded-full bg-on-tertiary-container text-tertiary font-label-tag text-label-tag font-bold uppercase tracking-wider">Đã xác thực</span>
+                <span class="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-label-tag text-label-tag font-bold uppercase tracking-wider border border-emerald-200">Đã xác thực</span>
               </div>
               <span class="font-body-sm text-body-sm text-on-surface-variant">Lá phiếu đã được ghi nhận trên sổ cái Sepolia và có giá trị kiểm toán vĩnh viễn.</span>
             </div>
@@ -88,11 +88,11 @@
 
           <!-- Nút tải biên lai & in phiếu -->
           <div class="flex items-center gap-space-xs no-print">
-            <button id="btnDownload" type="button" class="px-space-md py-2 rounded-xl bg-surface-container-lowest hover:bg-surface-container-low text-on-surface font-headline-sm text-body-sm font-semibold flex items-center gap-1.5 shadow-sm border border-surface-container-high transition-colors cursor-pointer" title="Tải về máy file biên lai xác thực">
+            <button id="btnDownload" type="button" class="px-space-md py-2 rounded-xl bg-white hover:bg-slate-50 text-slate-700 font-headline-sm text-body-sm font-semibold flex items-center gap-1.5 shadow-xs border border-slate-200/90 transition-all cursor-pointer" title="Tải về máy file biên lai xác thực">
               <span class="material-symbols-outlined text-[18px]">download</span>
               <span>Tải biên lai</span>
             </button>
-            <button id="btnPrint" type="button" class="px-space-md py-2 rounded-xl bg-surface-container-lowest hover:bg-surface-container-low text-on-surface font-headline-sm text-body-sm font-semibold flex items-center gap-1.5 shadow-sm border border-surface-container-high transition-colors cursor-pointer" title="In phiếu bầu">
+            <button id="btnPrint" type="button" class="px-space-md py-2 rounded-xl bg-white hover:bg-slate-50 text-slate-700 font-headline-sm text-body-sm font-semibold flex items-center gap-1.5 shadow-xs border border-slate-200/90 transition-all cursor-pointer" title="In phiếu bầu">
               <span class="material-symbols-outlined text-[18px]">print</span>
               <span>In phiếu</span>
             </button>

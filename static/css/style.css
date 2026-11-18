@@ -2,6 +2,29 @@
    VoteChain Design System - Global Custom Styles & Utilities
    ========================================================================= */
 
+/* Tối ưu hóa hiển thị phông chữ & Khử răng cưa toàn diện cho Tiếng Việt */
+:root {
+    --font-sans: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+html, body {
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+button, input, textarea, select {
+    font-family: inherit;
+}
+
+/* Đảm bảo dấu thanh Tiếng Việt (hỏi, ngã, mũ, râu) không bị đè dính hoặc cắt góc */
+h1, h2, h3, h4, h5, h6 {
+    text-rendering: optimizeLegibility;
+    letter-spacing: -0.012em;
+}
+
 /* Thông báo Toasts dạng nổi */
 .toasts-container {
     position: fixed;
@@ -39,3 +62,319 @@
         display: none !important;
     }
 }
+
+/* =========================================================================
+   VoteChain Universal Button & Interactive Hover System
+   Chuẩn hóa hiệu ứng phản hồi xúc giác (Tactile Hover & Elevation) cho mọi nút bấm
+   ========================================================================= */
+
+/* Tất cả các thẻ button và liên kết dạng nút */
+button,
+.btn,
+a.btn,
+.chip,
+.filter-pill,
+.tab-btn,
+.quick-search-tag,
+.candidate-select-btn {
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+button:focus,
+button:focus-visible {
+    outline: none;
+}
+
+/* 1. NÚT CHÍNH (Primary Buttons: Xanh dương) */
+button.bg-primary,
+button.bg-primary-container,
+a.bg-primary,
+a.bg-primary-container,
+#btnVote:not([disabled]),
+#btnVerify,
+#submit,
+#btnPreviewDeploy,
+#btnSearchSubmit,
+#btnConnect,
+.btn-primary {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+button.bg-primary:hover,
+button.bg-primary-container:hover,
+a.bg-primary:hover,
+a.bg-primary-container:hover,
+#btnVote:not([disabled]):hover,
+#btnVerify:hover,
+#submit:hover,
+#btnPreviewDeploy:hover,
+#btnSearchSubmit:hover,
+#btnConnect:hover,
+.btn-primary:hover {
+    background-color: #1d4ed8 !important; /* Xanh đậm sắc nét (blue-700) */
+    box-shadow: 0 6px 18px -2px rgba(37, 99, 235, 0.38), 0 2px 6px -1px rgba(37, 99, 235, 0.2) !important;
+    transform: translateY(-2px) !important;
+}
+
+button.bg-primary:active,
+button.bg-primary-container:active,
+a.bg-primary:active,
+a.bg-primary-container:active,
+#btnVote:not([disabled]):active,
+#btnVerify:active,
+#submit:active,
+#btnPreviewDeploy:active,
+#btnSearchSubmit:active,
+#btnConnect:active,
+.btn-primary:active {
+    background-color: #1e40af !important;
+    transform: translateY(0) !important;
+    box-shadow: 0 2px 4px 0 rgba(37, 99, 235, 0.2) !important;
+}
+
+/* 2. NÚT NỀN SÁNG / TRẮNG / VIỀN (Secondary & Outline Buttons) */
+button.bg-surface-container-low:not(.active),
+button.bg-surface-container-high:not(.active),
+button.bg-surface-container-lowest:not(.active),
+a.bg-surface-container-low,
+a.bg-surface-container-high,
+a.bg-surface-container-lowest,
+.btn-secondary,
+.btn-outline {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+button.bg-surface-container-low:not(.active):hover,
+button.bg-surface-container-high:not(.active):hover,
+button.bg-surface-container-lowest:not(.active):hover,
+a.bg-surface-container-low:hover,
+a.bg-surface-container-high:hover,
+a.bg-surface-container-lowest:hover,
+.btn-secondary:hover,
+.btn-outline:hover {
+    background-color: #eff6ff !important; /* Nền xanh phấn nhẹ nhàng */
+    color: #1d4ed8 !important; /* Chữ & icon chuyển sang xanh nổi bật */
+    border-color: #93c5fd !important;
+    box-shadow: 0 4px 14px -2px rgba(15, 23, 42, 0.08) !important;
+    transform: translateY(-1.5px) !important;
+}
+
+button.bg-surface-container-low:not(.active):active,
+button.bg-surface-container-high:not(.active):active,
+button.bg-surface-container-lowest:not(.active):active,
+a.bg-surface-container-low:active,
+a.bg-surface-container-high:active,
+a.bg-surface-container-lowest:active,
+.btn-secondary:active,
+.btn-outline:active {
+    background-color: #dbeafe !important;
+    transform: translateY(0) !important;
+    box-shadow: none !important;
+}
+
+/* 3. NÚT KẾT NỐI VÍ TRÊN HEADER (#btnWallet) */
+#btnWallet {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+#btnWallet:hover {
+    background-color: #eff6ff !important;
+    border-color: #93c5fd !important;
+    box-shadow: 0 4px 14px -2px rgba(37, 99, 235, 0.18) !important;
+    transform: translateY(-1.5px) !important;
+}
+#btnWallet:hover #walletText,
+#btnWallet:hover #walletAddress {
+    color: #1d4ed8 !important;
+}
+#btnWallet:active {
+    transform: translateY(0) !important;
+    box-shadow: 0 2px 4px 0 rgba(37, 99, 235, 0.1) !important;
+}
+
+/* 4. CÁC NÚT HÀNH ĐỘNG TRÊN THẺ BẦU CỬ (Cards: Bỏ phiếu ngay / Xem kết quả) */
+.btn-card-action {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+.btn-card-action:hover {
+    transform: translateY(-2px) !important;
+}
+.btn-card-action:active {
+    transform: translateY(0) !important;
+}
+
+/* 5. CÁC NÚT PHÂN TRANG (PAGER) */
+.pager button {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+.pager button:not([disabled]):hover {
+    background-color: #dbeafe !important;
+    color: #1d4ed8 !important;
+    border-color: #93c5fd !important;
+    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2) !important;
+    transform: translateY(-2px) !important;
+}
+.pager button:not([disabled]):active {
+    transform: translateY(0) !important;
+}
+.pager button[disabled] {
+    cursor: not-allowed !important;
+    opacity: 0.4 !important;
+}
+
+/* 6. CHIPS, FILTER PILLS & TAB BUTTONS */
+.chip,
+.filter-pill {
+    transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    position: relative;
+    user-select: none;
+}
+
+.count-badge {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-variant-numeric: tabular-nums;
+    padding: 1.5px 7px !important;
+    border-radius: 9999px !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    line-height: 1.2 !important;
+    margin-left: 6px !important;
+    min-width: 20px;
+    transition: all 0.18s ease !important;
+}
+
+/* Inactive Chip & Inactive Filter Pill */
+.chip:not(.active),
+.filter-pill:not(.active) {
+    background-color: transparent !important;
+    color: #475569 !important; /* slate-600 */
+}
+.chip:not(.active) .count-badge,
+.filter-pill:not(.active) .count-badge {
+    background-color: #e2e8f0 !important; /* slate-200 */
+    color: #334155 !important; /* slate-700 */
+}
+.chip:not(.active):hover,
+.filter-pill:not(.active):hover {
+    background-color: #e2e8f0 !important;
+    color: #0f172a !important;
+}
+.chip:not(.active):hover .count-badge,
+.filter-pill:not(.active):hover .count-badge {
+    background-color: #cbd5e1 !important; /* slate-300 */
+    color: #0f172a !important;
+}
+
+/* Active Chip & Active Filter Pill */
+.chip.active,
+.filter-pill.active {
+    background-color: #2563eb !important; /* Primary blue */
+    color: #ffffff !important;
+    box-shadow: 0 2px 8px -1px rgba(37, 99, 235, 0.35) !important;
+}
+.chip.active .count-badge,
+.filter-pill.active .count-badge {
+    background-color: rgba(255, 255, 255, 0.22) !important;
+    color: #ffffff !important;
+}
+.chip.active:hover,
+.filter-pill.active:hover {
+    background-color: #1d4ed8 !important;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.45) !important;
+}
+
+.tab-btn:not(.active):hover {
+    background-color: #e2e8f0 !important;
+    color: #0f172a !important;
+    transform: translateY(-1px) !important;
+}
+.tab-btn.active:hover {
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08) !important;
+    transform: translateY(-1px) !important;
+}
+
+/* 7. THẺ GỢI Ý TÌM KIẾM NHANH (Quick Search Tags) */
+.quick-search-tag:hover {
+    background-color: #dbeafe !important;
+    color: #1d4ed8 !important;
+    border-color: #93c5fd !important;
+    transform: translateY(-1.5px) !important;
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.15) !important;
+}
+.quick-search-tag:active {
+    transform: translateY(0) !important;
+}
+
+/* 8. NÚT ĐÓNG KHẨN CẤP / XÓA BẢN NHÁP (Danger Buttons) */
+#btnClose:hover,
+#btnClearAllDrafts:hover,
+.btn-danger:hover {
+    background-color: #b91c1c !important;
+    box-shadow: 0 4px 14px rgba(220, 38, 38, 0.35) !important;
+    transform: translateY(-1.5px) !important;
+}
+#btnClose:active,
+#btnClearAllDrafts:active,
+.btn-danger:active {
+    background-color: #991b1b !important;
+    transform: translateY(0) !important;
+}
+
+/* 9. NÚT BỎ PHIẾU KHI ĐƯỢC KÍCH HOẠT TRÊN STICKY PANEL */
+#btnVote:not([disabled]) {
+    background-color: #2563eb !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 14px 0 rgba(37, 99, 235, 0.35) !important;
+}
+#btnVote:not([disabled]):hover {
+    background-color: #1d4ed8 !important;
+    box-shadow: 0 6px 20px 0 rgba(37, 99, 235, 0.45) !important;
+    transform: translateY(-2px) !important;
+}
+#btnVote:not([disabled]):active {
+    background-color: #1e40af !important;
+    transform: translateY(0) !important;
+}
+
+/* 10. MODAL XÁC NHẬN WEB3 & BỎ PHIẾU */
+#voteModal {
+    animation: modalFadeIn 0.2s ease-out;
+}
+#voteModal > div {
+    animation: modalZoomIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes modalFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+@keyframes modalZoomIn {
+    from { opacity: 0; transform: scale(0.96) translateY(6px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* 11. HIỆU ỨNG CHẠY HỆ SINH THÁI CÔNG NGHỆ (INFINITE MARQUEE TICKER) */
+@keyframes marquee-scroll {
+    0% {
+        transform: translateX(0%);
+    }
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+.animate-marquee {
+    display: flex;
+    width: max-content;
+    animation: marquee-scroll 24s linear infinite;
+    will-change: transform;
+}
+
+.animate-marquee:hover {
+    animation-play-state: paused;
+}
+
+

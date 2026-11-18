@@ -29,19 +29,19 @@
       if ($('statOpenElections')) $('statOpenElections').textContent = `${openCount} đang mở`;
       if ($('statTotalVoters')) $('statTotalVoters').textContent = totalVoters.toLocaleString('vi-VN');
 
-      // Cập nhật số đếm trên các Tab trạng thái
-      if ($('tabCountAll')) $('tabCountAll').textContent = `(${totalElections})`;
-      if ($('tabCountOpen')) $('tabCountOpen').textContent = `(Live - ${openCount})`;
-      if ($('tabCountUpcoming')) $('tabCountUpcoming').textContent = `(${s.upcoming_elections || 0})`;
-      if ($('tabCountEnded')) $('tabCountEnded').textContent = `(${s.ended_elections || 0})`;
+      // Cập nhật số đếm trên các Tab trạng thái (dạng badge gọn gàng)
+      if ($('tabCountAll')) $('tabCountAll').textContent = totalElections;
+      if ($('tabCountOpen')) $('tabCountOpen').textContent = openCount;
+      if ($('tabCountUpcoming')) $('tabCountUpcoming').textContent = s.upcoming_elections || 0;
+      if ($('tabCountEnded')) $('tabCountEnded').textContent = s.ended_elections || 0;
     } catch (err) {
       console.warn('Lỗi cập nhật thống kê:', err);
     }
   }
 
-  // 2. Tải danh sách hòm phiếu thật từ API
+  // 2. Tải danh sách hòm phiếu thật từ API (3 cột x 3 hàng = 9 hòm phiếu mỗi trang)
   async function load() {
-    const p = new URLSearchParams({ status: st.status, page: st.page, page_size: 10 });
+    const p = new URLSearchParams({ status: st.status, page: st.page, page_size: 9 });
     if (st.kind) p.set('kind', st.kind);
     if (st.q) p.set('q', st.q);
     if (st.sort) p.set('sort', st.sort);
@@ -106,7 +106,12 @@
               </div>`;
           }
         } else {
-          listEl.innerHTML = d.elections.map((e) => Cards.card(e, App.state.address)).join('');
+          let html = d.elections.map((e) => Cards.card(e, App.state.address)).join('');
+          // Gợi ý tạo hòm phiếu mới nằm ở ô cuối cùng của lưới khi người dùng đã xem hết tất cả các hòm phiếu (ở trang cuối)
+          if (d.page >= d.pages && typeof Cards.createPromptCard === 'function') {
+            html += Cards.createPromptCard();
+          }
+          listEl.innerHTML = html;
         }
       }
 
@@ -128,13 +133,6 @@
           : '0 hòm phiếu';
       }
 
-      // Hiển thị gợi ý tạo hòm phiếu mới khi người dùng đã xem hết tất cả các hòm phiếu (ở trang cuối)
-      const banner = $('createSuggestionBanner');
-      if (banner) {
-        const isEnd = d.elections && d.elections.length > 0 && d.page >= d.pages;
-        banner.classList.toggle('hidden', !isEnd);
-      }
-
     } catch (e) {
       if ($('electionGrid')) {
         $('electionGrid').innerHTML = `
@@ -143,7 +141,6 @@
           <span class="font-medium">Không thể kết nối máy chủ: ${App.esc(e.message)}</span>
         </div>`;
       }
-      if ($('createSuggestionBanner')) $('createSuggestionBanner').classList.add('hidden');
     }
   }
 
