@@ -1,0 +1,11 @@
+{% load i18n %}
+<div class="inline-flex items-center shrink-0">
+  <select onchange="window.location.href=this.value;"
+    class="h-9 px-3.5 rounded-xl bg-slate-50 hover:bg-white focus:bg-white text-slate-700 text-xs font-semibold border border-slate-200 outline-none cursor-pointer transition-all shadow-2xs focus:border-blue-600 focus:ring-2 focus:ring-blue-500/10">
+    {% for choice in choices %}
+      <option value="{{ choice.query_string|iriencode }}"{% if choice.selected %} selected{% endif %}>
+        {% blocktranslate with filter_title=title %}{{ filter_title }}{% endblocktranslate %}: {{ choice.display }}
+      </option>
+    {% endfor %}
+  </select>
+</div>
