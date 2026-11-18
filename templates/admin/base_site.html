@@ -1,0 +1,20 @@
+{% extends "admin/base.html" %}
+
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | VoteChain Admin{% endblock %}
+
+{% block branding %}
+<a href="{% url 'admin:index' %}" class="flex items-center gap-2.5 text-decoration-none group">
+  <div class="w-9 h-9 rounded-xl bg-blue-100 flex items-center justify-center text-blue-600 shadow-2xs group-hover:bg-blue-600 group-hover:text-white transition-all">
+    <i class="fa-solid fa-cube text-lg"></i>
+  </div>
+  <div class="flex flex-col">
+    <div class="flex items-center gap-1.5">
+      <span class="font-bold text-slate-900 text-base leading-tight group-hover:text-blue-600 transition-colors">VoteChain Admin</span>
+      <span class="px-1.5 py-0.2 rounded-md bg-blue-50 text-blue-700 border border-blue-200 font-mono text-[10px] font-bold">Portal</span>
+    </div>
+    <span class="text-[10px] font-mono text-slate-500 uppercase tracking-wider font-semibold">Nền tảng Quản trị On-Chain</span>
+  </div>
+</a>
+{% endblock %}
+
+{% block nav-global %}{% endblock %}
