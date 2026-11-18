@@ -5,6 +5,7 @@
 (async () => {
   await App.init();
   const $ = App.$;
+  const Cards = window.ElectionCards || {};
   const ADDR = location.pathname.split('/').filter(Boolean)[1];
   const isNew = new URLSearchParams(location.search).get('new') === '1';
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -47,8 +48,41 @@
       ]);
       elig = { connected: true, voted, whitelisted, chainStatus: Number(st) };
       if (voted) {
-        const v = await App.api(`/api/elections/${ADDR}/voters/?voter=${me}`);
-        myChoices = v.votes.length ? v.votes[0] : null;
+        try {
+          const v = await App.api(`/api/elections/${ADDR}/voters/?voter=${me}`);
+          if (v && v.votes && v.votes.length) {
+            myChoices = v.votes[0];
+            try {
+              localStorage.setItem(`vote_${ADDR.toLowerCase()}_${me.toLowerCase()}`, JSON.stringify(myChoices));
+            } catch (_) {}
+          }
+        } catch (_) {}
+        if (!myChoices) {
+          try {
+            const raw = localStorage.getItem(`vote_${ADDR.toLowerCase()}_${me.toLowerCase()}`);
+            if (raw) myChoices = JSON.parse(raw);
+          } catch (_) {}
+        }
+        if (!myChoices) {
+          try {
+            const filter = c.filters.VoteCast(me);
+            const events = await c.queryFilter(filter, -10000);
+            if (events && events.length) {
+              const lastEvt = events[events.length - 1];
+              const rawChoices = lastEvt.args.choices || lastEvt.args[1];
+              const choices = Array.from(rawChoices).map(Number);
+              myChoices = {
+                voter: me,
+                choices: choices,
+                choice_labels: choices.map((id) => E.options.find((o) => o.id === id)?.label || `#${id}`),
+                tx_hash: lastEvt.transactionHash
+              };
+              try {
+                localStorage.setItem(`vote_${ADDR.toLowerCase()}_${me.toLowerCase()}`, JSON.stringify(myChoices));
+              } catch (_) {}
+            }
+          } catch (_) {}
+        }
       }
     } catch (e) {
       elig = { connected: true, error: App.errMsg(e) };
@@ -73,8 +107,8 @@
     if ($('crumbTitle')) $('crumbTitle').textContent = E.name;
     if ($('syncWarning')) $('syncWarning').classList.toggle('hidden', !E.indexer.lagging);
 
-    // Render Badges bằng ElectionCards
-    $('badges').innerHTML = ElectionCards.detailBadges(E, live, isOwner);
+    // Render Badges bằng Cards
+    $('badges').innerHTML = Cards.detailBadges ? Cards.detailBadges(E, live, isOwner) : '';
 
     // Meta line (Chủ sở hữu, Hòm phiếu contract, Thời gian tạo)
     const explorerUrl = App.cfg.explorer_url || 'https://sepolia.etherscan.io';
@@ -113,13 +147,13 @@
       </div>
       <div>
         ${k === 1
-          ? 'Mỗi cử tri chỉ được chọn <b>đúng 1</b> lựa chọn duy nhất.'
-          : `Mỗi cử tri được phép chọn <b>từ 1 đến ${k}</b> lựa chọn khác nhau.`
-        }
+        ? 'Mỗi cử tri chỉ được chọn <b>đúng 1</b> lựa chọn duy nhất.'
+        : `Mỗi cử tri được phép chọn <b>từ 1 đến ${k}</b> lựa chọn khác nhau.`
+      }
         ${E.is_private
-          ? '<br><span class="text-amber-800 font-medium flex items-center gap-1 mt-1"><span class="material-symbols-outlined text-[16px] text-amber-600">lock</span> Hòm phiếu riêng tư: Chỉ các địa chỉ ví nằm trong danh sách Whitelist được cấp quyền mới có thể bỏ phiếu.</span>'
-          : ''
-        }
+        ? '<br><span class="text-amber-800 font-medium flex items-center gap-1 mt-1"><span class="material-symbols-outlined text-[16px] text-amber-600">lock</span> Hòm phiếu riêng tư: Chỉ các địa chỉ ví nằm trong danh sách Whitelist được cấp quyền mới có thể bỏ phiếu.</span>'
+        : ''
+      }
       </div>
     `;
     $('ruleBox').innerHTML = ruleHtml;
@@ -267,24 +301,26 @@
     // Tìm ứng viên đang có nhiều phiếu nhất để gắn cờ "Đang dẫn đầu"
     const maxVotes = Math.max(0, ...E.options.map((o) => o.votes));
 
-    // Render danh sách thẻ ứng viên Material 3 bằng ElectionCards
+    // Render danh sách thẻ ứng viên Material 3 bằng Cards
     $('options').innerHTML = E.options.map((o) => {
       const isLeader = maxVotes > 0 && o.votes === maxVotes;
       const sel = selected.has(o.id);
       const full = canPick && !sel && selected.size >= E.max_choices && E.max_choices > 1;
       const noun = E.kind === 1 ? 'PHƯƠNG ÁN' : 'ỨNG VIÊN';
-      const myVoted = elig.voted && myChoices && myChoices.choices.includes(o.id);
+      const myVoted = elig.voted && myChoices && Array.isArray(myChoices.choices) && myChoices.choices.map(Number).includes(Number(o.id));
 
-      return ElectionCards.candidateCard(o, {
+      return Cards.candidateCard ? Cards.candidateCard(o, {
         isLeader,
         sel,
         canPick,
         full,
         noun,
         kind: E.kind,
-        myVoted,
+        myVoted: !!myVoted,
+        hasVoted: !!elig.voted,
+        isEnded: !open && live !== 'upcoming',
         contractAddress: E.address
-      });
+      }) : '';
     }).join('');
 
     // Cập nhật Nhãn Ứng viên Đã Chọn trên Sticky Control Panel
@@ -293,9 +329,14 @@
       return opt ? opt.label : '';
     }).filter(Boolean);
 
+    const isProp = E.kind === 1;
+    if ($('selected-candidate-title')) {
+      $('selected-candidate-title').textContent = isProp ? 'Phương án đã chọn:' : 'Ứng viên đã chọn:';
+    }
+
     if ($('selected-candidate-label')) {
       if (!selectedNames.length) {
-        $('selected-candidate-label').textContent = 'Chưa chọn ứng viên';
+        $('selected-candidate-label').textContent = isProp ? 'Chưa chọn phương án' : 'Chưa chọn ứng viên';
         $('selected-candidate-label').className = 'font-headline-sm text-headline-sm text-outline font-medium truncate max-w-[180px]';
       } else {
         $('selected-candidate-label').textContent = selectedNames.join(', ');
@@ -319,55 +360,209 @@
       } else if (E.is_private && !elig.whitelisted) {
         btnVoteText.textContent = 'Không có quyền Whitelist';
       } else if (!selected.size) {
-        btnVoteText.textContent = 'Vui lòng chọn ứng viên';
+        btnVoteText.textContent = isProp ? 'Vui lòng chọn phương án' : 'Vui lòng chọn ứng viên';
       } else if (selected.size === 1) {
-        btnVoteText.textContent = `Bỏ phiếu cho ${selectedNames[0]}`;
+        btnVoteText.textContent = isProp ? `Biểu quyết: ${selectedNames[0]}` : `Bỏ phiếu cho ${selectedNames[0]}`;
       } else {
-        btnVoteText.textContent = `Bỏ phiếu cho ${selected.size} lựa chọn`;
+        btnVoteText.textContent = isProp ? `Biểu quyết cho ${selected.size} phương án` : `Bỏ phiếu cho ${selected.size} lựa chọn`;
       }
     }
   }
 
   // ---------------------------------------------------------------- 6. Render Tab Kết Quả Chi Tiết
   function renderResults() {
-    const max = Math.max(0, ...E.options.map((o) => o.votes));
-    const items = E.options.map((o) => {
-      const isLeader = max > 0 && o.votes === max;
-      return `
-        <div class="bg-surface-container-low rounded-xl p-space-md border ${isLeader ? 'border-primary-container/60 bg-primary-container/[0.02]' : 'border-surface-container-high/60'} flex flex-col gap-2">
-          <div class="flex justify-between items-center font-headline-sm text-body-md">
-            <span class="text-on-surface font-semibold flex items-center gap-1.5">
-              ${isLeader ? '<span class="material-symbols-outlined text-amber-500 text-[18px]">trophy</span>' : ''}
-              ${App.esc(o.label)}
-            </span>
-            <span class="${isLeader ? 'text-primary font-bold' : 'text-on-surface-variant'} font-label-code text-label-code">
-              ${o.votes} phiếu (${o.percent}%)
-            </span>
+    const isEnded = (elig.connected && elig.chainStatus !== undefined) ? elig.chainStatus === 2 : liveStatus() === 'ended';
+    // Sắp xếp các lựa chọn theo số phiếu giảm dần để hiển thị trực quan và đúng chuẩn
+    const sortedOptions = [...(E.options || [])].sort((a, b) => b.votes - a.votes || a.id - b.id);
+    const max = Math.max(0, ...sortedOptions.map((o) => o.votes));
+
+    // 1. Banner vinh danh kết quả chung cuộc khi hòm phiếu đã kết thúc
+    let winnerBanner = '';
+    if (isEnded && max > 0) {
+      const winners = sortedOptions.filter((o) => o.votes === max);
+      if (winners.length === 1) {
+        const w = winners[0];
+        winnerBanner = `
+          <div class="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent border border-amber-300/80 flex items-center justify-between gap-4 shadow-xs">
+            <div class="flex items-center gap-3.5">
+              <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-500 text-white flex items-center justify-center shadow-md shadow-amber-500/20 shrink-0">
+                <span class="material-symbols-outlined text-[26px]">emoji_events</span>
+              </div>
+              <div>
+                <div class="text-[11px] font-bold text-amber-800 uppercase tracking-wider font-label-tag flex items-center gap-1">
+                  <span>KẾT QUẢ CHUNG CUỘC • HÒM PHIẾU ĐÃ ĐÓNG</span>
+                </div>
+                <h3 class="text-base sm:text-lg font-bold text-slate-900 mt-0.5">
+                  <span class="text-amber-700 font-extrabold">${App.esc(w.label)}</span> đã đắc cử với ${w.votes} phiếu (${w.percent}%)
+                </h3>
+              </div>
+            </div>
+            <div class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-100/80 text-amber-900 font-label-tag text-xs font-bold border border-amber-200 shrink-0">
+              <span class="material-symbols-outlined text-[15px] text-amber-600">verified</span>
+              <span>Đã chốt kết quả</span>
+            </div>
           </div>
-          <div class="w-full h-2.5 rounded-full bg-surface-container-high overflow-hidden">
-            <div class="h-full ${isLeader ? 'bg-primary-container' : 'bg-surface-container-highest'} rounded-full transition-all duration-500" style="width: ${Math.min(100, o.percent)}%"></div>
+        `;
+      } else {
+        const winnerNames = winners.map((w) => App.esc(w.label)).join(', ');
+        winnerBanner = `
+          <div class="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent border border-amber-300/80 flex items-center justify-between gap-4 shadow-xs">
+            <div class="flex items-center gap-3.5">
+              <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-500 text-white flex items-center justify-center shadow-md shrink-0">
+                <span class="material-symbols-outlined text-[26px]">emoji_events</span>
+              </div>
+              <div>
+                <div class="text-[11px] font-bold text-amber-800 uppercase tracking-wider font-label-tag">
+                  KẾT QUẢ CHUNG CUỘC • ĐỒNG HẠNG NHẤT
+                </div>
+                <h3 class="text-base sm:text-lg font-bold text-slate-900 mt-0.5">
+                  Hòa phiếu: <span class="text-amber-700 font-extrabold">${winnerNames}</span> (${max} phiếu)
+                </h3>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    // 2. Danh sách từng ứng viên với xếp hạng, ảnh đại diện, thanh tiến trình
+    const items = sortedOptions.map((o, idx) => {
+      const isLeader = max > 0 && o.votes === max;
+      const rank = idx + 1;
+      const leaderLabel = isEnded ? 'Đắc cử' : 'Đang dẫn đầu';
+      const initial = App.esc(o.label.charAt(0).toUpperCase());
+
+      return `
+        <div class="rounded-2xl p-4 sm:p-space-md border transition-all duration-200 flex flex-col gap-3 ${isLeader ? 'bg-gradient-to-r from-amber-50/70 via-white to-amber-50/30 border-amber-300/90 shadow-sm' : 'bg-surface-container-lowest border-slate-200/90 shadow-2xs hover:border-slate-300'}">
+          <div class="flex items-center justify-between gap-3 flex-wrap">
+            <div class="flex items-center gap-3 min-w-0">
+              <!-- Số thứ tự xếp hạng / Huy hiệu cúp -->
+              ${isLeader ? `
+                <div class="w-8 h-8 rounded-xl bg-amber-500 text-white flex items-center justify-center shadow-xs shrink-0" title="${leaderLabel}">
+                  <span class="material-symbols-outlined text-[18px]">emoji_events</span>
+                </div>
+              ` : `
+                <div class="w-8 h-8 rounded-xl bg-slate-100 text-slate-600 font-bold font-label-code text-xs flex items-center justify-center border border-slate-200 shrink-0">
+                  #${rank}
+                </div>
+              `}
+
+              <!-- Ảnh đại diện / Avatar ứng viên -->
+              ${o.image_url ? `
+                <img src="${App.esc(o.image_url)}" alt="${App.esc(o.label)}" class="w-9 h-9 rounded-xl object-cover border border-slate-200 shrink-0 bg-slate-100" onerror="this.style.display='none'" />
+              ` : `
+                <div class="w-9 h-9 rounded-xl bg-slate-100 text-primary font-bold text-sm flex items-center justify-center border border-slate-200 shrink-0">
+                  ${initial}
+                </div>
+              `}
+
+              <!-- Tên ứng viên & Badge -->
+              <div class="flex items-center gap-2 min-w-0 flex-wrap">
+                <span class="font-headline-sm text-sm sm:text-base font-bold text-slate-900 truncate">
+                  ${App.esc(o.label)}
+                </span>
+                ${isLeader ? `
+                  <span class="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 font-label-tag text-[11px] font-bold flex items-center gap-1 border border-amber-200 shrink-0">
+                    <span class="material-symbols-outlined text-[13px] text-amber-600">stars</span>
+                    <span>${leaderLabel}</span>
+                  </span>
+                ` : ''}
+              </div>
+            </div>
+
+            <!-- Số lượng phiếu & Phần trăm -->
+            <div class="flex items-baseline gap-1.5 shrink-0 ml-auto font-label-code">
+              <span class="text-sm sm:text-base font-bold ${isLeader ? 'text-amber-700 font-black' : 'text-slate-900'}">${o.votes}</span>
+              <span class="text-xs text-slate-500">phiếu</span>
+              <span class="px-2 py-0.5 rounded-lg text-xs font-bold ${isLeader ? 'bg-amber-100 text-amber-900 border border-amber-200' : 'bg-slate-100 text-slate-700 border border-slate-200'}">
+                ${o.percent}%
+              </span>
+            </div>
+          </div>
+
+          <!-- Thanh tiến trình kết quả -->
+          <div class="w-full h-3 rounded-full bg-slate-100 overflow-hidden border border-slate-200/60 p-0.5">
+            <div class="h-full rounded-full transition-all duration-700 ${isLeader ? 'bg-gradient-to-r from-amber-500 to-amber-400' : 'bg-primary'}" style="width: ${Math.min(100, Math.max(o.percent > 0 ? 3 : 0, o.percent))}%"></div>
           </div>
         </div>
       `;
     }).join('');
 
-    const wl = E.is_private ? `
-      <div class="text-center">
-        <span class="font-headline-xl text-headline-xl text-on-surface font-bold block">${E.whitelist_count || 0}</span>
-        <span class="font-body-sm text-body-sm text-on-surface-variant">Ví được cấp quyền</span>
-      </div>
-    ` : '';
+    let summaryHtml = '';
+    if (E.is_private) {
+      const turnout = (E.whitelist_count && E.whitelist_count > 0)
+        ? Math.round((E.total_voters / E.whitelist_count) * 100)
+        : 0;
+      summaryHtml = `
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div class="bg-surface-container-low p-3 sm:p-3.5 rounded-xl border border-surface-container-high/70 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center text-primary shrink-0">
+              <span class="material-symbols-outlined text-[22px]">how_to_reg</span>
+            </div>
+            <div class="min-w-0">
+              <span class="text-xs text-on-surface-variant font-medium block">Cử tri đã bỏ phiếu</span>
+              <span class="font-headline-md text-xl sm:text-2xl text-primary font-bold">${E.total_voters}</span>
+            </div>
+          </div>
+          <div class="bg-surface-container-low p-3 sm:p-3.5 rounded-xl border border-surface-container-high/70 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center text-secondary shrink-0">
+              <span class="material-symbols-outlined text-[22px]">playlist_add_check</span>
+            </div>
+            <div class="min-w-0">
+              <span class="text-xs text-on-surface-variant font-medium block">Ví trong Whitelist</span>
+              <span class="font-headline-md text-xl sm:text-2xl text-on-surface font-bold">${E.whitelist_count || 0}</span>
+            </div>
+          </div>
+          <div class="bg-surface-container-low p-3 sm:p-3.5 rounded-xl border border-surface-container-high/70 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center text-tertiary shrink-0">
+              <span class="material-symbols-outlined text-[22px]">pie_chart</span>
+            </div>
+            <div class="min-w-0">
+              <span class="text-xs text-on-surface-variant font-medium block">Tỷ lệ tham gia</span>
+              <span class="font-headline-md text-xl sm:text-2xl text-tertiary font-bold">${turnout}%</span>
+            </div>
+          </div>
+        </div>
+      `;
+    } else {
+      summaryHtml = `
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div class="bg-surface-container-low p-3 sm:p-3.5 rounded-xl border border-surface-container-high/70 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center text-primary shrink-0">
+              <span class="material-symbols-outlined text-[22px]">how_to_reg</span>
+            </div>
+            <div class="min-w-0">
+              <span class="text-xs text-on-surface-variant font-medium block">Cử tri đã bỏ phiếu</span>
+              <span class="font-headline-md text-xl sm:text-2xl text-primary font-bold">${E.total_voters}</span>
+            </div>
+          </div>
+          <div class="bg-surface-container-low p-3 sm:p-3.5 rounded-xl border border-surface-container-high/70 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center text-secondary shrink-0">
+              <span class="material-symbols-outlined text-[22px]">ballot</span>
+            </div>
+            <div class="min-w-0">
+              <span class="text-xs text-on-surface-variant font-medium block">Số lượng lựa chọn</span>
+              <span class="font-headline-md text-xl sm:text-2xl text-secondary font-bold">${E.options ? E.options.length : 0}</span>
+            </div>
+          </div>
+          <div class="bg-surface-container-low p-3 sm:p-3.5 rounded-xl border border-surface-container-high/70 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center text-tertiary shrink-0">
+              <span class="material-symbols-outlined text-[22px]">public</span>
+            </div>
+            <div class="min-w-0">
+              <span class="text-xs text-on-surface-variant font-medium block">Quyền tham gia</span>
+              <span class="font-headline-md text-sm sm:text-base text-tertiary font-bold truncate block">Công khai mọi ví</span>
+            </div>
+          </div>
+        </div>
+      `;
+    }
 
     $('pane-results').innerHTML = `
-      <div class="grid grid-cols-2 gap-space-md bg-surface-container-low p-space-md rounded-xl border border-surface-container-high/60">
-        <div class="text-center">
-          <span class="font-headline-xl text-headline-xl text-primary font-bold block">${E.total_voters}</span>
-          <span class="font-body-sm text-body-sm text-on-surface-variant">Tổng cử tri đã bỏ phiếu</span>
-        </div>
-        ${wl}
-      </div>
-      <div class="flex flex-col gap-space-sm pt-2">
-        ${items}
+      ${summaryHtml}
+      ${winnerBanner}
+      <div class="flex flex-col gap-3 pt-2">
+        ${items || '<div class="p-6 text-center text-on-surface-variant font-body-sm bg-surface-container-low rounded-xl">Chưa có ứng viên hoặc dữ liệu kết quả nào.</div>'}
       </div>
       ${E.max_choices > 1 ? '<p class="font-body-sm text-body-sm text-on-surface-variant text-center mt-2 flex items-center justify-center gap-1"><span class="material-symbols-outlined text-[16px] text-outline">info</span> Tổng tỷ lệ phần trăm có thể vượt 100% do cử tri được chọn nhiều lựa chọn.</p>' : ''}
     `;
@@ -399,40 +594,113 @@
     renderVoteCard(liveStatus());
   });
 
-  // ---------------------------------------------------------------- 8. Modal Xác Nhận Ký Giao Dịch Web3 (Metamask)
+  // ---------------------------------------------------------------- 8. Ước tính Phí Gas & Modal Xác Nhận Ký Web3 (Metamask)
+  async function estimateOpGasFee(gasUnits = 85000n) {
+    try {
+      let p = App.state.provider;
+      if (!p && App.cfg && App.cfg.rpc_url) {
+        p = new ethers.JsonRpcProvider(App.cfg.rpc_url);
+      }
+      if (p) {
+        const fee = await p.getFeeData();
+        const gasPrice = fee.gasPrice || 1000000000n;
+        const totalWei = gasPrice * BigInt(gasUnits);
+        const eth = parseFloat(ethers.formatEther(totalWei));
+        const ethFormatted = eth < 0.00001 ? '< 0.00001' : eth.toFixed(5);
+        const gwei = Math.max(1, Math.round(Number(ethers.formatUnits(gasPrice, 'gwei'))));
+        return {
+          eth: `~${ethFormatted} ETH`,
+          gwei: `${gwei} Gwei`
+        };
+      }
+    } catch (_) {}
+    return {
+      eth: gasUnits <= 60000n ? '~0.00006 ETH' : '~0.00012 ETH',
+      gwei: '~1 Gwei'
+    };
+  }
+
   const VoteModal = {
-    open(title, bodyHTML, onConfirm) {
+    open(optionsOrTitle, bodyHTML, onConfirm) {
       $('voteModal')?.remove();
+
+      let opts = {};
+      if (typeof optionsOrTitle === 'string') {
+        opts = {
+          title: optionsOrTitle,
+          bodyHTML: bodyHTML,
+          onConfirm: onConfirm
+        };
+      } else {
+        opts = optionsOrTitle || {};
+      }
+
+      const title = opts.title || 'Xác nhận giao dịch';
+      const badge = opts.badge || 'Giao dịch Web3';
+      const icon = opts.icon || 'verified_user';
+      const type = opts.type || 'info';
+      const isDanger = type === 'danger';
+      const confirmText = opts.confirmText || (isDanger ? 'Xác nhận thực hiện' : 'Ký giao dịch');
+      const confirmIcon = opts.confirmIcon || (isDanger ? 'warning' : 'draw');
+      const confirmClass = opts.confirmClass || (isDanger ? 'bg-error hover:bg-red-700 shadow-error/20' : 'bg-primary hover:bg-blue-700 shadow-primary/20');
+      const htmlContent = opts.bodyHTML || '';
+
       document.body.insertAdjacentHTML('beforeend', `
-        <div id="voteModal" class="fixed inset-0 bg-on-surface/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div class="bg-surface-container-lowest rounded-2xl p-space-lg w-full max-w-md shadow-2xl border border-surface-container-high flex flex-col gap-space-md">
-            <h3 id="vmTitle" class="font-headline-md text-headline-md text-on-surface font-bold text-center flex items-center justify-center gap-2">
-              <span class="material-symbols-outlined text-primary text-[24px]">verified_user</span> ${title}
-            </h3>
-            <div id="vmBody" class="font-body-md text-on-surface">${bodyHTML}</div>
-            <div id="vmActions" class="flex justify-end gap-space-sm pt-2">
-              <button id="vmCancel" type="button" class="px-space-md py-2 rounded-xl bg-surface-container-high text-on-surface font-headline-sm text-body-md font-semibold hover:bg-surface-container-highest transition-all cursor-pointer">
+        <div id="voteModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-50 flex items-center justify-center p-4">
+          <div class="bg-surface-container-lowest rounded-3xl p-5 sm:p-6 w-full max-w-md shadow-2xl border border-surface-container-high/70 flex flex-col gap-4 relative">
+            <!-- Nút đóng góc phải -->
+            <button id="vmCloseBtn" type="button" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-surface-container-high text-on-surface-variant hover:bg-slate-200 hover:text-on-surface flex items-center justify-center transition-all cursor-pointer">
+              <span class="material-symbols-outlined text-[18px]">close</span>
+            </button>
+
+            <!-- Tiêu đề & Biểu tượng -->
+            <div class="flex items-center gap-3 pr-8">
+              <div class="w-11 h-11 rounded-2xl ${isDanger ? 'bg-red-100 text-error ring-4 ring-red-100/50' : 'bg-blue-100 text-primary ring-4 ring-blue-100/50'} flex items-center justify-center shrink-0">
+                <span class="material-symbols-outlined text-[24px]">${icon}</span>
+              </div>
+              <div class="flex flex-col">
+                <span class="text-[11px] font-bold tracking-wider uppercase ${isDanger ? 'text-error' : 'text-primary'}">${badge}</span>
+                <h3 id="vmTitle" class="font-headline-md text-lg sm:text-xl font-bold text-on-surface leading-tight">
+                  ${App.esc(title)}
+                </h3>
+              </div>
+            </div>
+
+            <!-- Nội dung chính -->
+            <div id="vmBody" class="font-body-md text-on-surface flex flex-col gap-3">
+              ${htmlContent}
+            </div>
+
+            <!-- Nút hành động -->
+            <div id="vmActions" class="flex items-center justify-end gap-3 pt-2 border-t border-surface-container/60">
+              <button id="vmCancel" type="button" class="px-4 py-2.5 rounded-xl border border-surface-container-high/80 text-on-surface-variant font-headline-sm text-sm font-semibold hover:bg-surface-container-high transition-all cursor-pointer">
                 Hủy
               </button>
-              <button id="vmConfirm" type="button" class="px-space-md py-2 rounded-xl bg-primary-container text-on-primary font-headline-sm text-body-md font-bold hover:bg-primary transition-all flex items-center gap-1.5 shadow-sm cursor-pointer">
-                <span class="material-symbols-outlined text-[18px]">draw</span>
-                Ký giao dịch
+              <button id="vmConfirm" type="button" class="px-5 py-2.5 rounded-xl ${confirmClass} text-white font-headline-sm text-sm font-bold flex items-center gap-1.5 shadow-md hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer">
+                <span class="material-symbols-outlined text-[18px]">${confirmIcon}</span>
+                ${confirmText}
               </button>
             </div>
           </div>
         </div>
       `);
-      $('vmCancel').onclick = () => $('voteModal')?.remove();
+
+      const close = () => $('voteModal')?.remove();
+      $('vmCloseBtn').onclick = close;
+      $('vmCancel').onclick = close;
       $('vmConfirm').onclick = () => {
         $('vmActions').classList.add('hidden');
-        onConfirm();
+        $('vmCloseBtn').classList.add('hidden');
+        if (opts.onConfirm) opts.onConfirm();
       };
     },
 
     progress(stepIndex, text, status = 'processing') {
       let stepsContainer = $('vmSteps');
       if (!stepsContainer) {
-        $('vmBody').innerHTML = `<div id="vmSteps" class="flex flex-col gap-3 py-2"></div>`;
+        $('vmBody').innerHTML = `
+          <div class="bg-surface-container-low rounded-2xl p-4 border border-surface-container-high/60 flex flex-col gap-3" id="vmSteps"></div>
+        `;
         stepsContainer = $('vmSteps');
       }
 
@@ -443,37 +711,38 @@
           oldSpinner.outerHTML = `<span class="material-symbols-outlined text-${status === 'error' ? 'error' : 'outline'} text-[20px]">${status === 'error' ? 'cancel' : 'pause_circle'}</span>`;
         }
         stepsContainer.insertAdjacentHTML('beforeend', `
-          <div class="flex items-center gap-2 font-semibold ${status === 'error' ? 'text-error' : 'text-on-surface-variant'}">
-            <span class="material-symbols-outlined text-[20px]">${status === 'error' ? 'cancel' : 'pause_circle'}</span>
-            <span>${App.esc(text)}</span>
+          <div class="flex items-start gap-2.5 p-3 rounded-xl ${status === 'error' ? 'bg-red-50 text-error border border-red-200' : 'bg-surface-container-high text-on-surface-variant'} text-xs sm:text-sm font-semibold">
+            <span class="material-symbols-outlined text-[20px] shrink-0 mt-0.5">${status === 'error' ? 'cancel' : 'info'}</span>
+            <div class="flex-1 break-words">${App.esc(text)}</div>
           </div>
         `);
         $('vmActions').classList.remove('hidden');
         $('vmConfirm').classList.add('hidden');
-        $('vmCancel').textContent = 'Đóng';
+        $('vmCloseBtn').classList.remove('hidden');
+        $('vmCancel').textContent = 'Đóng lại';
         return;
       }
 
       if (oldSpinner) {
         const parentDiv = oldSpinner.closest('div');
-        if (parentDiv) parentDiv.className = 'flex items-center gap-2 text-on-surface-variant font-medium';
+        if (parentDiv) parentDiv.className = 'flex items-center gap-2 text-on-surface-variant text-xs sm:text-sm font-medium';
         oldSpinner.outerHTML = '<span class="material-symbols-outlined text-tertiary text-[20px]">check_circle</span>';
       }
 
       if (stepIndex === 2) {
         $('vmTitle').textContent = 'Hoàn tất giao dịch';
         stepsContainer.insertAdjacentHTML('beforeend', `
-          <div class="flex items-center gap-2 text-tertiary font-bold">
-            <span class="material-symbols-outlined text-[20px]">check_circle</span>
+          <div class="flex items-center gap-2 text-tertiary font-bold text-xs sm:text-sm p-3 rounded-xl bg-emerald-50 border border-emerald-200">
+            <span class="material-symbols-outlined text-[20px] text-emerald-600">verified</span>
             <span>${App.esc(text)}</span>
           </div>
         `);
-        setTimeout(() => $('voteModal')?.remove(), 3000);
+        setTimeout(() => $('voteModal')?.remove(), 2500);
       } else {
         $('vmTitle').textContent = 'Đang xử lý trên chuỗi...';
         stepsContainer.insertAdjacentHTML('beforeend', `
-          <div class="flex items-center gap-2 text-primary font-bold">
-            <span class="material-symbols-outlined text-[20px] animate-spin">progress_activity</span>
+          <div class="flex items-center gap-2 text-primary font-bold text-xs sm:text-sm p-2.5 rounded-xl bg-blue-50/60 border border-blue-100">
+            <span class="material-symbols-outlined text-[20px] animate-spin text-primary">progress_activity</span>
             <span>${App.esc(text)}</span>
           </div>
         `);
@@ -488,24 +757,78 @@
   $('btnVote').addEventListener('click', async () => {
     const ids = [...selected].sort((a, b) => a - b);
     if (!ids.length || ids.length > E.max_choices) return;
-    const names = ids.map((i) => E.options.find((o) => o.id === i).label).join(', ');
+    const selectedOptions = ids.map((i) => E.options.find((o) => o.id === i)).filter(Boolean);
+    const names = selectedOptions.map((o) => o.label).join(', ');
+    const noun = E.kind === 1 ? 'phương án' : 'ứng viên';
 
-    openConfirmModal(
-      'Xác nhận gửi phiếu',
-      `
-        <div class="bg-surface-container-low p-space-md rounded-xl border border-surface-container-high/60 mb-space-md">
-          <span class="font-body-sm text-body-sm text-on-surface-variant block mb-1">Bạn đang bỏ phiếu cho:</span>
-          <b class="font-headline-sm text-headline-sm text-primary block">${App.esc(names)}</b>
-        </div>
-        <div class="bg-amber-50 border-l-4 border-amber-500 p-3 rounded-xl text-amber-900 font-body-sm">
-          <span class="font-bold flex items-center gap-1 mb-1">
-            <span class="material-symbols-outlined text-amber-600 text-[18px]">warning</span>
-            Lưu ý bất biến Web3:
+    // Ước tính phí gas thực tế từ mạng Sepolia
+    const gasEst = await estimateOpGasFee(85000n);
+
+    const bodyHTML = `
+      <!-- Khối tóm tắt ứng viên được chọn -->
+      <div class="bg-primary/5 rounded-2xl p-3.5 border border-primary/20 flex flex-col gap-1.5">
+        <div class="flex items-center justify-between">
+          <span class="text-[11px] font-bold text-primary uppercase tracking-wide flex items-center gap-1">
+            <span class="material-symbols-outlined text-[15px]">how_to_vote</span>
+            ${ids.length > 1 ? `Lựa chọn của bạn (${ids.length} ${noun})` : `Lựa chọn của bạn`}
           </span>
-          Phiếu bầu sẽ được ký và ghi vĩnh viễn lên chuỗi khối Ethereum Sepolia. Bạn <b>KHÔNG THỂ</b> sửa đổi hoặc thu hồi sau khi gửi.
+          <span class="px-2 py-0.5 rounded-md bg-primary/10 text-primary text-[11px] font-bold">
+            #${ids.map((i) => String(i + 1).padStart(2, '0')).join(', #')}
+          </span>
         </div>
-      `,
-      async () => {
+        <div class="font-bold text-on-surface text-base sm:text-lg flex items-center gap-2">
+          <span class="material-symbols-outlined text-primary text-[20px] shrink-0">check_circle</span>
+          <span class="break-words font-headline-md">${App.esc(names)}</span>
+        </div>
+      </div>
+
+      <!-- Bảng thông số giao dịch & Phí gas cần trả -->
+      <div class="bg-surface-container-low rounded-2xl p-3 border border-surface-container-high/60 flex flex-col gap-2 text-xs">
+        <div class="flex items-center justify-between text-on-surface-variant pb-1.5 border-b border-surface-container/60">
+          <span class="flex items-center gap-1.5 text-on-surface-variant font-medium">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            Mạng chuỗi khối:
+          </span>
+          <span class="font-semibold text-on-surface">Ethereum Sepolia</span>
+        </div>
+        <div class="flex items-center justify-between text-on-surface-variant pb-1.5 border-b border-surface-container/60">
+          <span class="flex items-center gap-1.5 text-on-surface-variant font-medium">
+            <span class="material-symbols-outlined text-[15px] text-primary">local_gas_station</span>
+            Phí gas cần trả:
+          </span>
+          <div class="flex items-center gap-1 font-bold text-emerald-700">
+            <span>${gasEst.eth}</span>
+            <span class="text-[10px] text-outline font-normal">(${gasEst.gwei} • Testnet)</span>
+          </div>
+        </div>
+        <div class="flex items-center justify-between text-on-surface-variant">
+          <span class="flex items-center gap-1.5 text-on-surface-variant font-medium">
+            <span class="material-symbols-outlined text-[15px] text-outline">description</span>
+            Loại giao dịch:
+          </span>
+          <span class="font-mono text-[11px] text-on-surface bg-surface-container px-2 py-0.5 rounded font-medium">vote(uint256[])</span>
+        </div>
+      </div>
+
+      <!-- Cảnh báo bất biến Web3 -->
+      <div class="bg-amber-50/90 border border-amber-200/80 rounded-xl p-3 text-xs text-amber-900 leading-relaxed flex items-start gap-2">
+        <span class="material-symbols-outlined text-amber-600 text-[18px] shrink-0 mt-0.5">info</span>
+        <div>
+          Lá phiếu sẽ được ghi nhận <b>vĩnh viễn</b> trên chuỗi khối. Bạn <b>không thể sửa đổi hoặc thu hồi</b> sau khi ký xác nhận ví.
+        </div>
+      </div>
+    `;
+
+    openConfirmModal({
+      title: 'Xác nhận gửi phiếu',
+      badge: 'Bỏ phiếu Web3',
+      icon: 'how_to_vote',
+      type: 'vote',
+      confirmText: 'Ký giao dịch',
+      confirmIcon: 'draw',
+      confirmClass: 'bg-primary hover:bg-blue-700 shadow-primary/20',
+      bodyHTML,
+      onConfirm: async () => {
         $('btnVote').disabled = true;
         let rc = null;
         try {
@@ -527,6 +850,21 @@
           E.total_voters += 1;
           E.options.forEach((o) => o.percent = Math.round((o.votes / E.total_voters) * 100) || 0);
 
+          elig.voted = true;
+          myChoices = {
+            choices: ids,
+            choice_labels: ids.map((i) => {
+              const opt = E.options.find((o) => o.id === i);
+              return opt ? opt.label : `#${i}`;
+            }),
+            tx_hash: rc.hash,
+            voter: App.state.address,
+            time: new Date().toISOString()
+          };
+          try {
+            localStorage.setItem(`vote_${ADDR.toLowerCase()}_${App.state.address.toLowerCase()}`, JSON.stringify(myChoices));
+          } catch (_) {}
+
           renderResults();
           renderVoteCard(liveStatus());
           await refreshEligibility();
@@ -541,7 +879,7 @@
         }
         renderVoteCard(liveStatus());
       }
-    );
+    });
   });
 
   // ---------------------------------------------------------------- 10. Quản Trị Của Chủ Sở Hữu (Owner Panel)
@@ -597,19 +935,62 @@
   });
 
   $('btnClose').addEventListener('click', async () => {
-    openConfirmModal(
-      'Đóng hòm phiếu khẩn cấp',
-      `
-        <div class="bg-red-50 border-l-4 border-error p-3 rounded-xl text-error font-body-md mb-2">
-          <b class="flex items-center gap-1 mb-1">
-            <span class="material-symbols-outlined text-[18px]">warning</span>
-            CẢNH BÁO TỐI QUAN TRỌNG:
-          </b>
-          Bạn có chắc chắn muốn đóng hòm phiếu <b>NGAY BÂY GIỜ</b>?<br>
-          Sau khi giao dịch xác nhận trên blockchain, không ai có thể bỏ phiếu tiếp và hành động này <b>KHÔNG THỂ</b> hoàn tác!
+    const gasEst = await estimateOpGasFee(60000n);
+
+    const bodyHTML = `
+      <!-- Cảnh báo đỏ nổi bật -->
+      <div class="bg-red-50 border border-red-200/80 rounded-2xl p-3.5 text-xs text-red-900 leading-relaxed flex flex-col gap-2">
+        <div class="flex items-center gap-1.5 text-error font-bold text-xs sm:text-sm">
+          <span class="material-symbols-outlined text-[18px]">warning</span>
+          <span>CẢNH BÁO TỐI QUAN TRỌNG</span>
         </div>
-      `,
-      async () => {
+        <div>
+          Bạn có chắc chắn muốn đóng hòm phiếu <b>NGAY BÂY GIỜ</b>?
+        </div>
+        <div class="text-[11px] text-red-800 bg-red-100/60 p-2 rounded-xl border border-red-200 leading-normal">
+          Sau khi xác nhận trên blockchain, không ai có thể bỏ phiếu tiếp và hành động này <b>KHÔNG THỂ hoàn tác</b>!
+        </div>
+      </div>
+
+      <!-- Bảng thông số giao dịch & Phí gas cần trả -->
+      <div class="bg-surface-container-low rounded-2xl p-3 border border-surface-container-high/60 flex flex-col gap-2 text-xs">
+        <div class="flex items-center justify-between text-on-surface-variant pb-1.5 border-b border-surface-container/60">
+          <span class="flex items-center gap-1.5 text-on-surface-variant font-medium">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            Mạng chuỗi khối:
+          </span>
+          <span class="font-semibold text-on-surface">Ethereum Sepolia</span>
+        </div>
+        <div class="flex items-center justify-between text-on-surface-variant pb-1.5 border-b border-surface-container/60">
+          <span class="flex items-center gap-1.5 text-on-surface-variant font-medium">
+            <span class="material-symbols-outlined text-[15px] text-error">local_gas_station</span>
+            Phí gas cần trả:
+          </span>
+          <div class="flex items-center gap-1 font-bold text-slate-800">
+            <span>${gasEst.eth}</span>
+            <span class="text-[10px] text-outline font-normal">(${gasEst.gwei} • Testnet)</span>
+          </div>
+        </div>
+        <div class="flex items-center justify-between text-on-surface-variant">
+          <span class="flex items-center gap-1.5 text-on-surface-variant font-medium">
+            <span class="material-symbols-outlined text-[15px] text-outline">admin_panel_settings</span>
+            Quyền thực thi:
+          </span>
+          <span class="font-medium text-primary text-xs">Chủ sở hữu (Owner)</span>
+        </div>
+      </div>
+    `;
+
+    openConfirmModal({
+      title: 'Đóng hòm phiếu khẩn cấp',
+      badge: 'Quản trị viên',
+      icon: 'lock',
+      type: 'danger',
+      confirmText: 'Xác nhận đóng ngay',
+      confirmIcon: 'lock',
+      confirmClass: 'bg-error hover:bg-red-700 shadow-error/20',
+      bodyHTML,
+      onConfirm: async () => {
         try {
           setModalProgress(0, 'Đang chờ bạn ký xác nhận trong ví MetaMask...');
           await App.ensureChain();
@@ -618,13 +999,17 @@
           setModalProgress(1, 'Đang đợi Sepolia xác nhận giao dịch...');
           await tx.wait();
           setModalProgress(2, 'Đã đóng hòm phiếu vĩnh viễn trên chuỗi!');
-          setTimeout(refreshAll, 2500); setTimeout(refreshAll, 7000);
+          setTimeout(refreshAll, 2500);
+          setTimeout(refreshAll, 7000);
         } catch (e) {
-          if (e.code === 'ACTION_REJECTED' || e.code === 4001) setModalProgress(-1, 'Đã hủy', 'cancelled');
-          else setModalProgress(-1, App.errMsg(e), 'error');
+          if (e.code === 'ACTION_REJECTED' || e.code === 4001) {
+            setModalProgress(-1, 'Đã hủy bỏ thao tác đóng hòm phiếu', 'cancelled');
+          } else {
+            setModalProgress(-1, App.errMsg(e), 'error');
+          }
         }
       }
-    );
+    });
   });
 
   // ---------------------------------------------------------------- 11. Tab Phiếu Đã Bỏ & Whitelist
@@ -632,9 +1017,9 @@
     const el = $('pane-voters');
     try {
       const d = await App.api(`/api/elections/${ADDR}/voters/?page=${pages.voters}&page_size=15`);
-      el.innerHTML = ElectionCards.votersTable(d.votes) + (d.votes && d.votes.length ? '<div class="pager mt-4 flex justify-center" id="vPager"></div>' : '');
+      el.innerHTML = (Cards.votersTable ? Cards.votersTable(d.votes) : '') + (d.votes && d.votes.length ? '<div class="pager mt-4 flex justify-center" id="vPager"></div>' : '');
       const pg = $('vPager');
-      if (pg) ElectionCards.pager(pg, d.page, d.pages, (n) => { pages.voters = n; loadVoters(); });
+      if (pg && Cards.pager) Cards.pager(pg, d.page, d.pages, (n) => { pages.voters = n; loadVoters(); });
     } catch (e) {
       el.innerHTML = `<div class="bg-red-50 text-error p-3 rounded-xl font-body-sm">${App.esc(e.message)}</div>`;
     }
@@ -645,9 +1030,9 @@
     try {
       const d = await App.api(`/api/elections/${ADDR}/whitelist/?page=${pages.whitelist}&page_size=50`);
       const canRemove = App.sameAddr(App.state.address, E.owner) && ['open', 'upcoming'].includes(liveStatus());
-      el.innerHTML = ElectionCards.whitelistTable(d.entries, d.total, canRemove) + (d.entries && d.entries.length ? '<div class="pager mt-4 flex justify-center" id="wPager"></div>' : '');
+      el.innerHTML = (Cards.whitelistTable ? Cards.whitelistTable(d.entries, d.total, canRemove) : '') + (d.entries && d.entries.length ? '<div class="pager mt-4 flex justify-center" id="wPager"></div>' : '');
       const pg = $('wPager');
-      if (pg) ElectionCards.pager(pg, d.page, d.pages, (n) => { pages.whitelist = n; loadWhitelist(); });
+      if (pg && Cards.pager) Cards.pager(pg, d.page, d.pages, (n) => { pages.whitelist = n; loadWhitelist(); });
 
       el.querySelectorAll('[data-rm]').forEach((b) => b.addEventListener('click', async () => {
         try {

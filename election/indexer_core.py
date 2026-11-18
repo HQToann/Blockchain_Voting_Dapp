@@ -16,13 +16,14 @@ An toàn:
 """
 
 import logging
+import time
 
 from datetime import datetime, timezone as dt_timezone
 from functools import lru_cache
 
 from django.conf import settings
 from django.db import IntegrityError, transaction
-from django.db.models import F
+from django.db.models import F, Q
 from django.utils import timezone
 
 from eth_utils.abi import event_abi_to_log_topic
@@ -254,17 +255,16 @@ def process_log(w3, log, factory_address=None):
 def _sorted(logs):
     return sorted(logs, key=lambda l: (int(l['blockNumber']), int(l['logIndex'])))
 
-import time
-
 # Gọi RPC để lấy log, tích hợp cơ chế tự động chờ (Exponential Backoff) nếu bị chặn (lỗi 429)
 def _fetch_logs_with_retry(w3, params, max_retries=5):
     for attempt in range(max_retries):
         try:
             return w3.eth.get_logs(params)
         except Exception as e:
-            if '429' in str(e) and attempt < max_retries - 1:
+            err_msg = str(e).lower()
+            if ('429' in err_msg or 'too many requests' in err_msg) and attempt < max_retries - 1:
                 logger.warning(f"Rate limited (429) bởi RPC, chờ {2**attempt}s thử lại...")
-                time.sleep(2 ** attempt) # Ngủ 1s, 2s, 4s... rồi thử lại
+                time.sleep(2 ** attempt)
             else:
                 raise
 
@@ -337,10 +337,13 @@ def reconcile_election(w3, election, block=None):
                         continue
                 raise
 
-    # Truy vấn trạng thái thực tế của hòm phiếu từ Smart Contract
+    # Truy vấn trạng thái thực tế của hòm phiếu từ Smart Contract (kèm nhịp nghỉ nhỏ chống 429)
     start = _safe_call(c.functions.startTime().call, block_identifier=block)
+    time.sleep(0.08)
     end = _safe_call(c.functions.endTime().call, block_identifier=block)
+    time.sleep(0.08)
     closed = _safe_call(c.functions.closedByOwner().call, block_identifier=block)
+    time.sleep(0.08)
     chain_total = _safe_call(c.functions.totalVoters().call, block_identifier=block)
 
     time.sleep(0.1)  # Giãn nhẹ nhịp gọi RPC để tránh sập Node
@@ -401,14 +404,36 @@ def rebuild_election(w3, election, block):
     scan_logs(w3, max(election.created_block, 0), block, addresses=[election.contract_addr])
     _log_sys('WARNING', f'Đã dựng lại dữ liệu hòm phiếu {election.contract_addr} từ chain')
 
+def safe_block_number(w3, max_retries=4):
+    """Lấy số block hiện tại từ RPC an toàn, có retry và backoff nếu bị 429 hoặc timeout."""
+    for attempt in range(max_retries):
+        try:
+            return w3.eth.block_number
+        except Exception as e:
+            err_msg = str(e).lower()
+            if any(k in err_msg for k in ['429', 'too many requests', 'rate limit', 'timeout']) and attempt < max_retries - 1:
+                time.sleep(1.5 * (attempt + 1))
+                continue
+            raise
+
 # Quét đối soát cho toàn bộ hệ thống
 def reconcile_all(w3, only_active=True):
     """Đối soát mọi hòm phiếu chưa kết thúc (và các hòm vừa kết thúc chưa đối soát lại)."""
     qs = Election.objects.all()
     if only_active:
-        qs = qs.filter(closed_by_owner=False) # Bỏ qua các hòm phiếu đã đóng lâu rồi để đỡ tốn tài nguyên
+        from django.utils import timezone
+        now = timezone.now()
+        # Chỉ đối soát hòm chưa đóng thủ công VÀ (chưa hết giờ hoặc mới hết giờ dưới 2 tiếng)
+        qs = qs.filter(closed_by_owner=False).filter(
+            Q(end_time__isnull=True) | Q(end_time__gt=now - timezone.timedelta(hours=2))
+        )
     results = {}
-    block = w3.eth.block_number
+    try:
+        block = safe_block_number(w3)
+    except Exception as ex:
+        logger.warning('Không thể lấy block_number khi đối soát (%s): %s', type(ex).__name__, ex)
+        return results
+
     for e in qs:
         try:
             r = reconcile_election(w3, e, block)
@@ -417,6 +442,7 @@ def reconcile_all(w3, only_active=True):
         except Exception as ex:  # Bắt lỗi độc lập: 1 hòm phiếu lỗi không làm chết cả kịch bản đối soát
             logger.exception('Lỗi đối soát %s', e.contract_addr)
             _log_sys('ERROR', f'Đối soát {e.contract_addr} lỗi: {type(ex).__name__}: {ex}')
+        time.sleep(0.15)  # Giãn nhịp giữa các hòm phiếu để không vượt rate-limit 10 req/s
     return results
 
 # Trạng thái indexer (Theo dõi tiến độ quét khối)

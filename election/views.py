@@ -15,7 +15,7 @@ import secrets
 
 from django.conf import settings
 from django.core.cache import cache
-from django.db.models import Count, Q
+from django.db.models import Count, F, Q, Sum
 from django.http import JsonResponse
 from django.utils import timezone
 from django.views.decorators.csrf import ensure_csrf_cookie
@@ -117,6 +117,52 @@ def health(request):
         }
     )
 
+@require_GET
+def platform_stats(request):
+    now = timezone.now()
+    base_qs = Election.objects.filter(is_hidden=False)
+
+    total_elections = base_qs.count()
+    open_elections = base_qs.filter(closed_by_owner=False, start_time__lte=now).filter(Q(end_time__isnull=True) | Q(end_time__gt=now)).count()
+    upcoming_elections = base_qs.filter(closed_by_owner=False, start_time__gt=now).count()
+    ended_elections = base_qs.filter(Q(closed_by_owner=True) | Q(end_time__lte=now)).count()
+
+    total_votes = VoteRecord.objects.filter(election__is_hidden=False).count()
+    total_voters = VoteRecord.objects.filter(election__is_hidden=False).values('voter_address').distinct().count()
+
+    data = {
+        'total_elections': total_elections,
+        'open_elections': open_elections,
+        'upcoming_elections': upcoming_elections,
+        'ended_elections': ended_elections,
+        'total_votes': total_votes,
+        'total_voters': total_voters,
+    }
+
+    address = (request.GET.get('address') or '').strip()
+    if address and is_address(address):
+        addr_cs = to_checksum(address)
+        owner_qs = base_qs.filter(owner_address__iexact=addr_cs)
+        owner_total = owner_qs.count()
+        owner_open = owner_qs.filter(closed_by_owner=False, start_time__lte=now).filter(Q(end_time__isnull=True) | Q(end_time__gt=now)).count()
+        owner_ended = owner_qs.filter(Q(closed_by_owner=True) | Q(end_time__lte=now)).count()
+
+        user_votes = VoteRecord.objects.filter(election__is_hidden=False, voter_address__iexact=addr_cs)
+        voted_total = user_votes.values('election_id').distinct().count()
+        last_vote = user_votes.order_by('-created_at').first()
+
+        user_stats = {
+            'owner_total': owner_total,
+            'owner_open': owner_open,
+            'owner_ended': owner_ended,
+            'voted_total': voted_total,
+            'recent_voted_time': _iso(last_vote.created_at) if last_vote else None,
+        }
+        data['user'] = user_stats
+        data.update(user_stats)
+
+    return JsonResponse(data)
+
 # Đăng nhập bằng chữ ký ví (chỉ phục vụ upload IPFS)
 def login_message(request, nonce):
     """Thông điệp ký. Có cả domain + chain để chữ ký không dùng lại được ở nơi khác."""
@@ -197,11 +243,8 @@ def _apply_status_filter(qs, status, now):
         return qs.filter(closed_by_owner=False, start_time__lte=now).filter(Q(end_time__isnull=True) | Q(end_time__gt=now))
     if status == 'upcoming':
         return qs.filter(closed_by_owner=False, start_time__gt=now)
-    if status == 'ended':
-        return qs.filter(closed_by_owner=False, end_time__lte=now)
-    if status == 'closed':
-        return qs.filter(closed_by_owner=True)
-    if status == 'finished':      # đã kết thúc theo bất kỳ cách nào
+    if status in ('ended', 'closed', 'finished'):
+        # Tất cả hòm phiếu đã kết thúc (dù do hết thời gian hay chủ đóng sớm)
         return qs.filter(Q(closed_by_owner=True) | Q(end_time__lte=now))
     return qs
 
@@ -218,20 +261,42 @@ def elections_list(request):
     if owner:
         if not is_address(owner):
             return _err('Địa chỉ owner không hợp lệ.')
-        qs = qs.filter(owner_address=to_checksum(owner))
+        qs = qs.filter(owner_address__iexact=to_checksum(owner))
     voted = request.GET.get('voted')
     if voted:
         if not is_address(voted):
             return _err('Địa chỉ ví không hợp lệ.')
-        qs = qs.filter(pk__in=VoteRecord.objects.filter(voter_address=to_checksum(voted)).values('election_id'))
+        qs = qs.filter(pk__in=VoteRecord.objects.filter(voter_address__iexact=to_checksum(voted)).values('election_id'))
     q = (request.GET.get('q') or '').strip()
     if q:
-        cond = Q(name__icontains=q[:100])
-        if ADDRESS_RE.match(q):
-            cond |= Q(contract_addr__iexact=q) | Q(owner_address__iexact=q)
-        qs = qs.filter(cond)
+        clean_q = q.replace('#', '').strip()
+        cond = (
+            Q(name__icontains=q[:100]) |
+            Q(description__icontains=q[:100]) |
+            Q(options__label__icontains=q[:100])
+        )
+        if '-' in clean_q:
+            parts = [p.strip() for p in clean_q.split('-') if p.strip()]
+            if len(parts) == 2 and all(len(p) >= 2 for p in parts):
+                cond |= (
+                    (Q(contract_addr__istartswith=f"0x{parts[0]}") | Q(contract_addr__icontains=parts[0])) &
+                    Q(contract_addr__iendswith=parts[1])
+                )
+        if clean_q:
+            cond |= Q(contract_addr__icontains=clean_q) | Q(owner_address__icontains=clean_q)
+            if not clean_q.lower().startswith('0x'):
+                cond |= Q(contract_addr__icontains=f"0x{clean_q}") | Q(owner_address__icontains=f"0x{clean_q}")
+        qs = qs.filter(cond).distinct()
 
-    page_size = _int_param(request, 'page_size', 12, 1, 50)
+    sort = request.GET.get('sort', 'newest')
+    if sort == 'most_votes':
+        qs = qs.order_by('-total_voters', '-id')
+    elif sort == 'closing_soon':
+        qs = qs.order_by(F('end_time').asc(nulls_last=True), '-id')
+    else:
+        qs = qs.order_by('-id')
+
+    page_size = _int_param(request, 'page_size', 9, 1, 50)
     page = _int_param(request, 'page', 1, 1, 10_000)
     total = qs.count()
     rows = list(qs[(page - 1) * page_size: page * page_size])
@@ -314,10 +379,8 @@ def get_http_w3():
     global _cached_w3
     if _cached_w3 is not None:
         return _cached_w3
-    url = os.getenv('INFURA_RPC_URL') or os.getenv('RPC_URL', '')
-    if not url:
-        return None
-    _cached_w3 = Web3(Web3.HTTPProvider(url, request_kwargs={'timeout': 10}))
+    from election.utils import create_resilient_w3
+    _cached_w3 = create_resilient_w3(timeout=10)
     return _cached_w3
     
 def _vote_payload(v):
