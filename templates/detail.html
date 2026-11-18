@@ -3,6 +3,8 @@
 
 <!-- Tiêu đề trang hiển thị trên tab trình duyệt -->
 {% block title %}VoteChain - Chi Tiết Hòm Phiếu Bầu Cử{% endblock %}
+{% block nav_home %}active bg-surface-container-low font-bold text-primary{% endblock %}
+{% block mob_nav_home %}bg-blue-50 text-blue-600 font-bold{% endblock %}
 
 {% block content %}
 <!-- Thanh điều hướng (Trang chủ > Khám phá > Tên hòm phiếu) -->
@@ -56,7 +58,7 @@
     <div class="lg:col-span-8 flex flex-col gap-6 sm:gap-space-lg">
 
       <!-- PHẦN 1: Thông tin tổng quan hòm phiếu -->
-      <div class="bg-surface-container-lowest rounded-2xl p-5 sm:p-space-lg shadow-sm border border-surface-container-high/60 flex flex-col gap-4 sm:gap-space-md">
+      <div class="bg-surface-container-lowest rounded-2xl p-5 sm:p-space-lg shadow-sm border border-slate-200 flex flex-col gap-4 sm:gap-space-md">
         
         <!-- Các nhãn trạng thái (Đang mở, Public/Private,...) -->
         <div id="badges" class="flex flex-wrap items-center gap-2 sm:gap-space-xs">
@@ -68,7 +70,7 @@
           <div id="metaLine" class="flex flex-wrap items-center gap-x-3 sm:gap-x-space-md gap-y-2 font-body-sm text-xs sm:text-body-sm text-on-surface-variant">
             <!-- JS sẽ điền địa chỉ ví tạo và ngày tạo -->
           </div>
-          <h1 id="title" class="font-headline-xl text-2xl sm:text-headline-xl text-on-surface tracking-tight font-extrabold leading-tight mt-1 sm:mt-0">
+          <h1 id="title" class="font-headline-xl text-2xl sm:text-headline-xl text-on-surface tracking-[-0.01em] font-bold leading-snug mt-1 sm:mt-0">
             <!-- JS sẽ điền tên cuộc bầu cử -->
           </h1>
         </div>
@@ -85,7 +87,7 @@
 
         <!-- 3 Thẻ thống kê: Số lượng cử tri, Số phiếu đã bầu, Trạng thái On-chain -->
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-space-sm pt-2 sm:pt-space-xs">
-          <div class="bg-surface-container-low p-3 sm:p-space-sm rounded-xl flex items-center gap-3 sm:gap-space-sm border border-surface-container-high/50">
+          <div class="bg-surface-container-low p-3 sm:p-space-sm rounded-xl flex items-center gap-3 sm:gap-space-sm border border-slate-200/80">
             <div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center shrink-0">
               <span class="material-symbols-outlined text-primary text-[20px]">groups</span>
             </div>
@@ -95,7 +97,7 @@
             </div>
           </div>
 
-          <div class="bg-surface-container-low p-3 sm:p-space-sm rounded-xl flex items-center gap-3 sm:gap-space-sm border border-surface-container-high/50">
+          <div class="bg-surface-container-low p-3 sm:p-space-sm rounded-xl flex items-center gap-3 sm:gap-space-sm border border-slate-200/80">
             <div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center shrink-0">
               <span class="material-symbols-outlined text-secondary text-[20px]">how_to_reg</span>
             </div>
@@ -105,7 +107,7 @@
             </div>
           </div>
 
-          <div class="bg-surface-container-low p-3 sm:p-space-sm rounded-xl flex items-center gap-3 sm:gap-space-sm border border-surface-container-high/50">
+          <div class="bg-surface-container-low p-3 sm:p-space-sm rounded-xl flex items-center gap-3 sm:gap-space-sm border border-slate-200/80">
             <div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center shrink-0">
               <span class="material-symbols-outlined text-tertiary text-[20px]">verified_user</span>
             </div>
@@ -236,9 +238,9 @@
     <!-- ================================================================= -->
     <!-- CỘT PHẢI: BẢNG BỎ PHIẾU (Sẽ luôn bám sát màn hình khi cuộn chuột) -->
     <!-- ================================================================= -->
-    <div class="lg:col-span-4 lg:sticky lg:top-28 flex flex-col gap-4 sm:gap-space-md mt-2 lg:mt-0">
+    <div class="lg:col-span-4 lg:sticky lg:top-24 self-start z-10 flex flex-col gap-4 sm:gap-space-md mt-2 lg:mt-0">
       
-      <div class="bg-surface-container-lowest rounded-2xl p-5 sm:p-space-lg shadow-xl border border-surface-container-high/60 flex flex-col gap-4 sm:gap-space-md">
+      <div class="bg-surface-container-lowest rounded-2xl p-5 sm:p-space-lg shadow-xl border border-slate-200 flex flex-col gap-4 sm:gap-space-md">
         
         <!-- Tiêu đề Bảng điều khiển -->
         <div class="flex items-center justify-between pb-3 sm:pb-space-xs border-b border-surface-container-high">
@@ -250,31 +252,31 @@
         </div>
 
         <!-- Bảng Đồng Hồ Đếm Ngược -->
-        <div class="bg-surface-container-low p-4 sm:p-space-md rounded-xl flex flex-col gap-2 sm:gap-space-xs border border-surface-container-high/60">
+        <div class="bg-surface-container-low p-4 sm:p-space-md rounded-xl flex flex-col gap-2 sm:gap-space-xs border border-slate-200/80">
           <span id="countdownLabel" class="font-body-sm text-xs sm:text-body-sm text-on-surface-variant flex items-center justify-center sm:justify-start gap-1">
             <span class="material-symbols-outlined text-[16px] text-primary">timer</span>
             Thời gian còn lại:
           </span>
           
           <!-- Các con số đếm ngược -->
-          <div class="flex items-baseline gap-2 sm:gap-space-xs justify-center py-2 sm:py-space-xs">
+          <div class="flex items-baseline gap-1.5 sm:gap-space-xs justify-center py-2 sm:py-space-xs">
             <div class="flex flex-col items-center">
-              <span id="cdDays" class="font-headline-xl text-3xl sm:text-headline-xl text-on-surface font-extrabold tracking-tight">00</span>
+              <span id="cdDays" class="font-headline-xl text-2xl sm:text-3xl text-on-surface font-extrabold tracking-tight">00</span>
               <span class="font-label-tag text-[10px] sm:text-label-tag text-on-surface-variant">NGÀY</span>
             </div>
-            <span class="font-headline-lg text-xl sm:text-headline-lg text-outline font-bold px-0.5 sm:px-1">:</span>
+            <span class="font-headline-lg text-lg sm:text-xl text-outline font-bold px-0.5">:</span>
             <div class="flex flex-col items-center">
-              <span id="cdHours" class="font-headline-xl text-3xl sm:text-headline-xl text-on-surface font-extrabold tracking-tight">00</span>
+              <span id="cdHours" class="font-headline-xl text-2xl sm:text-3xl text-on-surface font-extrabold tracking-tight">00</span>
               <span class="font-label-tag text-[10px] sm:text-label-tag text-on-surface-variant">GIỜ</span>
             </div>
-            <span class="font-headline-lg text-xl sm:text-headline-lg text-outline font-bold px-0.5 sm:px-1">:</span>
+            <span class="font-headline-lg text-lg sm:text-xl text-outline font-bold px-0.5">:</span>
             <div class="flex flex-col items-center">
-              <span id="cdMins" class="font-headline-xl text-3xl sm:text-headline-xl text-on-surface font-extrabold tracking-tight">00</span>
+              <span id="cdMins" class="font-headline-xl text-2xl sm:text-3xl text-on-surface font-extrabold tracking-tight">00</span>
               <span class="font-label-tag text-[10px] sm:text-label-tag text-on-surface-variant">PHÚT</span>
             </div>
-            <span class="font-headline-lg text-xl sm:text-headline-lg text-outline font-bold px-0.5 sm:px-1">:</span>
+            <span class="font-headline-lg text-lg sm:text-xl text-outline font-bold px-0.5">:</span>
             <div class="flex flex-col items-center">
-              <span id="cdSecs" class="font-headline-xl text-3xl sm:text-headline-xl text-primary font-extrabold tracking-tight">00</span>
+              <span id="cdSecs" class="font-headline-xl text-2xl sm:text-3xl text-primary font-extrabold tracking-tight">00</span>
               <span class="font-label-tag text-[10px] sm:text-label-tag text-on-surface-variant">GIÂY</span>
             </div>
           </div>
@@ -288,7 +290,7 @@
           
           <!-- Thanh hiển thị tên ứng viên đã click chọn -->
           <div class="flex items-center justify-between font-body-sm text-xs sm:text-body-sm bg-surface-container-low px-3 py-2.5 rounded-xl border border-surface-container-high">
-            <span class="text-on-surface-variant">Ứng viên đã chọn:</span>
+            <span id="selected-candidate-title" class="text-on-surface-variant">Ứng viên đã chọn:</span>
             <span id="selected-candidate-label" class="font-headline-sm text-sm sm:text-headline-sm text-outline font-semibold truncate max-w-[140px] sm:max-w-[180px]">
               Chưa chọn
             </span>
@@ -298,7 +300,7 @@
           <div id="voteStatus"></div>
 
           <!-- Nút Bấm Thực Hiện Bầu Cử (Submit lên Blockchain) -->
-          <button id="btnVote" type="button" disabled class="w-full py-3 sm:py-3.5 px-4 sm:px-space-lg rounded-xl bg-primary-fixed text-primary font-headline-sm text-sm sm:text-headline-sm font-bold shadow-sm disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 sm:gap-space-sm cursor-pointer border-0">
+          <button id="btnVote" type="button" disabled class="w-full py-3 sm:py-3.5 px-4 sm:px-space-lg rounded-xl bg-primary text-white font-headline-sm text-sm sm:text-headline-sm font-bold shadow-sm disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 sm:gap-space-sm cursor-pointer border-0">
             <span class="material-symbols-outlined text-[20px] sm:text-[22px]">how_to_reg</span>
             <span id="btnVoteText">Vui lòng chọn ứng viên</span>
           </button>
@@ -322,7 +324,7 @@
         <ul class="font-body-sm text-xs sm:text-body-sm text-on-surface-variant flex flex-col gap-2 pl-1 list-none mt-1">
           <li class="flex items-start gap-2">
             <span class="w-4 h-4 rounded-full bg-primary text-on-primary flex items-center justify-center text-[11px] font-bold shrink-0 mt-0.5 shadow-sm">1</span>
-            <span>Nhấp vào thẻ ứng viên mong muốn để chọn.</span>
+            <span>Nhấp vào thẻ để chọn phương án hoặc ứng viên mong muốn.</span>
           </li>
           <li class="flex items-start gap-2">
             <span class="w-4 h-4 rounded-full bg-primary text-on-primary flex items-center justify-center text-[11px] font-bold shrink-0 mt-0.5 shadow-sm">2</span>
@@ -355,6 +357,5 @@
     color: var(--color-on-surface-variant, #434655) !important;
   }
 </style>
-<script src="{% static 'js/cards.js' %}"></script>
 <script src="{% static 'js/detail.js' %}"></script>
 {% endblock %}
