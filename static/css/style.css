@@ -340,11 +340,17 @@ a.bg-surface-container-lowest:active,
     transform: translateY(0) !important;
 }
 
-/* 10. MODAL XÁC NHẬN WEB3 & BỎ PHIẾU */
-#voteModal {
+/* 10. MODAL XÁC NHẬN WEB3 & CÁC HỘP THOẠI POPUP */
+#voteModal,
+#previewModal:not(.hidden),
+#draftsModal:not(.hidden),
+#progressModal {
     animation: modalFadeIn 0.2s ease-out;
 }
-#voteModal > div {
+#voteModal > div,
+#previewModal:not(.hidden) > div,
+#draftsModal:not(.hidden) > div,
+#progressModal > div {
     animation: modalZoomIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 @keyframes modalFadeIn {

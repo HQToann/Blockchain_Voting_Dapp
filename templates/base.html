@@ -212,7 +212,7 @@
             position: fixed;
             bottom: 24px;
             right: 24px;
-            z-index: 9999;
+            z-index: 99999;
             display: flex;
             flex-direction: column;
             gap: 12px;
@@ -335,7 +335,7 @@
     </header>
 
     <!-- CONTENT CHÍNH (KHOẢNG CÁCH HEADER VÀ BREADCRUMB CÂN ĐỐI, GIẢM 70%) -->
-    <main class="w-full pt-[84px] sm:pt-[92px] flex-1 relative z-10 overflow-x-clip">
+    <main class="w-full pt-[84px] sm:pt-[92px] flex-1 relative overflow-x-clip">
         <div class="w-full max-w-[1680px] mx-auto px-3 sm:px-6 lg:px-8 pb-12 sm:pb-20">
             <div id="banner"></div>
             {% block content %}{% endblock %}
@@ -378,6 +378,12 @@
         </div>
     </footer>
     
+    <!-- ===================================================================== -->
+    <!-- KHU VỰC CHỨA CÁC HỘP THOẠI MODAL POPUP CỦA HỆ THỐNG                   -->
+    <!-- ĐẶT TẠI ROOT BODY ĐỂ KHÔNG BỊ BẤT KỲ THÀNH PHẦN NÀO CHE KHUẤT         -->
+    <!-- ===================================================================== -->
+    {% block modals %}{% endblock %}
+
     <!-- CONTAINER HIỂN THỊ THÔNG BÁO LỖI NỔI -->
     <div id="toasts" class="toasts-container"></div>
 

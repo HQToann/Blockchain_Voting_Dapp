@@ -406,25 +406,27 @@
     if (!m) {
       m = document.createElement('div');
       m.id = 'progressModal';
-      m.className = 'fixed inset-0 bg-black/60 backdrop-blur-sm z-[9999] flex items-center justify-center p-4';
+      m.className = 'fixed inset-0 bg-slate-900/80 backdrop-blur-md z-[9995] flex items-center justify-center p-4 overflow-y-auto';
       m.innerHTML = `
-        <div class="bg-surface-container-lowest rounded-3xl p-space-xl w-full max-w-md shadow-2xl border border-surface-container-high space-y-space-md">
-          <div class="text-center space-y-1">
-            <div class="w-12 h-12 rounded-2xl bg-primary-container text-on-primary flex items-center justify-center mx-auto shadow-md">
-              <span class="material-symbols-outlined text-[24px]">token</span>
+        <div class="bg-white rounded-3xl p-6 sm:p-8 w-full max-w-md shadow-2xl border border-slate-200 space-y-4 my-auto">
+          <div class="text-center space-y-2">
+            <div class="w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 border border-blue-100 flex items-center justify-center mx-auto shadow-sm">
+              <span class="material-symbols-outlined text-[28px] animate-pulse">token</span>
             </div>
-            <h3 class="font-headline-md text-headline-md font-bold text-on-surface">Khởi tạo Hòm phiếu</h3>
-            <p class="font-body-sm text-body-sm text-on-surface-variant">Vui lòng không đóng trình duyệt trong quá trình này</p>
+            <h3 class="font-headline-md text-lg sm:text-xl font-bold text-slate-900">Khởi tạo Hòm phiếu</h3>
+            <p class="font-body-sm text-xs text-slate-500">Vui lòng không đóng trình duyệt trong quá trình này</p>
           </div>
           <div id="modalSteps" class="space-y-3 pt-2"></div>
         </div>`;
       document.body.appendChild(m);
     }
+    document.body.classList.add('overflow-hidden');
   }
 
   function hideModal() {
     const m = $('progressModal');
     if (m) m.remove();
+    document.body.classList.remove('overflow-hidden');
   }
 
   function step(text) {
@@ -762,11 +764,17 @@
 
   function showDraftsModal() {
     renderDraftsList();
-    if ($('draftsModal')) $('draftsModal').classList.remove('hidden');
+    if ($('draftsModal')) {
+      $('draftsModal').classList.remove('hidden');
+      document.body.classList.add('overflow-hidden');
+    }
   }
 
   function hideDraftsModal() {
-    if ($('draftsModal')) $('draftsModal').classList.add('hidden');
+    if ($('draftsModal')) {
+      $('draftsModal').classList.add('hidden');
+      document.body.classList.remove('overflow-hidden');
+    }
   }
 
   function renderDraftsList() {
@@ -882,11 +890,17 @@
       body.innerHTML = renderPreview(data);
       setupMockSelection(data.maxChoices || 1);
     }
-    if ($('previewModal')) $('previewModal').classList.remove('hidden');
+    if ($('previewModal')) {
+      $('previewModal').classList.remove('hidden');
+      document.body.classList.add('overflow-hidden');
+    }
   }
 
   function hidePreviewModal() {
-    if ($('previewModal')) $('previewModal').classList.add('hidden');
+    if ($('previewModal')) {
+      $('previewModal').classList.add('hidden');
+      document.body.classList.remove('overflow-hidden');
+    }
   }
 
   function renderPreview(data) {
@@ -1227,13 +1241,24 @@
     });
   }
 
-  // Đóng Modal khi bấm phím Escape
+  // Đóng Modal khi bấm phím Escape hoặc bấm ngoài nền mờ
   window.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
       hidePreviewModal();
       hideDraftsModal();
     }
   });
+
+  if ($('previewModal')) {
+    $('previewModal').addEventListener('click', (e) => {
+      if (e.target === $('previewModal')) hidePreviewModal();
+    });
+  }
+  if ($('draftsModal')) {
+    $('draftsModal').addEventListener('click', (e) => {
+      if (e.target === $('draftsModal')) hideDraftsModal();
+    });
+  }
 
   // Thêm 2 hàng lựa chọn ban đầu
   const container = $('optionsContainer') || $('options');

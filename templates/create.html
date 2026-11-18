@@ -717,220 +717,129 @@
 
 </div>
 
-  <!-- MODAL XEM TRƯỚC HÒM PHIẾU (PREVIEW MODAL)                                 -->
+{% endblock %}
+
+{% block modals %}
 
   <!-- ========================================================================= -->
-
+  <!-- MODAL XEM TRƯỚC HÒM PHIẾU (PREVIEW MODAL)                                 -->
+  <!-- ========================================================================= -->
   <div id="previewModal"
-
-    class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-[9990] flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
-
+    class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-md z-[9990] flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
     <div
-
-      class="bg-surface rounded-3xl w-full max-w-4xl max-h-[92vh] flex flex-col shadow-2xl border border-surface-container-high overflow-hidden my-auto">
-
+      class="bg-white rounded-3xl w-full max-w-4xl max-h-[88vh] flex flex-col shadow-2xl border border-slate-200 overflow-hidden my-auto">
+      
       <!-- Modal Header -->
-
       <div
-
-        class="px-space-lg py-space-md bg-surface-container-lowest border-b border-surface-container-high flex items-center justify-between gap-4 shrink-0">
-
+        class="px-5 sm:px-7 py-4 bg-white/95 backdrop-blur border-b border-slate-200/90 flex items-center justify-between gap-4 shrink-0 rounded-t-3xl shadow-2xs z-10">
         <div class="flex items-center gap-3 min-w-0">
-
           <div
-
-            class="w-10 h-10 rounded-xl bg-secondary-fixed text-secondary flex items-center justify-center shrink-0 shadow-xs">
-
+            class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 border border-blue-200/70 flex items-center justify-center shrink-0 shadow-2xs">
             <span class="material-symbols-outlined text-[24px]">visibility</span>
-
           </div>
-
           <div class="min-w-0">
-
             <div class="flex items-center gap-2">
-
-              <h3 class="font-headline-md text-headline-md font-bold text-on-surface truncate">
-
+              <h3 class="font-headline-md text-base sm:text-lg font-bold text-slate-900 truncate">
                 Xem Trước Hòm Phiếu Bầu Cử
-
               </h3>
-
               <span
-
-                class="px-2.5 py-0.5 rounded-full bg-secondary-fixed text-secondary font-label-tag text-[10px] uppercase font-bold tracking-wider shrink-0">
-
+                class="px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-700 font-mono text-[10px] uppercase font-bold tracking-wider shrink-0 border border-blue-200">
                 Mô phỏng Web3
-
               </span>
-
             </div>
-
-            <p class="font-body-sm text-body-sm text-on-surface-variant truncate">
-
+            <p class="font-body-sm text-xs text-slate-500 truncate">
               Mô phỏng giao diện những gì cử tri và cộng đồng sẽ nhìn thấy sau khi triển khai lên Blockchain
-
             </p>
-
           </div>
-
         </div>
-
         <button id="btnClosePreview" type="button"
-
-          class="w-9 h-9 rounded-xl bg-surface-container-low hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface flex items-center justify-center transition-colors cursor-pointer shrink-0">
-
+          class="w-9 h-9 rounded-full bg-slate-100 hover:bg-rose-50 text-slate-500 hover:text-rose-600 border border-slate-200 hover:border-rose-200 flex items-center justify-center transition-all cursor-pointer shrink-0 shadow-2xs"
+          title="Đóng xem trước (Esc)">
           <span class="material-symbols-outlined text-[20px]">close</span>
-
         </button>
-
       </div>
 
       <!-- Modal Body (Scrollable) -->
-
-      <div id="previewBody" class="p-space-lg sm:p-space-xl overflow-y-auto space-y-space-lg flex-1">
-
+      <div id="previewBody" class="p-4 sm:p-6 overflow-y-auto space-y-5 flex-1 bg-slate-50/50">
         <!-- JS will populate preview content here -->
-
       </div>
 
       <!-- Modal Footer Action Bar -->
-
       <div
-
-        class="px-space-lg py-space-md bg-surface-container-lowest border-t border-surface-container-high flex flex-wrap items-center justify-between gap-space-sm shrink-0">
-
+        class="px-5 sm:px-7 py-3.5 bg-white border-t border-slate-200/90 flex flex-wrap items-center justify-between gap-3 shrink-0 rounded-b-3xl shadow-2xs z-10">
         <div class="flex items-center gap-2">
-
           <button id="btnPreviewBack" type="button"
-
-            class="px-4 py-2.5 rounded-xl bg-surface-container-low hover:bg-surface-container-high text-on-surface font-headline-sm text-headline-sm font-semibold transition-colors flex items-center gap-1.5 cursor-pointer">
-
+            class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs sm:text-sm flex items-center gap-1.5 transition-all cursor-pointer border border-slate-200">
             <span class="material-symbols-outlined text-[18px]">edit</span>
-
-            Tiếp tục chỉnh sửa
-
+            <span>Tiếp tục chỉnh sửa</span>
           </button>
-
           <button id="btnPreviewSave" type="button"
-
-            class="px-4 py-2.5 rounded-xl bg-surface-container-low hover:bg-surface-container-high text-on-surface font-headline-sm text-headline-sm font-semibold transition-colors flex items-center gap-1.5 cursor-pointer border border-surface-container-high">
-
+            class="px-4 py-2.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 font-bold text-xs sm:text-sm flex items-center gap-1.5 transition-all cursor-pointer border border-amber-200">
             <span class="material-symbols-outlined text-[18px] text-amber-600">save</span>
-
-            Lưu bản nháp này
-
+            <span>Lưu bản nháp này</span>
           </button>
-
         </div>
-
         <button id="btnPreviewDeploy" type="button"
-
-          class="px-6 py-2.5 rounded-xl bg-primary-container text-on-primary font-headline-sm text-headline-sm font-bold flex items-center gap-2 shadow-[0_4px_16px_rgba(37,99,235,0.3)] hover:bg-primary transition-all cursor-pointer">
-
+          class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-xs sm:text-sm flex items-center gap-2 shadow-[0_4px_16px_rgba(37,99,235,0.35)] hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer border-0">
           <span class="material-symbols-outlined text-[20px]">cloud_upload</span>
-
-          Xác nhận &amp; Đẩy lên Blockchain
-
+          <span>Xác nhận &amp; Đẩy lên Blockchain</span>
         </button>
-
       </div>
 
     </div>
-
   </div>
 
   <!-- ========================================================================= -->
-
   <!-- MODAL QUẢN LÝ BẢN NHÁP (DRAFTS MANAGER MODAL)                             -->
-
   <!-- ========================================================================= -->
-
   <div id="draftsModal"
-
-    class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-[9990] flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
-
+    class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-md z-[9990] flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
     <div
-
-      class="bg-surface rounded-3xl w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl border border-surface-container-high overflow-hidden my-auto">
-
+      class="bg-white rounded-3xl w-full max-w-2xl max-h-[85vh] flex flex-col shadow-2xl border border-slate-200 overflow-hidden my-auto">
+      
       <!-- Modal Header -->
-
       <div
-
-        class="px-space-lg py-space-md bg-surface-container-lowest border-b border-surface-container-high flex items-center justify-between gap-4 shrink-0">
-
+        class="px-5 sm:px-6 py-4 bg-white/95 backdrop-blur border-b border-slate-200/90 flex items-center justify-between gap-4 shrink-0 rounded-t-3xl shadow-2xs z-10">
         <div class="flex items-center gap-3">
-
-          <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center shrink-0">
-
+          <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-800 border border-amber-200 flex items-center justify-center shrink-0">
             <span class="material-symbols-outlined text-[22px]">drafts</span>
-
           </div>
-
           <div>
-
-            <h3 class="font-headline-md text-headline-md font-bold text-on-surface">
-
+            <h3 class="font-headline-md text-base sm:text-lg font-bold text-slate-900">
               Bản Nháp Hòm Phiếu Đã Lưu
-
             </h3>
-
-            <p class="font-body-sm text-body-sm text-on-surface-variant text-xs">
-
+            <p class="font-body-sm text-xs text-slate-500">
               Được lưu trữ an toàn trên trình duyệt của bạn, chưa đưa lên Blockchain
-
             </p>
-
           </div>
-
         </div>
-
         <button id="btnCloseDrafts" type="button"
-
-          class="w-9 h-9 rounded-xl bg-surface-container-low hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface flex items-center justify-center transition-colors cursor-pointer shrink-0">
-
+          class="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 border border-slate-200 flex items-center justify-center transition-all cursor-pointer shrink-0 shadow-2xs"
+          title="Đóng (Esc)">
           <span class="material-symbols-outlined text-[20px]">close</span>
-
         </button>
-
       </div>
 
       <!-- Modal Body (Drafts list) -->
-
-      <div id="draftsListContainer" class="p-space-lg overflow-y-auto space-y-3 flex-1">
-
+      <div id="draftsListContainer" class="p-4 sm:p-5 overflow-y-auto space-y-3 flex-1 bg-slate-50/50">
         <!-- JS will populate list of drafts here -->
-
       </div>
 
       <!-- Modal Footer -->
-
       <div
-
-        class="px-space-lg py-space-md bg-surface-container-lowest border-t border-surface-container-high flex items-center justify-between gap-space-sm shrink-0">
-
+        class="px-5 sm:px-6 py-3.5 bg-white border-t border-slate-200/90 flex items-center justify-between gap-3 shrink-0 rounded-b-3xl shadow-2xs z-10">
         <button id="btnClearAllDrafts" type="button"
-
-          class="px-3.5 py-2 rounded-xl text-error hover:bg-red-50 font-headline-sm text-xs font-semibold flex items-center gap-1 transition-colors cursor-pointer">
-
+          class="px-3.5 py-2 rounded-xl text-rose-600 hover:bg-rose-50 font-bold text-xs flex items-center gap-1 transition-colors cursor-pointer border border-rose-200">
           <span class="material-symbols-outlined text-[16px]">delete_sweep</span>
-
-          Xóa tất cả bản nháp
-
+          <span>Xóa tất cả bản nháp</span>
         </button>
-
         <button id="btnCloseDraftsBtn" type="button"
-
-          class="px-5 py-2 rounded-xl bg-surface-container-low hover:bg-surface-container-high text-on-surface font-headline-sm text-sm font-semibold transition-colors cursor-pointer">
-
+          class="px-5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs sm:text-sm transition-colors cursor-pointer border border-slate-200">
           Đóng
-
         </button>
-
       </div>
 
     </div>
-
   </div>
 
 {% endblock %}

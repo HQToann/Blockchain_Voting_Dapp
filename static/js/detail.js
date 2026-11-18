@@ -628,6 +628,7 @@
   const VoteModal = {
     open(optionsOrTitle, bodyHTML, onConfirm) {
       $('voteModal')?.remove();
+      document.body.classList.remove('overflow-hidden');
 
       let opts = {};
       if (typeof optionsOrTitle === 'string') {
@@ -651,8 +652,8 @@
       const htmlContent = opts.bodyHTML || '';
 
       document.body.insertAdjacentHTML('beforeend', `
-        <div id="voteModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div class="bg-surface-container-lowest rounded-3xl p-5 sm:p-6 w-full max-w-md shadow-2xl border border-surface-container-high/70 flex flex-col gap-4 relative">
+        <div id="voteModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-[9990] flex items-center justify-center p-4 overflow-y-auto">
+          <div class="bg-surface-container-lowest rounded-3xl p-5 sm:p-6 w-full max-w-md shadow-2xl border border-surface-container-high/70 flex flex-col gap-4 relative my-auto max-h-[90vh] overflow-y-auto">
             <!-- Nút đóng góc phải -->
             <button id="vmCloseBtn" type="button" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-surface-container-high text-on-surface-variant hover:bg-slate-200 hover:text-on-surface flex items-center justify-center transition-all cursor-pointer">
               <span class="material-symbols-outlined text-[18px]">close</span>
@@ -690,9 +691,24 @@
         </div>
       `);
 
-      const close = () => $('voteModal')?.remove();
+      document.body.classList.add('overflow-hidden');
+
+      const close = () => {
+        $('voteModal')?.remove();
+        document.body.classList.remove('overflow-hidden');
+      };
       $('vmCloseBtn').onclick = close;
       $('vmCancel').onclick = close;
+
+      const modalWrap = $('voteModal');
+      if (modalWrap) {
+        modalWrap.onclick = (e) => {
+          if (e.target === modalWrap && !$('vmActions')?.classList.contains('hidden')) {
+            close();
+          }
+        };
+      }
+
       $('vmConfirm').onclick = () => {
         $('vmActions').classList.add('hidden');
         $('vmCloseBtn').classList.add('hidden');
@@ -742,7 +758,10 @@
             <span>${App.esc(text)}</span>
           </div>
         `);
-        setTimeout(() => $('voteModal')?.remove(), 2500);
+        setTimeout(() => {
+          $('voteModal')?.remove();
+          document.body.classList.remove('overflow-hidden');
+        }, 2500);
       } else {
         $('vmTitle').textContent = 'Đang xử lý trên chuỗi...';
         stepsContainer.insertAdjacentHTML('beforeend', `
