@@ -162,7 +162,7 @@ class SystemLog(models.Model):
         return f'[{self.get_level_display()}] {self.module}: {self.message[:50]}'
 
 
-# --- Auto-rotation: giữ tối đa 1000 bản ghi SystemLog mới nhất ---
+# --- Auto-rotation: Giữ tối đa 1000 bản ghi SystemLog mới nhất ---
 MAX_SYSTEM_LOGS = 1000
 
 
