@@ -563,52 +563,52 @@ var ElectionCards = window.ElectionCards = (function () {
     const list = [];
     if (live === 'open') {
       list.push(`
-        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-on-tertiary-container text-tertiary font-label-tag text-label-tag font-bold tracking-wide uppercase shadow-sm">
-          <span class="w-2 h-2 rounded-full bg-tertiary animate-ping"></span>
-          BỎ PHIẾU ĐANG DIỄN RA
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/80 text-xs font-bold shadow-2xs">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          Đang diễn ra
         </span>
       `);
     } else if (live === 'upcoming') {
       list.push(`
-        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 text-amber-800 font-label-tag text-label-tag font-bold tracking-wide uppercase">
-          <span class="material-symbols-outlined text-[14px]">schedule</span>
-          SẮP DIỄN RA
+        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-50 text-amber-800 border border-amber-200/80 text-xs font-bold">
+          <span class="material-symbols-outlined text-[15px]">schedule</span>
+          Sắp diễn ra
         </span>
       `);
     } else if (live === 'closed') {
       list.push(`
-        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-error-container text-error font-label-tag text-label-tag font-bold tracking-wide uppercase">
-          <span class="material-symbols-outlined text-[14px]">block</span>
-          ĐÃ ĐÓNG SỚM
+        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-red-50 text-red-700 border border-red-200/80 text-xs font-bold">
+          <span class="material-symbols-outlined text-[15px]">block</span>
+          Đã đóng sớm
         </span>
       `);
     } else {
       list.push(`
-        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container-high text-on-surface-variant font-label-tag text-label-tag font-bold tracking-wide uppercase">
-          <span class="material-symbols-outlined text-[14px]">flag</span>
-          ĐÃ KẾT THÚC
+        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 border border-slate-200 text-xs font-bold">
+          <span class="material-symbols-outlined text-[15px]">task_alt</span>
+          Đã kết thúc
         </span>
       `);
     }
 
     list.push(`
-      <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-surface-container-low text-secondary font-label-tag text-label-tag font-semibold">
-        <span class="material-symbols-outlined text-[14px]">${e.kind === 1 ? 'poll' : 'badge'}</span>
+      <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200/70 text-xs font-semibold">
+        <span class="material-symbols-outlined text-[15px]">${e.kind === 1 ? 'poll' : 'groups'}</span>
         ${e.kind === 1 ? 'Lấy ý kiến biểu quyết' : 'Bầu chọn ứng viên'}
       </span>
     `);
 
     list.push(`
-      <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-surface-container-low ${e.is_private ? 'text-purple-700' : 'text-primary'} font-label-tag text-label-tag font-semibold">
-        <span class="material-symbols-outlined text-[14px]">${e.is_private ? 'lock' : 'public'}</span>
+      <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full ${e.is_private ? 'bg-purple-50 text-purple-700 border border-purple-200/70' : 'bg-slate-100 text-slate-700 border border-slate-200'} text-xs font-semibold">
+        <span class="material-symbols-outlined text-[15px]">${e.is_private ? 'lock' : 'public'}</span>
         ${e.is_private ? 'Riêng tư (Whitelist)' : 'Công khai'}
       </span>
     `);
 
     if (isOwner) {
       list.push(`
-        <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-300 font-label-tag text-label-tag font-bold shadow-xs">
-          <span class="material-symbols-outlined text-[14px] text-amber-600">shield_person</span>
+        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-50 text-amber-800 border border-amber-300 text-xs font-bold shadow-2xs">
+          <span class="material-symbols-outlined text-[15px] text-amber-600">shield_person</span>
           Của bạn (Owner)
         </span>
       `);

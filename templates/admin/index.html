@@ -1,0 +1,298 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static log %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+
+  <!-- ===================================================================== -->
+  <!-- 1. BENTO HERO STATS: CHỈ SỐ HOẠT ĐỘNG TOÀN HỆ THỐNG ON-CHAIN           -->
+  <!-- ===================================================================== -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    
+    <!-- Stat 1: Hòm phiếu On-Chain -->
+    <div class="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-blue-50/90 via-sky-50/50 to-indigo-50/60 border border-blue-200/90 shadow-2xs hover:shadow-md transition-all flex flex-col justify-between">
+      <div class="flex items-center justify-between">
+        <span class="text-xs font-bold text-slate-700 uppercase tracking-wider font-mono">Bầu Cử On-Chain</span>
+        <span class="w-8 h-8 rounded-xl bg-white text-blue-600 border border-blue-200 flex items-center justify-center shadow-2xs">
+          <span class="material-symbols-outlined text-[18px]">how_to_vote</span>
+        </span>
+      </div>
+      <div class="mt-3">
+        <div class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">Elections</div>
+        <p class="text-xs text-slate-500 font-medium mt-0.5">Kiểm duyệt &amp; quản lý hòm phiếu</p>
+      </div>
+      <div class="mt-3 pt-2.5 border-t border-blue-100 flex items-center justify-between text-xs">
+        <a href="/admin/election/election/" class="text-blue-600 font-bold hover:underline inline-flex items-center gap-1">
+          <span>Xem danh sách</span>
+          <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+        </a>
+        <span class="text-[10px] font-mono text-emerald-600 font-bold">Active</span>
+      </div>
+    </div>
+
+    <!-- Stat 2: Lá phiếu đã ghi sổ -->
+    <div class="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-indigo-50/90 via-purple-50/40 to-indigo-50/60 border border-indigo-200/90 shadow-2xs hover:shadow-md transition-all flex flex-col justify-between">
+      <div class="flex items-center justify-between">
+        <span class="text-xs font-bold text-slate-700 uppercase tracking-wider font-mono">Lá Phiếu Đã Đúc</span>
+        <span class="w-8 h-8 rounded-xl bg-white text-indigo-600 border border-indigo-200 flex items-center justify-center shadow-2xs">
+          <span class="material-symbols-outlined text-[18px]">receipt_long</span>
+        </span>
+      </div>
+      <div class="mt-3">
+        <div class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">Vote Records</div>
+        <p class="text-xs text-slate-500 font-medium mt-0.5">Lưu trữ bất biến trên Sepolia</p>
+      </div>
+      <div class="mt-3 pt-2.5 border-t border-indigo-100 flex items-center justify-between text-xs">
+        <a href="/admin/election/voterecord/" class="text-indigo-600 font-bold hover:underline inline-flex items-center gap-1">
+          <span>Đối soát giao dịch</span>
+          <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+        </a>
+        <span class="text-[10px] font-mono text-indigo-700 font-bold">EIP-712</span>
+      </div>
+    </div>
+
+    <!-- Stat 3: Whitelist cử tri -->
+    <div class="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-emerald-50/90 via-teal-50/40 to-emerald-50/60 border border-emerald-200/90 shadow-2xs hover:shadow-md transition-all flex flex-col justify-between">
+      <div class="flex items-center justify-between">
+        <span class="text-xs font-bold text-slate-700 uppercase tracking-wider font-mono">Quyền Bầu Cử</span>
+        <span class="w-8 h-8 rounded-xl bg-white text-emerald-600 border border-emerald-200 flex items-center justify-center shadow-2xs">
+          <span class="material-symbols-outlined text-[18px]">badge</span>
+        </span>
+      </div>
+      <div class="mt-3">
+        <div class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">Whitelist</div>
+        <p class="text-xs text-slate-500 font-medium mt-0.5">Định danh ví &amp; Merkle Root</p>
+      </div>
+      <div class="mt-3 pt-2.5 border-t border-emerald-100 flex items-center justify-between text-xs">
+        <a href="/admin/election/whitelistentry/" class="text-emerald-700 font-bold hover:underline inline-flex items-center gap-1">
+          <span>Tra cứu cử tri</span>
+          <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+        </a>
+        <span class="text-[10px] font-mono text-emerald-700 font-bold">Verified</span>
+      </div>
+    </div>
+
+    <!-- Stat 4: Trạng thái Indexer -->
+    <div class="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-amber-50/90 via-orange-50/40 to-amber-50/60 border border-amber-200/90 shadow-2xs hover:shadow-md transition-all flex flex-col justify-between">
+      <div class="flex items-center justify-between">
+        <span class="text-xs font-bold text-slate-700 uppercase tracking-wider font-mono">Hạ Tầng Indexer</span>
+        <span class="w-8 h-8 rounded-xl bg-white text-amber-600 border border-amber-200 flex items-center justify-center shadow-2xs">
+          <span class="material-symbols-outlined text-[18px]">sync</span>
+        </span>
+      </div>
+      <div class="mt-3">
+        <div class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">Live Sync</div>
+        <p class="text-xs text-slate-500 font-medium mt-0.5">Quét khối Sepolia liên tục</p>
+      </div>
+      <div class="mt-3 pt-2.5 border-t border-amber-100 flex items-center justify-between text-xs">
+        <a href="/admin/election/indexerstate/" class="text-amber-700 font-bold hover:underline inline-flex items-center gap-1">
+          <span>Xem log quét khối</span>
+          <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+        </a>
+        <span class="text-[10px] font-mono text-emerald-600 font-bold flex items-center gap-1">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Running
+        </span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- 2. KHU VỰC CHÍNH: DANH SÁCH MÔ HÌNH DỮ LIỆU & NHẬT KÝ THAO TÁC         -->
+  <!-- ===================================================================== -->
+  <div class="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
+    
+    <!-- CỘT TRÁI (8/12): CÁC NHÓM MÔ HÌNH QUẢN LÝ (APPLICATIONS & MODELS) -->
+    <div class="xl:col-span-8 space-y-6">
+      
+      {% if app_list %}
+        {% for app in app_list %}
+        <div class="p-5 sm:p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-4">
+          
+          <!-- Tiêu đề nhóm ứng dụng -->
+          <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+            <div class="flex items-center gap-2.5">
+              <span class="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 border border-blue-200 flex items-center justify-center">
+                {% if app.app_label == 'election' %}
+                  <span class="material-symbols-outlined text-[18px]">account_balance</span>
+                {% elif app.app_label == 'auth' %}
+                  <span class="material-symbols-outlined text-[18px]">shield_person</span>
+                {% else %}
+                  <span class="material-symbols-outlined text-[18px]">folder</span>
+                {% endif %}
+              </span>
+              <div>
+                <h3 class="font-bold text-base text-slate-900 tracking-tight">
+                  {% if app.app_label == 'election' %}Quản Trị Bầu Cử &amp; Dữ Liệu Chuỗi Khối (Election){% elif app.app_label == 'auth' %}Tài Khoản &amp; Phân Quyền Quản Trị (Authentication){% else %}{{ app.name }}{% endif %}
+                </h3>
+                <span class="text-xs text-slate-500 font-medium">Bảng dữ liệu thực thể on-chain và cấu hình</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Danh sách các Models trong App -->
+          <div class="divide-y divide-slate-100">
+            {% for model in app.models %}
+            <div class="py-3 sm:py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-slate-50/70 px-2 rounded-xl transition-colors">
+              
+              <!-- Tên model và mô tả -->
+              <div class="flex items-center gap-3">
+                <span class="w-8 h-8 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center shrink-0">
+                  {% if model.object_name == 'Election' %}
+                    <span class="material-symbols-outlined text-[16px] text-blue-600">how_to_vote</span>
+                  {% elif model.object_name == 'VoteRecord' %}
+                    <span class="material-symbols-outlined text-[16px] text-indigo-600">receipt_long</span>
+                  {% elif model.object_name == 'WhitelistEntry' %}
+                    <span class="material-symbols-outlined text-[16px] text-emerald-600">badge</span>
+                  {% elif model.object_name == 'MetadataBlob' %}
+                    <span class="material-symbols-outlined text-[16px] text-cyan-600">cloud_queue</span>
+                  {% elif model.object_name == 'IndexerState' %}
+                    <span class="material-symbols-outlined text-[16px] text-amber-600">sync</span>
+                  {% elif model.object_name == 'SystemLog' %}
+                    <span class="material-symbols-outlined text-[16px] text-rose-600">terminal</span>
+                  {% elif model.object_name == 'User' %}
+                    <span class="material-symbols-outlined text-[16px] text-blue-600">person</span>
+                  {% elif model.object_name == 'Group' %}
+                    <span class="material-symbols-outlined text-[16px] text-purple-600">groups</span>
+                  {% else %}
+                    <span class="material-symbols-outlined text-[16px]">database</span>
+                  {% endif %}
+                </span>
+                
+                <div>
+                  {% if model.admin_url %}
+                    <a href="{{ model.admin_url }}" class="font-bold text-sm text-slate-800 hover:text-blue-600 transition-colors text-decoration-none">
+                      {{ model.name }}
+                    </a>
+                  {% else %}
+                    <span class="font-bold text-sm text-slate-800">{{ model.name }}</span>
+                  {% endif %}
+                  <span class="font-mono text-[10px] text-slate-400 block">{{ model.object_name }}</span>
+                </div>
+              </div>
+
+              <!-- Nút Thao tác: Xem danh sách & Thêm mới -->
+              <div class="flex items-center gap-2 self-end sm:self-center">
+                {% if model.admin_url %}
+                  <a href="{{ model.admin_url }}"
+                    class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center gap-1 transition-all text-decoration-none shadow-2xs">
+                    <span class="material-symbols-outlined text-[14px]">visibility</span>
+                    <span>Xem danh sách</span>
+                  </a>
+                {% endif %}
+
+                {% if model.add_url %}
+                  <a href="{{ model.add_url }}"
+                    class="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center gap-1 transition-all text-decoration-none shadow-2xs">
+                    <span class="material-symbols-outlined text-[14px]">add</span>
+                    <span>Thêm</span>
+                  </a>
+                {% endif %}
+              </div>
+
+            </div>
+            {% endfor %}
+          </div>
+
+        </div>
+        {% endfor %}
+      {% else %}
+        <div class="p-8 text-center bg-white rounded-2xl border border-slate-200 text-slate-500 font-medium">
+          Bạn chưa được cấp quyền quản trị các mô hình dữ liệu trong hệ thống.
+        </div>
+      {% endif %}
+
+    </div>
+
+    <!-- CỘT PHẢI (4/12): NHẬT KÝ THAO TÁC GẦN ĐÂY & THÔNG SỐ BLOCKCHAIN -->
+    <div class="xl:col-span-4 space-y-6">
+      
+      <!-- Thẻ 1: Nhật ký thao tác gần đây của Admin (Recent Actions) -->
+      <div class="p-5 sm:p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-4">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+          <h3 class="font-bold text-sm text-slate-900 flex items-center gap-2">
+            <span class="material-symbols-outlined text-[18px] text-blue-600">history</span>
+            <span>Thao tác gần đây</span>
+          </h3>
+          <span class="text-[10px] font-mono text-slate-400 font-bold uppercase">Audit log</span>
+        </div>
+
+        {% load log %}
+        {% get_admin_log 8 as admin_log for_user user %}
+        {% if not admin_log %}
+          <div class="py-6 text-center text-xs text-slate-400 font-medium space-y-1">
+            <span class="material-symbols-outlined text-[28px] text-slate-300">manage_history</span>
+            <p>Chưa có thao tác quản trị nào được ghi nhận.</p>
+          </div>
+        {% else %}
+          <ul class="space-y-3 m-0 p-0 list-none">
+            {% for entry in admin_log %}
+            <li class="p-2.5 rounded-xl bg-slate-50 border border-slate-100 text-xs space-y-1">
+              <div class="flex items-center justify-between">
+                <span class="font-bold text-slate-700 truncate max-w-[180px]">
+                  {% if entry.is_addition %}
+                    <span class="text-emerald-600 font-semibold">[+ Thêm]</span>
+                  {% elif entry.is_change %}
+                    <span class="text-blue-600 font-semibold">[~ Sửa]</span>
+                  {% elif entry.is_deletion %}
+                    <span class="text-rose-600 font-semibold">[- Xóa]</span>
+                  {% endif %}
+                  {{ entry.object_repr }}
+                </span>
+                <span class="text-[10px] font-mono text-slate-400">{{ entry.action_time|date:"H:i d/m" }}</span>
+              </div>
+              <div class="font-mono text-[10px] text-slate-500">
+                Thực thể: <span class="font-semibold text-slate-700">{{ entry.content_type }}</span>
+              </div>
+            </li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      </div>
+
+      <!-- Thẻ 2: Thông số môi trường Web3 & Smart Contract -->
+      <div class="p-5 sm:p-6 rounded-2xl bg-gradient-to-br from-slate-900 to-blue-950 text-white shadow-md space-y-4">
+        <div class="flex items-center justify-between pb-3 border-b border-white/10">
+          <div class="flex items-center gap-2">
+            <i class="fa-brands fa-ethereum text-blue-400 text-lg"></i>
+            <span class="font-bold text-sm">Hạ Tầng Chuỗi Khối</span>
+          </div>
+          <span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] font-mono font-bold">Online</span>
+        </div>
+
+        <div class="space-y-2.5 text-xs font-mono">
+          <div class="flex justify-between py-1 border-b border-white/5">
+            <span class="text-slate-400">Network:</span>
+            <span class="text-blue-300 font-bold">Ethereum Sepolia</span>
+          </div>
+          <div class="flex justify-between py-1 border-b border-white/5">
+            <span class="text-slate-400">Standard:</span>
+            <span class="text-emerald-300 font-bold">ERC-1202 Voting</span>
+          </div>
+          <div class="flex justify-between py-1 border-b border-white/5">
+            <span class="text-slate-400">Compiler:</span>
+            <span class="text-slate-300 font-bold">Solidity ^0.8.20</span>
+          </div>
+          <div class="flex justify-between py-1">
+            <span class="text-slate-400">Cryptography:</span>
+            <span class="text-indigo-300 font-bold">EIP-712 • ECDSA</span>
+          </div>
+        </div>
+
+        <div class="pt-2">
+          <a href="/verify/" target="_blank"
+            class="w-full py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs flex items-center justify-center gap-2 transition-all border border-white/15 text-decoration-none shadow-sm">
+            <span class="material-symbols-outlined text-[16px]">verified</span>
+            <span>Mở công cụ đối soát mật mã</span>
+          </a>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+{% endblock %}

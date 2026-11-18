@@ -1,0 +1,727 @@
+{% load i18n static %}<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE|default:'vi' }}" class="h-full">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}{{ title }} | VoteChain Admin{% endblock %}</title>
+
+  <link rel="icon" type="image/png" href="{% static 'img/favicon.png' %}">
+
+  <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS & Icon Fonts -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'Inter', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            brand: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              200: '#bfdbfe',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              800: '#1e40af',
+              900: '#1e3a8a',
+            }
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #f8fafc;
+      color: #0f172a;
+    }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      line-height: 1;
+      vertical-align: middle;
+    }
+
+    /* =================================================================== */
+    /* CHUẨN HÓA TOÀN BỘ GIAO DIỆN BẢNG DỮ LIỆU & BỘ LỌC DJANGO ADMIN        */
+    /* =================================================================== */
+
+    /* 1. Breadcrumbs (Thanh điều hướng phân cấp) */
+    .breadcrumbs {
+      display: flex !important;
+      align-items: center !important;
+      flex-wrap: wrap !important;
+      gap: 0.5rem !important;
+      padding: 0.65rem 1.15rem !important;
+      background: white !important;
+      border: 1px solid #e2e8f0 !important;
+      border-radius: 0.875rem !important;
+      font-size: 0.8125rem !important;
+      font-weight: 600 !important;
+      color: #64748b !important;
+      margin-bottom: 1rem !important;
+      box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03) !important;
+    }
+    .breadcrumbs a {
+      color: #2563eb !important;
+      text-decoration: none !important;
+      transition: color 0.15s !important;
+    }
+    .breadcrumbs a:hover {
+      text-decoration: underline !important;
+      color: #1d4ed8 !important;
+    }
+
+    /* 2. Nút thao tác phía trên (Object tools - Add button) */
+    .object-tools {
+      display: flex !important;
+      justify-content: flex-end !important;
+      list-style: none !important;
+      margin: 0 0 1rem 0 !important;
+      padding: 0 !important;
+      gap: 0.5rem !important;
+    }
+    .object-tools li a {
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 0.35rem !important;
+      padding: 0.5rem 1rem !important;
+      border-radius: 0.75rem !important;
+      background: #2563eb !important;
+      color: white !important;
+      font-weight: 700 !important;
+      font-size: 0.8125rem !important;
+      text-decoration: none !important;
+      box-shadow: 0 1px 3px rgba(37, 99, 235, 0.25) !important;
+      transition: all 0.15s !important;
+    }
+    .object-tools li a:hover {
+      background: #1d4ed8 !important;
+      transform: translateY(-1px) !important;
+    }
+
+    /* 3. Khung chứa ChangeList chung */
+    #changelist {
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 1rem !important;
+      width: 100% !important;
+    }
+    .changelist-form-container {
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 1rem !important;
+      width: 100% !important;
+    }
+
+    /* 4. Thanh tìm kiếm (Toolbar / Search form) */
+    #toolbar {
+      background: transparent !important;
+      padding: 0 !important;
+      border-radius: 0 !important;
+      border: none !important;
+      box-shadow: none !important;
+      margin: 0 !important;
+      width: 100% !important;
+    }
+    #changelist-search {
+      display: flex !important;
+      align-items: center !important;
+      flex-wrap: wrap !important;
+      gap: 0.75rem !important;
+      width: 100% !important;
+    }
+    /* Ẩn triệt để icon search ảnh cũ của Django làm rớt dòng icon Q */
+    #changelist-search label[for="searchbar"],
+    #changelist-search img[alt="Search"],
+    #changelist-search img[src*="search.svg"] {
+      display: none !important;
+    }
+    #changelist-search input[type="text"] {
+      border: 1px solid #cbd5e1 !important;
+      border-radius: 0.75rem !important;
+      padding-top: 0.5rem !important;
+      padding-bottom: 0.5rem !important;
+      padding-right: 1rem !important;
+      padding-left: 2.75rem !important; /* Đảm bảo 44px lùi lề để không bao giờ bị icon đè lên chữ */
+      font-size: 0.875rem !important;
+      font-weight: 500 !important;
+      color: #1e293b !important;
+      background: #f8fafc !important;
+      outline: none !important;
+      height: 2.625rem !important;
+      box-sizing: border-box !important;
+      transition: all 0.15s !important;
+    }
+    #changelist-search input[type="text"]:focus {
+      background: white !important;
+      border-color: #2563eb !important;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12) !important;
+    }
+    #changelist-search input[type="submit"],
+    #changelist-search button[type="submit"] {
+      background: #2563eb !important;
+      color: white !important;
+      font-weight: 700 !important;
+      border-radius: 0.75rem !important;
+      padding: 0 1.25rem !important;
+      height: 2.625rem !important;
+      border: none !important;
+      cursor: pointer !important;
+      font-size: 0.8125rem !important;
+      box-shadow: 0 1px 2px rgba(37, 99, 235, 0.2) !important;
+      transition: all 0.15s !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 0.4rem !important;
+      box-sizing: border-box !important;
+    }
+    #changelist-search input[type="submit"]:hover,
+    #changelist-search button[type="submit"]:hover {
+      background: #1d4ed8 !important;
+    }
+
+    /* 5. Bộ lọc Filters (Dropdowns & thanh ngang Django 5) */
+    #changelist-filter, .changelist-filter {
+      background: transparent !important;
+      padding: 0 !important;
+      border-radius: 0 !important;
+      border: none !important;
+      box-shadow: none !important;
+      display: flex !important;
+      align-items: center !important;
+      flex-wrap: wrap !important;
+      gap: 0.65rem !important;
+      margin: 0 !important;
+      width: 100% !important;
+    }
+    #changelist-filter h2 {
+      display: none !important;
+    }
+    #changelist-filter select, .admin-filter select, select[name*="filter"] {
+      background: #f8fafc !important;
+      border: 1px solid #cbd5e1 !important;
+      border-radius: 0.75rem !important;
+      padding: 0 0.85rem !important;
+      height: 2.25rem !important;
+      font-size: 0.8125rem !important;
+      font-weight: 600 !important;
+      color: #334155 !important;
+      outline: none !important;
+      cursor: pointer !important;
+      transition: all 0.15s !important;
+      box-sizing: border-box !important;
+    }
+    #changelist-filter select:focus {
+      background: white !important;
+      border-color: #2563eb !important;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12) !important;
+    }
+    #changelist-filter details summary {
+      font-size: 0.8125rem !important;
+      font-weight: 700 !important;
+      color: #334155 !important;
+      cursor: pointer !important;
+      padding: 0.4rem 0.75rem !important;
+      background: #f1f5f9 !important;
+      border-radius: 0.5rem !important;
+    }
+    #changelist-filter details ul {
+      margin: 0.5rem 0 0 !important;
+      padding: 0.5rem !important;
+      background: white !important;
+      border: 1px solid #e2e8f0 !important;
+      border-radius: 0.65rem !important;
+      list-style: none !important;
+    }
+    #changelist-filter details ul li a {
+      display: block !important;
+      padding: 0.3rem 0.6rem !important;
+      border-radius: 0.4rem !important;
+      font-size: 0.75rem !important;
+      color: #475569 !important;
+      text-decoration: none !important;
+    }
+    #changelist-filter details ul li.selected a {
+      background: #eff6ff !important;
+      color: #1d4ed8 !important;
+      font-weight: 700 !important;
+    }
+
+    /* 6. Thanh thao tác hàng loạt (Actions bar) */
+    .actions {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: flex-start !important;
+      flex-wrap: wrap !important;
+      gap: 0.75rem !important;
+      background: white !important;
+      padding: 0.75rem 1.15rem !important;
+      border-radius: 1rem !important;
+      border: 1px solid #e2e8f0 !important;
+      box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03) !important;
+      font-size: 0.8125rem !important;
+    }
+    .actions label {
+      display: flex !important;
+      align-items: center !important;
+      gap: 0.5rem !important;
+      font-weight: 700 !important;
+      color: #475569 !important;
+      margin: 0 !important;
+    }
+    .actions select {
+      background: #f8fafc !important;
+      border: 1px solid #cbd5e1 !important;
+      border-radius: 0.65rem !important;
+      padding: 0.4rem 0.75rem !important;
+      font-size: 0.8125rem !important;
+      font-weight: 600 !important;
+      color: #1e293b !important;
+      outline: none !important;
+      cursor: pointer !important;
+    }
+    .actions select:focus {
+      background: white !important;
+      border-color: #2563eb !important;
+    }
+    .actions button.button {
+      background: #0f172a !important;
+      color: white !important;
+      font-weight: 700 !important;
+      border-radius: 0.65rem !important;
+      padding: 0.45rem 1.15rem !important;
+      border: none !important;
+      cursor: pointer !important;
+      font-size: 0.8125rem !important;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.1) !important;
+      transition: all 0.15s !important;
+    }
+    .actions button.button:hover {
+      background: #1e293b !important;
+    }
+    .actions .action-counter {
+      font-size: 0.75rem !important;
+      font-weight: 700 !important;
+      color: #64748b !important;
+      font-family: 'JetBrains Mono', monospace !important;
+      margin-left: auto !important;
+    }
+
+    /* 7. Bảng danh sách dữ liệu (#changelist .results & table) */
+    #changelist .results {
+      background: white !important;
+      border-radius: 1rem !important;
+      border: 1px solid #e2e8f0 !important;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04) !important;
+      overflow-x: auto !important;
+    }
+    #changelist table {
+      width: 100% !important;
+      border-collapse: collapse !important;
+      text-align: left !important;
+      font-size: 0.8125rem !important;
+    }
+    #changelist thead th {
+      background: #f8fafc !important;
+      color: #475569 !important;
+      font-weight: 700 !important;
+      padding: 0.85rem 1.15rem !important;
+      border-bottom: 1px solid #e2e8f0 !important;
+      text-transform: uppercase !important;
+      font-size: 0.6875rem !important;
+      letter-spacing: 0.06em !important;
+      white-space: nowrap !important;
+    }
+    #changelist thead th a {
+      color: #475569 !important;
+      text-decoration: none !important;
+    }
+    #changelist thead th a:hover {
+      color: #2563eb !important;
+    }
+    #changelist thead th.action-checkbox-column {
+      width: 2.75rem !important;
+      text-align: center !important;
+      padding-left: 0.85rem !important;
+      padding-right: 0.5rem !important;
+    }
+    #changelist tbody tr {
+      border-bottom: 1px solid #f1f5f9 !important;
+      transition: all 0.12s !important;
+    }
+    #changelist tbody tr:hover {
+      background-color: #f8fafc !important;
+    }
+    #changelist tbody tr.selected {
+      background-color: #eff6ff !important;
+    }
+    #changelist tbody td,
+    #changelist tbody th {
+      padding: 0.85rem 1.15rem !important;
+      color: #1e293b !important;
+      vertical-align: middle !important;
+      white-space: nowrap !important;
+    }
+    #changelist tbody th {
+      font-weight: 600 !important;
+      text-align: left !important;
+    }
+    #changelist tbody td.action-checkbox,
+    #changelist tbody th.action-checkbox {
+      text-align: center !important;
+      padding-left: 0.85rem !important;
+      padding-right: 0.5rem !important;
+      width: 2.75rem !important;
+    }
+    #changelist tbody td a,
+    #changelist tbody th a {
+      color: #0f172a !important;
+      font-weight: 700 !important;
+      text-decoration: none !important;
+      white-space: nowrap !important;
+    }
+    #changelist tbody td a:hover,
+    #changelist tbody th a:hover {
+      color: #2563eb !important;
+      text-decoration: underline !important;
+    }
+    #changelist tbody td span,
+    #changelist tbody th span,
+    #changelist .badge,
+    #changelist .status-pill {
+      white-space: nowrap !important;
+    }
+    #changelist .field-is_hidden {
+      text-align: center !important;
+      width: 1% !important;
+      white-space: nowrap !important;
+    }
+    input[type="checkbox"] {
+      width: 1.1rem !important;
+      height: 1.1rem !important;
+      border-radius: 0.35rem !important;
+      border: 1px solid #cbd5e1 !important;
+      accent-color: #2563eb !important;
+      cursor: pointer !important;
+    }
+
+    /* 8. Thanh phân trang (Paginator) */
+    .paginator {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      background: white !important;
+      padding: 0.75rem 1.25rem !important;
+      border-radius: 1rem !important;
+      border: 1px solid #e2e8f0 !important;
+      box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03) !important;
+      font-size: 0.8125rem !important;
+      color: #64748b !important;
+      font-weight: 600 !important;
+    }
+    .paginator a {
+      color: #2563eb !important;
+      text-decoration: none !important;
+      font-weight: 700 !important;
+      padding: 0.25rem 0.6rem !important;
+      border-radius: 0.5rem !important;
+      transition: all 0.15s !important;
+    }
+    .paginator a:hover {
+      background: #eff6ff !important;
+    }
+
+    /* 9. Biểu mẫu chỉnh sửa Form (ChangeForm styling) */
+    .form-row {
+      padding: 1rem 0 !important;
+      border-bottom: 1px solid #f1f5f9 !important;
+    }
+    input[type="text"], input[type="password"], input[type="email"], textarea, select {
+      border: 1px solid #cbd5e1 !important;
+      border-radius: 0.65rem !important;
+      padding: 0.5rem 0.85rem !important;
+      font-size: 0.875rem !important;
+      outline: none !important;
+      transition: all 0.15s !important;
+    }
+    input:focus, textarea:focus, select:focus {
+      border-color: #2563eb !important;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15) !important;
+    }
+    .submit-row {
+      display: flex !important;
+      align-items: center !important;
+      gap: 0.75rem !important;
+      padding: 1.25rem 0 !important;
+    }
+    .submit-row input[type="submit"] {
+      background: #2563eb !important;
+      color: white !important;
+      font-weight: 700 !important;
+      border-radius: 0.65rem !important;
+      padding: 0.6rem 1.4rem !important;
+      border: none !important;
+      cursor: pointer !important;
+      font-size: 0.875rem !important;
+      box-shadow: 0 1px 2px rgba(37, 99, 235, 0.2) !important;
+    }
+    .submit-row input[type="submit"]:hover {
+      background: #1d4ed8 !important;
+    }
+  </style>
+
+  {% block extrahead %}{% endblock %}
+  {% block extrastyle %}{% endblock %}
+</head>
+
+<body class="min-h-full flex flex-col bg-slate-50 text-slate-800 antialiased selection:bg-blue-500 selection:text-white {% block bodyclass %}{% endblock %}">
+
+  <!-- ===================================================================== -->
+  <!-- 1. TOP NAVIGATION HEADER (THANH ĐIỀU HƯỚNG SÁNG SỦA, CAO CẤP)          -->
+  <!-- ===================================================================== -->
+  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/90 shadow-2xs">
+    <div class="w-full px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+      
+      <!-- Brand Logo & Tiêu đề phân hệ -->
+      <div class="flex items-center gap-3">
+        {% block branding %}
+        <a href="{% url 'admin:index' %}" class="flex items-center gap-2.5 text-decoration-none group">
+          <div class="w-9 h-9 rounded-xl bg-blue-100 flex items-center justify-center text-blue-600 shadow-2xs group-hover:bg-blue-600 group-hover:text-white transition-all">
+            <i class="fa-solid fa-cube text-lg"></i>
+          </div>
+          <div class="flex flex-col">
+            <div class="flex items-center gap-1.5">
+              <span class="font-bold text-slate-900 text-base leading-tight group-hover:text-blue-600 transition-colors">VoteChain Admin</span>
+              <span class="px-1.5 py-0.2 rounded-md bg-blue-50 text-blue-700 border border-blue-200 font-mono text-[10px] font-bold">Portal</span>
+            </div>
+            <span class="text-[10px] font-mono text-slate-500 uppercase tracking-wider font-semibold">Nền tảng Quản trị On-Chain</span>
+          </div>
+        </a>
+        {% endblock %}
+      </div>
+
+      <!-- Quick Action: Nút quay lại DApp Bầu cử -->
+      <div class="flex items-center gap-2 sm:gap-3">
+        <a href="/" target="_blank"
+          class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-blue-50 text-slate-700 hover:text-blue-700 border border-slate-200 hover:border-blue-300 font-bold text-xs transition-all shadow-2xs text-decoration-none">
+          <span class="material-symbols-outlined text-[16px] text-blue-600">open_in_new</span>
+          <span>Vào Web Bầu Cử</span>
+        </a>
+
+        {% if user.is_authenticated %}
+        <!-- User Profile Dropdown Badge -->
+        <div class="flex items-center gap-2 pl-2 border-l border-slate-200">
+          <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center font-bold text-xs shadow-2xs">
+            {{ user.get_username|slice:":1"|upper }}
+          </div>
+          <div class="hidden md:flex flex-col">
+            <span class="font-bold text-xs text-slate-800 leading-tight">{{ user.get_username }}</span>
+            <span class="text-[10px] font-mono text-emerald-600 font-semibold">Superuser</span>
+          </div>
+          
+          <!-- Đăng xuất -->
+          <form action="{% url 'admin:logout' %}" method="post" class="inline m-0">
+            {% csrf_token %}
+            <button type="submit" title="Đăng xuất khỏi hệ thống"
+              class="ml-1 p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer border-0 bg-transparent flex items-center justify-center">
+              <span class="material-symbols-outlined text-[18px]">logout</span>
+            </button>
+          </form>
+        </div>
+        {% endif %}
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ===================================================================== -->
+  <!-- 2. BỐ CỤC CHÍNH (SIDEBAR TRÁI + KHU VỰC NỘI DUNG PHẢI)                -->
+  <!-- ===================================================================== -->
+  <div class="flex-1 w-full max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col lg:flex-row gap-6 items-start">
+    
+    <!-- THANH SIDEBAR TRÁI: DANH MỤC QUẢN LÝ DỰ ÁN VOTECHAIN -->
+    <aside class="w-full lg:w-64 xl:w-72 shrink-0 lg:sticky lg:top-24 space-y-4">
+      <div class="p-4 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-4">
+        
+        <!-- Mục Dashboard chính -->
+        <div>
+          <a href="{% url 'admin:index' %}"
+            class="w-full px-3 py-2.5 rounded-xl font-bold text-xs sm:text-sm flex items-center gap-2.5 transition-all text-decoration-none {% if request.path == '/admin/' %}bg-blue-600 text-white shadow-sm shadow-blue-500/25{% else %}text-slate-700 hover:bg-slate-100{% endif %}">
+            <span class="material-symbols-outlined text-[18px]">dashboard</span>
+            <span>Bảng điều khiển</span>
+          </a>
+        </div>
+
+        <!-- Nhóm 1: Quản trị Bầu cử & Dữ liệu On-Chain -->
+        <div class="space-y-1 pt-2 border-t border-slate-100">
+          <span class="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 font-mono block">
+            Quản trị Bầu cử
+          </span>
+          
+          <a href="/admin/election/election/"
+            class="w-full px-3 py-2 rounded-xl font-semibold text-xs flex items-center justify-between transition-all text-decoration-none {% if '/admin/election/election/' in request.path %}bg-blue-50 text-blue-700 border border-blue-200 font-bold{% else %}text-slate-600 hover:bg-slate-50 hover:text-slate-900{% endif %}">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-[16px] text-blue-600">how_to_vote</span>
+              <span>Hòm phiếu (Elections)</span>
+            </div>
+            <span class="material-symbols-outlined text-[14px] text-slate-400">chevron_right</span>
+          </a>
+
+          <a href="/admin/election/voterecord/"
+            class="w-full px-3 py-2 rounded-xl font-semibold text-xs flex items-center justify-between transition-all text-decoration-none {% if '/admin/election/voterecord/' in request.path %}bg-blue-50 text-blue-700 border border-blue-200 font-bold{% else %}text-slate-600 hover:bg-slate-50 hover:text-slate-900{% endif %}">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-[16px] text-indigo-600">receipt_long</span>
+              <span>Lá phiếu (Vote records)</span>
+            </div>
+            <span class="material-symbols-outlined text-[14px] text-slate-400">chevron_right</span>
+          </a>
+
+          <a href="/admin/election/whitelistentry/"
+            class="w-full px-3 py-2 rounded-xl font-semibold text-xs flex items-center justify-between transition-all text-decoration-none {% if '/admin/election/whitelistentry/' in request.path %}bg-blue-50 text-blue-700 border border-blue-200 font-bold{% else %}text-slate-600 hover:bg-slate-50 hover:text-slate-900{% endif %}">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-[16px] text-emerald-600">badge</span>
+              <span>Danh sách Whitelist</span>
+            </div>
+            <span class="material-symbols-outlined text-[14px] text-slate-400">chevron_right</span>
+          </a>
+
+          <a href="/admin/election/metadatablob/"
+            class="w-full px-3 py-2 rounded-xl font-semibold text-xs flex items-center justify-between transition-all text-decoration-none {% if '/admin/election/metadatablob/' in request.path %}bg-blue-50 text-blue-700 border border-blue-200 font-bold{% else %}text-slate-600 hover:bg-slate-50 hover:text-slate-900{% endif %}">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-[16px] text-cyan-600">cloud_queue</span>
+              <span>Dữ liệu IPFS (Blobs)</span>
+            </div>
+            <span class="material-symbols-outlined text-[14px] text-slate-400">chevron_right</span>
+          </a>
+        </div>
+
+        <!-- Nhóm 2: Hệ thống & Nhật ký On-Chain -->
+        <div class="space-y-1 pt-2 border-t border-slate-100">
+          <span class="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 font-mono block">
+            Hạ tầng &amp; Nhật ký
+          </span>
+
+          <a href="/admin/election/indexerstate/"
+            class="w-full px-3 py-2 rounded-xl font-semibold text-xs flex items-center justify-between transition-all text-decoration-none {% if '/admin/election/indexerstate/' in request.path %}bg-blue-50 text-blue-700 border border-blue-200 font-bold{% else %}text-slate-600 hover:bg-slate-50 hover:text-slate-900{% endif %}">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-[16px] text-amber-600">sync</span>
+              <span>Trạng thái Indexer</span>
+            </div>
+            <span class="material-symbols-outlined text-[14px] text-slate-400">chevron_right</span>
+          </a>
+
+          <a href="/admin/election/systemlog/"
+            class="w-full px-3 py-2 rounded-xl font-semibold text-xs flex items-center justify-between transition-all text-decoration-none {% if '/admin/election/systemlog/' in request.path %}bg-blue-50 text-blue-700 border border-blue-200 font-bold{% else %}text-slate-600 hover:bg-slate-50 hover:text-slate-900{% endif %}">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-[16px] text-rose-600">terminal</span>
+              <span>Nhật ký (System logs)</span>
+            </div>
+            <span class="material-symbols-outlined text-[14px] text-slate-400">chevron_right</span>
+          </a>
+        </div>
+
+        <!-- Nhóm 3: Tài khoản & Phân quyền -->
+        <div class="space-y-1 pt-2 border-t border-slate-100">
+          <span class="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 font-mono block">
+            Phân quyền Admin
+          </span>
+
+          <a href="/admin/auth/user/"
+            class="w-full px-3 py-2 rounded-xl font-semibold text-xs flex items-center justify-between transition-all text-decoration-none {% if '/admin/auth/user/' in request.path %}bg-blue-50 text-blue-700 border border-blue-200 font-bold{% else %}text-slate-600 hover:bg-slate-50 hover:text-slate-900{% endif %}">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-[16px] text-slate-600">group</span>
+              <span>Người dùng (Users)</span>
+            </div>
+            <span class="material-symbols-outlined text-[14px] text-slate-400">chevron_right</span>
+          </a>
+
+          <a href="/admin/auth/group/"
+            class="w-full px-3 py-2 rounded-xl font-semibold text-xs flex items-center justify-between transition-all text-decoration-none {% if '/admin/auth/group/' in request.path %}bg-blue-50 text-blue-700 border border-blue-200 font-bold{% else %}text-slate-600 hover:bg-slate-50 hover:text-slate-900{% endif %}">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-[16px] text-slate-600">lock_person</span>
+              <span>Nhóm quyền (Groups)</span>
+            </div>
+            <span class="material-symbols-outlined text-[14px] text-slate-400">chevron_right</span>
+          </a>
+        </div>
+
+      </div>
+
+      <!-- Card Thông tin mạng lưới chuỗi khối dưới sidebar -->
+      <div class="p-3.5 rounded-2xl bg-gradient-to-br from-blue-50/80 via-sky-50/40 to-indigo-50/60 border border-blue-200/80 text-xs space-y-2">
+        <div class="flex items-center justify-between">
+          <span class="font-bold text-slate-700 flex items-center gap-1.5">
+            <i class="fa-brands fa-ethereum text-blue-600"></i> Sepolia
+          </span>
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        </div>
+        <p class="text-[11px] text-slate-500 leading-relaxed">
+          Đang đồng bộ trực tiếp từ hợp đồng thông minh ERC-1202.
+        </p>
+      </div>
+    </aside>
+
+    <!-- KHU VỰC NỘI DUNG CHÍNH (MAIN CONTENT) -->
+    <main class="flex-1 w-full min-w-0 space-y-4">
+      
+      <!-- BREADCRUMBS -->
+      {% block breadcrumbs %}
+      <div class="flex items-center gap-2 text-xs font-semibold text-slate-500">
+        <a href="{% url 'admin:index' %}" class="text-blue-600 hover:underline">Trang chủ</a>
+        {% if title %}
+          <span>/</span>
+          <span class="text-slate-800">{{ title }}</span>
+        {% endif %}
+      </div>
+      {% endblock %}
+
+      <!-- THÔNG BÁO HỆ THỐNG (MESSAGES) -->
+      {% if messages %}
+      <div class="space-y-2">
+        {% for message in messages %}
+        <div class="p-3.5 rounded-xl border text-xs sm:text-sm font-semibold flex items-center gap-2.5 {% if message.tags == 'success' %}bg-emerald-50 text-emerald-800 border-emerald-200{% elif message.tags == 'error' %}bg-rose-50 text-rose-800 border-rose-200{% else %}bg-blue-50 text-blue-800 border-blue-200{% endif %}">
+          <span class="material-symbols-outlined text-[18px]">
+            {% if message.tags == 'success' %}check_circle{% elif message.tags == 'error' %}error{% else %}info{% endif %}
+          </span>
+          <span>{{ message }}</span>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <!-- NỘI DUNG THỰC THI (BLOCK CONTENT) -->
+      <div class="w-full">
+        {% block content %}
+          {% block object-tools %}{% endblock %}
+          {{ content }}
+        {% endblock %}
+      </div>
+
+    </main>
+
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="w-full py-4 px-6 border-t border-slate-200 bg-white text-center text-xs text-slate-500 font-medium mt-auto">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+      <span>VoteChain Admin Portal • Bản quyền © 2026 Web3 Voting Project.</span>
+      <span class="font-mono text-[11px] text-slate-400">ERC-1202 Standard • Django Core</span>
+    </div>
+  </footer>
+
+</body>
+</html>

@@ -57,65 +57,79 @@
     <!-- ================================================================= -->
     <div class="lg:col-span-8 flex flex-col gap-6 sm:gap-space-lg">
 
-      <!-- PHẦN 1: Thông tin tổng quan hòm phiếu -->
-      <div class="bg-surface-container-lowest rounded-2xl p-5 sm:p-space-lg shadow-sm border border-slate-200 flex flex-col gap-4 sm:gap-space-md">
+      <!-- PHẦN 1: Thông tin tổng quan hòm phiếu (Bento SaaS Style Tinh Gọn) -->
+      <div class="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-7 shadow-sm border border-slate-200 flex flex-col gap-4 sm:gap-5">
         
-        <!-- Các nhãn trạng thái (Đang mở, Public/Private,...) -->
-        <div id="badges" class="flex flex-wrap items-center gap-2 sm:gap-space-xs">
-          <!-- JS sẽ tự động điền nhãn vào đây -->
+        <!-- Hàng 1: Dải huy hiệu bên trái + Mã Contract có nút Copy & Etherscan bên phải -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3.5 border-b border-slate-100">
+          <div id="badges" class="flex flex-wrap items-center gap-2">
+            <!-- JS tự động điền các badge trạng thái -->
+          </div>
+          <div id="contractBox" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-slate-50 border border-slate-200 text-xs font-mono text-slate-600 w-fit shrink-0">
+            <!-- JS sẽ điền Contract short + copy btn + etherscan link -->
+          </div>
         </div>
 
-        <!-- Tên hòm phiếu và thông tin người tạo -->
-        <div class="flex flex-col gap-2 sm:gap-space-xs">
-          <div id="metaLine" class="flex flex-wrap items-center gap-x-3 sm:gap-x-space-md gap-y-2 font-body-sm text-xs sm:text-body-sm text-on-surface-variant">
-            <!-- JS sẽ điền địa chỉ ví tạo và ngày tạo -->
-          </div>
-          <h1 id="title" class="font-headline-xl text-2xl sm:text-headline-xl text-on-surface tracking-[-0.01em] font-bold leading-snug mt-1 sm:mt-0">
+        <!-- Hàng 2: Tiêu đề hòm phiếu, Người tạo & Mô tả -->
+        <div class="space-y-1.5 sm:space-y-2">
+          <h1 id="title" class="text-2xl sm:text-3xl font-bold text-slate-900 tracking-normal leading-snug">
             <!-- JS sẽ điền tên cuộc bầu cử -->
           </h1>
+          <div id="metaLine" class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500 font-medium">
+            <!-- JS sẽ điền thông tin người tạo và ngày tạo -->
+          </div>
+          <p id="desc" class="text-xs sm:text-sm text-slate-600 leading-relaxed pt-1 whitespace-pre-wrap">
+            <!-- JS sẽ điền mô tả -->
+          </p>
         </div>
 
-        <!-- Đoạn mô tả chi tiết -->
-        <p id="desc" class="font-body-md text-sm sm:text-body-md text-on-surface-variant leading-relaxed whitespace-pre-wrap">
-          <!-- JS sẽ điền mô tả -->
-        </p>
-
-        <!-- Thẻ nhắc nhở luật chơi (chọn 1 hay nhiều) -->
-        <div id="ruleBox" class="bg-[#F0F5FF] px-4 sm:px-space-md py-3 rounded-xl border border-blue-200 text-on-surface font-body-sm text-sm leading-relaxed">
-          <!-- JS sẽ điền quy chế bỏ phiếu -->
-        </div>
-
-        <!-- 3 Thẻ thống kê: Số lượng cử tri, Số phiếu đã bầu, Trạng thái On-chain -->
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-space-sm pt-2 sm:pt-space-xs">
-          <div class="bg-surface-container-low p-3 sm:p-space-sm rounded-xl flex items-center gap-3 sm:gap-space-sm border border-slate-200/80">
-            <div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center shrink-0">
-              <span class="material-symbols-outlined text-primary text-[20px]">groups</span>
+        <!-- Hàng 3: Dải thông số & Quy chế tích hợp (Bento Metrics Strip) -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3 p-3 sm:p-4 rounded-2xl bg-slate-50/90 border border-slate-200/90">
+          
+          <!-- Khối 1: Quy chế biểu quyết -->
+          <div class="flex items-center gap-2.5 sm:gap-3 p-2.5 rounded-xl bg-white border border-slate-200/60 shadow-2xs">
+            <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 border border-blue-100">
+              <span class="material-symbols-outlined text-[18px] sm:text-[20px]">how_to_vote</span>
             </div>
             <div class="flex flex-col min-w-0">
-              <span class="font-body-sm text-xs sm:text-body-sm text-on-surface-variant">Quyền bỏ phiếu</span>
-              <span id="statTotalVoters" class="font-headline-sm text-base sm:text-headline-sm text-on-surface font-bold truncate">Đang tải...</span>
+              <span class="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider font-mono">Quy chế</span>
+              <span id="ruleValue" class="text-xs sm:text-sm font-bold text-slate-800 truncate">Chọn 1 ứng viên</span>
             </div>
           </div>
 
-          <div class="bg-surface-container-low p-3 sm:p-space-sm rounded-xl flex items-center gap-3 sm:gap-space-sm border border-slate-200/80">
-            <div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center shrink-0">
-              <span class="material-symbols-outlined text-secondary text-[20px]">how_to_reg</span>
+          <!-- Khối 2: Cử tri hợp lệ -->
+          <div class="flex items-center gap-2.5 sm:gap-3 p-2.5 rounded-xl bg-white border border-slate-200/60 shadow-2xs">
+            <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0 border border-indigo-100">
+              <span class="material-symbols-outlined text-[18px] sm:text-[20px]">groups</span>
             </div>
             <div class="flex flex-col min-w-0">
-              <span class="font-body-sm text-xs sm:text-body-sm text-on-surface-variant">Đã bỏ phiếu</span>
-              <span id="statVotedCount" class="font-headline-sm text-base sm:text-headline-sm text-on-surface font-bold truncate">0 phiếu</span>
+              <span class="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider font-mono">Quyền cử tri</span>
+              <span id="statTotalVoters" class="text-xs sm:text-sm font-bold text-slate-800 truncate">Đang tải...</span>
             </div>
           </div>
 
-          <div class="bg-surface-container-low p-3 sm:p-space-sm rounded-xl flex items-center gap-3 sm:gap-space-sm border border-slate-200/80">
-            <div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center shrink-0">
-              <span class="material-symbols-outlined text-tertiary text-[20px]">verified_user</span>
+          <!-- Khối 3: Phiếu đã ghi nhận -->
+          <div class="flex items-center gap-2.5 sm:gap-3 p-2.5 rounded-xl bg-white border border-slate-200/60 shadow-2xs">
+            <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 border border-emerald-100">
+              <span class="material-symbols-outlined text-[18px] sm:text-[20px]">how_to_reg</span>
             </div>
             <div class="flex flex-col min-w-0">
-              <span class="font-body-sm text-xs sm:text-body-sm text-on-surface-variant">Tính toàn vẹn</span>
-              <span class="font-headline-sm text-base sm:text-headline-sm text-tertiary font-bold truncate">100% On-Chain</span>
+              <span class="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider font-mono">Đã bỏ phiếu</span>
+              <span id="statVotedCount" class="text-xs sm:text-sm font-bold text-slate-800 truncate">0 phiếu</span>
             </div>
           </div>
+
+          <!-- Khối 4: Chuỗi bảo chứng -->
+          <div class="flex items-center gap-2.5 sm:gap-3 p-2.5 rounded-xl bg-white border border-slate-200/60 shadow-2xs">
+            <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center shrink-0 border border-teal-100">
+              <span class="material-symbols-outlined text-[18px] sm:text-[20px]">verified_user</span>
+            </div>
+            <div class="flex flex-col min-w-0">
+              <span class="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider font-mono">Tính toàn vẹn</span>
+              <span class="text-xs sm:text-sm font-bold text-teal-700 truncate">100% On-Chain</span>
+            </div>
+          </div>
+
         </div>
 
       </div>

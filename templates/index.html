@@ -13,7 +13,7 @@
 <div class="flex flex-col w-full">
 
   <!-- Hiệu ứng ánh sáng nền trang trí (Ambient Glow) -->
-  <div class="relative w-full overflow-hidden pb-10 sm:pb-space-xl">
+  <div class="relative w-full pb-10 sm:pb-space-xl">
     <div class="pointer-events-none absolute -top-40 right-10 w-[550px] h-[550px] bg-blue-400/10 rounded-full blur-3xl"></div>
     <div class="pointer-events-none absolute top-96 -left-32 w-[480px] h-[480px] bg-indigo-400/10 rounded-full blur-3xl"></div>
 
@@ -22,15 +22,66 @@
       <!-- ===================================================================== -->
       <!-- 1. PHẦN GIỚI THIỆU CHÍNH (HERO HEADER SECTION - THEO PHONG CÁCH MỚI)  -->
       <!-- ===================================================================== -->
-      <section class="relative rounded-2xl sm:rounded-3xl bg-white p-5 sm:p-8 lg:p-10 overflow-hidden shadow-sm border border-slate-200">
+      <section class="relative rounded-2xl sm:rounded-3xl bg-gradient-to-br from-white via-[#f2f7ff] to-[#e4f0fe] p-5 sm:p-8 lg:p-10 overflow-hidden shadow-sm border border-blue-200/90">
+        
+        <!-- =================================================================== -->
+        <!-- WATERMARK LOGO CHÌM TINH TẾ DƯỚI NỀN BANNER (THEO IDEA ẢNH 2)       -->
+        <!-- =================================================================== -->
+        <!-- Ánh sáng nền lan tỏa có chiều sâu -->
+        <div class="pointer-events-none absolute -top-32 right-1/4 w-[520px] h-[520px] bg-blue-400/[0.12] rounded-full blur-3xl z-0"></div>
+        <div class="pointer-events-none absolute -bottom-32 left-1/4 w-[480px] h-[480px] bg-indigo-400/[0.09] rounded-full blur-3xl z-0"></div>
+
+        <!-- Con dấu mật mã học tròn VoteChain Seal (Theo Idea Ảnh 2) chìm ở phía góc phải -->
+        <div class="pointer-events-none absolute -right-12 sm:-right-8 -bottom-16 w-[380px] h-[380px] sm:w-[460px] sm:h-[460px] text-blue-600/[0.07] select-none z-0">
+          <svg viewBox="0 0 400 400" class="w-full h-full fill-none stroke-current" stroke-width="1.5">
+            <!-- Vòng tròn bảo chứng ngoài cùng -->
+            <circle cx="200" cy="200" r="190" stroke-width="2" stroke-dasharray="6 6" />
+            <circle cx="200" cy="200" r="176" stroke-width="1.2" />
+            <circle cx="200" cy="200" r="140" stroke-width="1" stroke-dasharray="4 4" />
+            <circle cx="200" cy="200" r="100" stroke-width="1.5" />
+            
+            <!-- Họa tiết đa giác mật mã học (Octagon chuỗi khối) -->
+            <polygon points="200,70 292,108 330,200 292,292 200,330 108,292 70,200 108,108" stroke-width="1.2" />
+            
+            <!-- Con dấu Ethereum Diamond ở trung tâm -->
+            <g transform="translate(145, 125) scale(0.43)" class="fill-current stroke-none">
+              <path d="M127.961 0l-2.795 9.5v275.668l2.795 2.79 127.962-75.638z" />
+              <path d="M127.962 0L0 209.82l127.962 75.638V0z" />
+              <path d="M127.961 312.187l-1.575 1.92v98.199l1.575 4.6L256 236.587z" />
+              <path d="M127.962 416.905v-104.72L0 236.585z" />
+              <path d="M127.961 287.958l127.96-75.637-127.96-58.162z" />
+              <path d="M0 212.32l127.96 75.638v-133.8z" />
+            </g>
+            
+            <!-- Vòng chữ chạy tròn (Cryptographic Seal Text Path) -->
+            <path id="sealPathIndex" d="M 200, 200 m -158, 0 a 158,158 0 1,1 316,0 a 158,158 0 1,1 -316,0" fill="none" stroke="none" />
+            <text class="fill-current text-[11px] font-mono tracking-[0.22em] uppercase font-bold" stroke="none">
+              <textPath href="#sealPathIndex" startOffset="0%">
+                ★ VOTECHAIN DECENTRALIZED PROTOCOL ★ ETHEREUM SEPOLIA VERIFIED ★ ERC-1202 &amp; EIP-712 ★
+              </textPath>
+            </text>
+          </svg>
+        </div>
+
+        <!-- Họa tiết phụ: Mạng lưới nút mạng (Node Network) chìm ở phía trái -->
+        <div class="pointer-events-none absolute -left-12 -top-12 w-[320px] h-[320px] text-indigo-600/[0.055] select-none z-0">
+          <svg viewBox="0 0 200 200" class="w-full h-full fill-none stroke-current" stroke-width="1.2">
+            <circle cx="100" cy="100" r="90" stroke-dasharray="4 4" />
+            <polygon points="100,25 165,62 165,138 100,175 35,138 35,62" />
+            <line x1="100" y1="25" x2="100" y2="175" />
+            <line x1="35" y1="62" x2="165" y2="138" />
+            <line x1="35" y1="138" x2="165" y2="62" />
+          </svg>
+        </div>
+
         <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
 
           <!-- Cột trái: Nội dung giới thiệu và Các nút bấm hành động -->
           <div class="lg:col-span-7 space-y-4 sm:space-y-5">
-<!-- Tiêu đề cấp cao Typography (Tinh chỉnh thoáng đãng, chống mất dấu Tiếng Việt) -->
-            <h1 class="text-3xl sm:text-4xl lg:text-[2.65rem] font-bold text-slate-900 tracking-[-0.01em] leading-[1.25]">
+<!-- Tiêu đề cấp cao Typography (Tinh chỉnh thoáng đãng, chống mất dấu Tiếng Việt & giãn dòng chuẩn) -->
+            <h1 class="text-2xl sm:text-3xl lg:text-[2.5rem] font-bold text-slate-900 tracking-normal leading-[1.35] lg:leading-[1.4]">
               Minh Bạch Từng Lá Phiếu.
-              <span class="block bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 bg-clip-text text-transparent pb-0.5">Bỏ Phiếu Bất Biến Trên Chuỗi Khối.</span>
+              <span class="block bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 bg-clip-text text-transparent mt-1.5 sm:mt-2 lg:mt-2.5 pb-1">Bỏ Phiếu Bất Biến Trên Chuỗi Khối.</span>
             </h1>
 
             <p class="font-body-lg text-sm sm:text-base text-slate-600 max-w-xl leading-relaxed">
@@ -58,24 +109,31 @@
             </div>
           </div>
 
-          <!-- Cột phải: Bảng thống kê dữ liệu trực tiếp (Nền xanh nhẹ nhàng, nổi bật) -->
-          <div class="lg:col-span-5 relative flex flex-col gap-4 sm:gap-space-md mt-6 lg:mt-0">
+          <!-- Cột phải: Bảng thống kê dữ liệu trực tiếp (1 khối dài ở trên, 2 khối ngắn ở dưới như ban đầu) -->
+          <div class="lg:col-span-5 relative flex flex-col gap-3 mt-6 lg:mt-0">
             <!-- Hiệu ứng vầng sáng xanh dịu nhẹ phía sau -->
             <div class="pointer-events-none absolute -inset-2 bg-blue-400/15 rounded-3xl blur-2xl"></div>
 
-            <div class="relative z-10 flex flex-col gap-4 sm:gap-space-md">
-              <!-- Ô 1: Tổng phiếu bầu đã đúc (Nền gradient xanh lam phấn nhẹ) -->
-              <div class="p-5 sm:p-6 rounded-2xl bg-gradient-to-br from-blue-50 via-sky-50/60 to-indigo-50/70 shadow-sm shadow-blue-500/5 space-y-3 border border-blue-200/90 hover:border-blue-300 hover:shadow-md transition-all">
-                <div class="flex items-center justify-between text-on-surface-variant font-body-sm text-xs sm:text-body-sm font-semibold">
-                  <span class="text-slate-700 font-bold">Tổng phiếu bầu đã đúc</span>
-                  <span class="font-label-code text-[10px] sm:text-label-code text-blue-700 font-bold px-2.5 py-0.5 rounded-full bg-white border border-blue-200 shadow-2xs">On-chain Sepolia</span>
+            <div class="relative z-10 flex flex-col gap-3 w-full">
+
+              <!-- Khối 1 DÀI Ở TRÊN: Tổng phiếu bầu đã đúc (Nền Pastel Xanh Lam Sky) -->
+              <div class="w-full p-4 rounded-2xl bg-gradient-to-br from-sky-50/95 via-blue-50/50 to-indigo-50/70 shadow-sm border border-sky-200/90 hover:border-sky-300 hover:shadow-md transition-all space-y-2">
+                <div class="flex items-center justify-between text-xs font-semibold">
+                  <span class="text-slate-700 font-bold uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-[16px] text-sky-600">ballot</span>
+                    Tổng phiếu bầu đã đúc
+                  </span>
+                  <span class="font-mono text-[10px] text-sky-700 font-bold px-2 py-0.5 rounded-full bg-white border border-sky-200 shadow-2xs">On-chain Sepolia</span>
                 </div>
-                <div id="statTotalVotes" class="font-headline-xl text-3xl sm:text-4xl text-on-surface font-black tracking-tight text-slate-900">5</div>
+                <div class="flex items-baseline gap-2 pt-0.5">
+                  <div id="statTotalVotes" class="font-headline-lg text-2xl sm:text-3xl text-slate-900 font-black tracking-tight">0</div>
+                  <span class="text-xs text-slate-500 font-medium">phiếu đã ghi sổ</span>
+                </div>
                 <!-- Thanh tiến trình minh hoạ 100% minh bạch -->
-                <div class="w-full bg-blue-100/90 h-2.5 rounded-full overflow-hidden mt-2">
-                  <div class="bg-blue-600 h-full rounded-full w-[100%]"></div>
+                <div class="w-full bg-sky-100/90 h-1.5 rounded-full overflow-hidden">
+                  <div class="bg-sky-600 h-full rounded-full w-full"></div>
                 </div>
-                <div class="flex justify-between font-label-code text-[9px] sm:text-[10px] text-slate-500 uppercase font-bold pt-2">
+                <div class="flex justify-between font-mono text-[9px] sm:text-[10px] text-slate-500 uppercase font-bold pt-0.5">
                   <span>Phiếu xác thực chữ ký</span>
                   <span class="text-emerald-600 flex items-center gap-1 font-semibold">
                     <span class="material-symbols-outlined text-[13px]">verified</span> 100% Minh bạch
@@ -83,23 +141,53 @@
                 </div>
               </div>
 
-              <!-- Thống kê phụ: Số hòm phiếu và Số cử tri -->
-              <div class="grid grid-cols-2 gap-3 sm:gap-space-sm">
-                <!-- Ô 2: Hòm phiếu hoạt động -->
-                <div class="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-blue-50 via-sky-50/60 to-indigo-50/70 shadow-sm shadow-blue-500/5 flex flex-col border border-blue-200/90 hover:border-blue-300 hover:shadow-md transition-all">
-                  <span class="font-label-tag text-[9px] sm:text-label-tag text-slate-500 uppercase tracking-wider font-bold">Hòm phiếu hoạt động</span>
-                  <span id="statTotalElections" class="font-headline-lg text-xl sm:text-headline-lg text-blue-600 font-bold mt-2">5 hòm</span>
-                  <span id="statOpenElections" class="font-label-code text-[9px] sm:text-[10px] text-emerald-600 font-semibold mt-auto pt-2 flex items-center gap-1">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> 4 đang mở
-                  </span>
+              <!-- HAI KHỐI NGẮN Ở DƯỚI (GRID 2 CỘT) -->
+              <div class="grid grid-cols-2 gap-3 w-full">
+                
+                <!-- Khối ngắn 1: Hòm phiếu hoạt động (Nền Pastel Xanh Ngọc Mint) -->
+                <div class="p-3 sm:p-3.5 rounded-2xl bg-gradient-to-br from-emerald-50/95 via-teal-50/50 to-emerald-50/70 shadow-sm border border-emerald-200/90 hover:border-emerald-300 hover:shadow-md transition-all flex flex-col justify-between space-y-1.5">
+                  <div class="flex items-center justify-between text-xs font-semibold">
+                    <span class="text-slate-700 font-bold uppercase tracking-wider text-[10px] flex items-center gap-1">
+                      <span class="material-symbols-outlined text-[14px] text-emerald-600">how_to_vote</span>
+                      Hòm phiếu
+                    </span>
+                    <span class="font-mono text-[9px] text-emerald-800 font-bold px-1.5 py-0.5 rounded-full bg-white border border-emerald-200">Live</span>
+                  </div>
+                  <div class="pt-0.5">
+                    <div id="statTotalElections" class="font-headline-lg text-xl sm:text-2xl text-emerald-700 font-black tracking-tight">0 hòm</div>
+                  </div>
+                  <div class="w-full bg-emerald-100/90 h-1 rounded-full overflow-hidden">
+                    <div class="bg-emerald-600 h-full rounded-full w-full"></div>
+                  </div>
+                  <div class="font-mono text-[9px] sm:text-[10px] text-emerald-700 font-bold pt-0.5 flex items-center gap-1">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                    <span id="statOpenElections">0 đang mở</span>
+                  </div>
                 </div>
-                <!-- Ô 3: Cử tri đã tham gia -->
-                <div class="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-blue-50 via-sky-50/60 to-indigo-50/70 shadow-sm shadow-blue-500/5 flex flex-col border border-blue-200/90 hover:border-blue-300 hover:shadow-md transition-all">
-                  <span class="font-label-tag text-[9px] sm:text-label-tag text-slate-500 uppercase tracking-wider font-bold">Cử tri đã tham gia</span>
-                  <span id="statTotalVoters" class="font-headline-lg text-xl sm:text-headline-lg text-indigo-600 font-bold mt-2">5</span>
-                  <span class="font-label-code text-[9px] sm:text-[10px] text-slate-500 uppercase font-bold mt-auto pt-2">Lượt bỏ phiếu</span>
+
+                <!-- Khối ngắn 2: Cử tri đã tham gia (Nền Pastel Tím Lam Indigo) -->
+                <div class="p-3 sm:p-3.5 rounded-2xl bg-gradient-to-br from-indigo-50/95 via-purple-50/50 to-indigo-50/70 shadow-sm border border-indigo-200/90 hover:border-indigo-300 hover:shadow-md transition-all flex flex-col justify-between space-y-1.5">
+                  <div class="flex items-center justify-between text-xs font-semibold">
+                    <span class="text-slate-700 font-bold uppercase tracking-wider text-[10px] flex items-center gap-1">
+                      <span class="material-symbols-outlined text-[14px] text-indigo-600">group</span>
+                      Cử tri
+                    </span>
+                    <span class="font-mono text-[9px] text-indigo-700 font-bold px-1.5 py-0.5 rounded-full bg-white border border-indigo-200">Community</span>
+                  </div>
+                  <div class="pt-0.5">
+                    <div id="statTotalVoters" class="font-headline-lg text-xl sm:text-2xl text-indigo-700 font-black tracking-tight">0</div>
+                  </div>
+                  <div class="w-full bg-indigo-100/90 h-1 rounded-full overflow-hidden">
+                    <div class="bg-indigo-600 h-full rounded-full w-full"></div>
+                  </div>
+                  <div class="font-mono text-[9px] sm:text-[10px] text-slate-500 font-bold pt-0.5 flex items-center gap-1 truncate">
+                    <span class="material-symbols-outlined text-[12px] text-indigo-600 shrink-0">check_circle</span>
+                    <span class="truncate">Lượt bỏ phiếu</span>
+                  </div>
                 </div>
+
               </div>
+
             </div>
           </div>
 
@@ -110,7 +198,7 @@
         <!-- ===================================================================== -->
         <div class="relative z-10 pt-5 sm:pt-6 mt-6 sm:mt-8 border-t border-slate-200/90 flex flex-col md:flex-row md:items-center gap-3 sm:gap-4 overflow-hidden">
           <!-- Nhãn cố định bên trái -->
-          <div class="flex items-center gap-2 shrink-0 bg-white z-10 pr-2">
+          <div class="flex items-center gap-2 shrink-0 bg-transparent z-10 pr-2">
             <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
             <span class="text-[11px] sm:text-xs uppercase tracking-widest font-mono text-slate-500 font-bold whitespace-nowrap">
               HỆ SINH THÁI &amp; BẢO CHỨNG CÔNG NGHỆ:
@@ -295,11 +383,11 @@
           <!-- ============================================================= -->
           <!-- 1. THANH DỌC BỘ LỌC SÁT BÊN TRÁI (LEFT SIDEBAR FILTER)        -->
           <!-- ============================================================= -->
-          <aside class="w-full lg:w-72 xl:w-80 shrink-0 lg:sticky lg:top-24 self-start">
-            <div class="p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-white shadow-sm border border-slate-200 space-y-4">
+          <aside class="w-full lg:w-72 xl:w-80 shrink-0 lg:sticky lg:top-24 self-start z-10">
+            <div class="p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-slate-100 border border-slate-200/90 shadow-sm space-y-4">
               
               <!-- Tiêu đề bộ lọc nhỏ gọn -->
-              <div class="flex items-center justify-between pb-2.5 border-b border-slate-100">
+              <div class="flex items-center justify-between pb-2.5 border-b border-slate-200/80">
                 <div class="flex items-center gap-2 text-slate-800 font-bold text-sm">
                   <span class="material-symbols-outlined text-[20px] text-blue-600">tune</span>
                   <span>Bộ lọc tìm kiếm</span>
@@ -323,7 +411,7 @@
                   </div>
                   <input id="searchInput" type="text"
                     placeholder="Tên cuộc bầu cử, ứng viên, ID..."
-                    class="w-full pl-9 pr-9 py-2 rounded-xl bg-slate-50 hover:bg-white focus:bg-white text-slate-800 placeholder:text-slate-400 text-xs sm:text-sm font-semibold border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/15 outline-none transition-all shadow-2xs">
+                    class="w-full pl-9 pr-9 py-2 rounded-xl bg-white hover:bg-slate-50/80 focus:bg-white text-slate-800 placeholder:text-slate-400 text-xs sm:text-sm font-semibold border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/15 outline-none transition-all shadow-2xs">
                   <!-- Nút tìm kiếm nhỏ -->
                   <button id="btnSearchSubmit" type="button" title="Tìm kiếm"
                     class="absolute right-1.5 w-7 h-7 rounded-lg bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center transition-all border-0 cursor-pointer shadow-2xs">
@@ -337,31 +425,39 @@
                 <label class="text-[11px] font-bold uppercase tracking-wider text-slate-500 font-mono block">
                   Trạng thái
                 </label>
-                <div id="statusChips" class="flex flex-col gap-1 p-1 bg-slate-100/90 rounded-2xl border border-slate-200/90 shadow-2xs w-full">
-                  <button class="chip active w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all border-0 cursor-pointer focus:outline-none" data-status="all" style="margin:0;">
-                    <div class="flex items-center gap-2">
-                      <span class="material-symbols-outlined text-[18px]">apps</span>
+                <div id="statusChips" class="flex flex-col gap-1 p-1 bg-slate-200/50 rounded-2xl border border-slate-200/90 shadow-2xs w-full">
+                  <button class="chip active w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all border-0 cursor-pointer focus:outline-none" data-status="all" style="margin:0;">
+                    <div class="flex items-center gap-2.5">
+                      <span class="w-5 h-5 flex items-center justify-center shrink-0">
+                        <span class="material-symbols-outlined text-[18px]">apps</span>
+                      </span>
                       <span>Tất cả</span>
                     </div>
                     <span id="tabCountAll" class="count-badge">0</span>
                   </button>
-                  <button class="chip w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all border-0 cursor-pointer focus:outline-none" data-status="open" style="margin:0;">
-                    <div class="flex items-center gap-2">
-                      <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>
+                  <button class="chip w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all border-0 cursor-pointer focus:outline-none" data-status="open" style="margin:0;">
+                    <div class="flex items-center gap-2.5">
+                      <span class="w-5 h-5 flex items-center justify-center shrink-0">
+                        <span class="material-symbols-outlined text-[18px]">play_circle</span>
+                      </span>
                       <span>Đang mở</span>
                     </div>
                     <span id="tabCountOpen" class="count-badge">0</span>
                   </button>
-                  <button class="chip w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all border-0 cursor-pointer focus:outline-none" data-status="upcoming" style="margin:0;">
-                    <div class="flex items-center gap-2">
-                      <span class="material-symbols-outlined text-[18px]">schedule</span>
+                  <button class="chip w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all border-0 cursor-pointer focus:outline-none" data-status="upcoming" style="margin:0;">
+                    <div class="flex items-center gap-2.5">
+                      <span class="w-5 h-5 flex items-center justify-center shrink-0">
+                        <span class="material-symbols-outlined text-[18px]">schedule</span>
+                      </span>
                       <span>Sắp diễn ra</span>
                     </div>
                     <span id="tabCountUpcoming" class="count-badge">0</span>
                   </button>
-                  <button class="chip w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all border-0 cursor-pointer focus:outline-none" data-status="finished" style="margin:0;">
-                    <div class="flex items-center gap-2">
-                      <span class="material-symbols-outlined text-[18px]">task_alt</span>
+                  <button class="chip w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all border-0 cursor-pointer focus:outline-none" data-status="finished" style="margin:0;">
+                    <div class="flex items-center gap-2.5">
+                      <span class="w-5 h-5 flex items-center justify-center shrink-0">
+                        <span class="material-symbols-outlined text-[18px]">task_alt</span>
+                      </span>
                       <span>Đã kết thúc</span>
                     </div>
                     <span id="tabCountEnded" class="count-badge">0</span>
@@ -376,7 +472,7 @@
                 </label>
                 <div class="relative w-full">
                   <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-[18px]">category</span>
-                  <select id="typeFilter" class="w-full appearance-none bg-slate-50 hover:bg-white focus:bg-white text-slate-700 font-semibold pl-9 pr-8 py-2 rounded-xl border border-slate-200/90 outline-none text-xs sm:text-sm cursor-pointer transition-all shadow-2xs focus:border-blue-500 focus:ring-2 focus:ring-blue-500/15">
+                  <select id="typeFilter" class="w-full appearance-none bg-white hover:bg-slate-50/80 focus:bg-white text-slate-700 font-semibold pl-9 pr-8 py-2 rounded-xl border border-slate-200 outline-none text-xs sm:text-sm cursor-pointer transition-all shadow-2xs focus:border-blue-500 focus:ring-2 focus:ring-blue-500/15">
                     <option value="all">Mọi thể loại</option>
                     <option value="0">Bầu cử ứng viên</option>
                     <option value="1">Lấy ý kiến</option>
@@ -392,7 +488,7 @@
                 </label>
                 <div class="relative w-full">
                   <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-[18px]">swap_vert</span>
-                  <select id="sortFilter" class="w-full appearance-none bg-slate-50 hover:bg-white focus:bg-white text-slate-700 font-semibold pl-9 pr-8 py-2 rounded-xl border border-slate-200/90 outline-none text-xs sm:text-sm cursor-pointer transition-all shadow-2xs focus:border-blue-500 focus:ring-2 focus:ring-blue-500/15">
+                  <select id="sortFilter" class="w-full appearance-none bg-white hover:bg-slate-50/80 focus:bg-white text-slate-700 font-semibold pl-9 pr-8 py-2 rounded-xl border border-slate-200 outline-none text-xs sm:text-sm cursor-pointer transition-all shadow-2xs focus:border-blue-500 focus:ring-2 focus:ring-blue-500/15">
                     <option value="newest">Mới nhất</option>
                     <option value="most_votes">Nhiều phiếu nhất</option>
                     <option value="closing_soon">Sắp kết thúc</option>
@@ -402,15 +498,15 @@
               </div>
 
               <!-- Mục 5: Từ khóa gợi ý -->
-              <div class="space-y-1.5 pt-2 border-t border-slate-100">
+              <div class="space-y-1.5 pt-2 border-t border-slate-200/80">
                 <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500 font-mono block">
                   Gợi ý tìm kiếm
                 </span>
                 <div class="flex flex-wrap gap-1.5">
-                  <button type="button" class="quick-search-tag px-2.5 py-1 rounded-lg bg-slate-50 hover:bg-blue-50 text-slate-600 hover:text-blue-700 border border-slate-200/80 hover:border-blue-200 transition-all text-xs font-medium cursor-pointer shadow-2xs hover:-translate-y-0.5" data-query="Bầu ban cán sự">Bầu ban cán sự</button>
-                  <button type="button" class="quick-search-tag px-2.5 py-1 rounded-lg bg-slate-50 hover:bg-blue-50 text-slate-600 hover:text-blue-700 border border-slate-200/80 hover:border-blue-200 transition-all text-xs font-medium cursor-pointer shadow-2xs hover:-translate-y-0.5" data-query="Lấy ý kiến">Lấy ý kiến</button>
-                  <button type="button" class="quick-search-tag px-2.5 py-1 rounded-lg bg-slate-50 hover:bg-blue-50 text-slate-600 hover:text-blue-700 border border-slate-200/80 hover:border-blue-200 transition-all text-xs font-medium cursor-pointer shadow-2xs hover:-translate-y-0.5" data-query="Test">Test</button>
-                  <button type="button" class="quick-search-tag px-2.5 py-1 rounded-lg bg-slate-50 hover:bg-blue-50 text-slate-600 hover:text-blue-700 border border-slate-200/80 hover:border-blue-200 transition-all text-xs font-medium cursor-pointer shadow-2xs hover:-translate-y-0.5" data-query="HQT">Ứng viên HQT</button>
+                  <button type="button" class="quick-search-tag px-2.5 py-1 rounded-lg bg-white hover:bg-blue-50 text-slate-600 hover:text-blue-700 border border-slate-200 hover:border-blue-200 transition-all text-xs font-medium cursor-pointer shadow-2xs hover:-translate-y-0.5" data-query="Bầu ban cán sự">Bầu ban cán sự</button>
+                  <button type="button" class="quick-search-tag px-2.5 py-1 rounded-lg bg-white hover:bg-blue-50 text-slate-600 hover:text-blue-700 border border-slate-200 hover:border-blue-200 transition-all text-xs font-medium cursor-pointer shadow-2xs hover:-translate-y-0.5" data-query="Lấy ý kiến">Lấy ý kiến</button>
+                  <button type="button" class="quick-search-tag px-2.5 py-1 rounded-lg bg-white hover:bg-blue-50 text-slate-600 hover:text-blue-700 border border-slate-200 hover:border-blue-200 transition-all text-xs font-medium cursor-pointer shadow-2xs hover:-translate-y-0.5" data-query="Test">Test</button>
+                  <button type="button" class="quick-search-tag px-2.5 py-1 rounded-lg bg-white hover:bg-blue-50 text-slate-600 hover:text-blue-700 border border-slate-200 hover:border-blue-200 transition-all text-xs font-medium cursor-pointer shadow-2xs hover:-translate-y-0.5" data-query="HQT">Ứng viên HQT</button>
                 </div>
               </div>
 

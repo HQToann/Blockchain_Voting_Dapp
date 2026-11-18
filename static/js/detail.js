@@ -110,56 +110,61 @@
     // Render Badges bằng Cards
     $('badges').innerHTML = Cards.detailBadges ? Cards.detailBadges(E, live, isOwner) : '';
 
-    // Meta line (Chủ sở hữu, Hòm phiếu contract, Thời gian tạo)
     const explorerUrl = App.cfg.explorer_url || 'https://sepolia.etherscan.io';
-    $('metaLine').innerHTML = `
-      <span class="flex items-center gap-1">
-        <span class="material-symbols-outlined text-[16px] text-primary">account_circle</span>
-        <span>Chủ: <a href="${explorerUrl}/address/${E.owner}" target="_blank" rel="noopener" class="font-label-code text-primary font-semibold hover:underline">${App.short(E.owner)}</a></span>
-      </span>
-      <span class="text-outline">•</span>
-      <span class="flex items-center gap-1">
-        <span class="material-symbols-outlined text-[16px] text-primary">token</span>
-        <span>Contract: <a href="${explorerUrl}/address/${E.address}" target="_blank" rel="noopener" class="font-label-code text-primary font-semibold hover:underline">${App.short(E.address)}</a></span>
-      </span>
-      <span class="text-outline">•</span>
-      <span class="flex items-center gap-1">
-        <span class="material-symbols-outlined text-[16px] text-outline">calendar_today</span>
-        <span>${App.fmtDate(E.created_at)}</span>
-      </span>
-    `;
 
+    // Contract box trên góc phải
+    if ($('contractBox')) {
+      $('contractBox').innerHTML = `
+        <span class="text-slate-400">Contract:</span>
+        <a href="${explorerUrl}/address/${E.address}" target="_blank" rel="noopener" class="font-bold text-blue-600 hover:underline" title="Xem trên Etherscan">${App.short(E.address)}</a>
+        <button type="button" onclick="navigator.clipboard.writeText('${E.address}'); App.toast('Đã sao chép địa chỉ contract!', 'info');" class="border-0 bg-transparent text-slate-400 hover:text-blue-600 cursor-pointer p-0.5 flex items-center" title="Sao chép địa chỉ">
+          <span class="material-symbols-outlined text-[14px]">content_copy</span>
+        </button>
+        <a href="${explorerUrl}/address/${E.address}" target="_blank" rel="noopener" class="text-slate-400 hover:text-blue-600 flex items-center p-0.5" title="Mở trên Etherscan">
+          <span class="material-symbols-outlined text-[14px]">open_in_new</span>
+        </a>
+      `;
+    }
+
+    // Tiêu đề & Thông tin tác giả
     $('title').textContent = E.name;
     $('desc').textContent = E.description || 'Cuộc bầu cử phi tập trung được bảo đảm toàn vẹn và bất biến trên sổ cái chuỗi khối Ethereum Sepolia.';
 
-    // Thống kê nhanh
+    $('metaLine').innerHTML = `
+      <span class="flex items-center gap-1">
+        <span class="material-symbols-outlined text-[15px] text-slate-400">account_circle</span>
+        <span>Chủ hòm phiếu: <a href="${explorerUrl}/address/${E.owner}" target="_blank" rel="noopener" class="font-mono text-blue-600 font-semibold hover:underline">${App.short(E.owner)}</a></span>
+      </span>
+      <span class="text-slate-300">•</span>
+      <span class="flex items-center gap-1">
+        <span class="material-symbols-outlined text-[15px] text-slate-400">calendar_today</span>
+        <span>Khởi tạo: ${App.fmtDate(E.created_at)}</span>
+      </span>
+      <span class="text-slate-300">•</span>
+      <span class="inline-flex items-center gap-1 text-slate-500 font-mono text-[11px]">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+        <span>Sepolia Testnet</span>
+      </span>
+    `;
+
+    // Quy chế và Thống kê nhanh
+    const k = E.max_choices;
+    const optNoun = E.kind === 1 ? 'phương án' : 'ứng viên';
+    if ($('ruleValue')) {
+      $('ruleValue').textContent = k === 1
+        ? `Chọn đúng 1 ${optNoun}`
+        : `Chọn 1 đến ${k} ${optNoun}`;
+    }
+    if ($('ruleBox')) {
+      $('ruleBox').textContent = k === 1 ? `Chọn đúng 1 ${optNoun}` : `Chọn 1 đến ${k} ${optNoun}`;
+    }
+
     $('statTotalVoters').textContent = E.is_private
       ? `${E.whitelist_count || 0} ví Whitelist`
       : 'Cộng đồng mở';
     $('statVotedCount').textContent = `${E.total_voters} phiếu`;
 
-    // Quy chế bỏ phiếu (Rule Box)
-    const k = E.max_choices;
-    let ruleHtml = `
-      <div class="flex items-center gap-2 font-semibold text-primary mb-1">
-        <span class="material-symbols-outlined text-[18px]">verified</span>
-        <span>Quy chế kiểm phiếu:</span>
-      </div>
-      <div>
-        ${k === 1
-        ? 'Mỗi cử tri chỉ được chọn <b>đúng 1</b> lựa chọn duy nhất.'
-        : `Mỗi cử tri được phép chọn <b>từ 1 đến ${k}</b> lựa chọn khác nhau.`
-      }
-        ${E.is_private
-        ? '<br><span class="text-amber-800 font-medium flex items-center gap-1 mt-1"><span class="material-symbols-outlined text-[16px] text-amber-600">lock</span> Hòm phiếu riêng tư: Chỉ các địa chỉ ví nằm trong danh sách Whitelist được cấp quyền mới có thể bỏ phiếu.</span>'
-        : ''
-      }
-      </div>
-    `;
-    $('ruleBox').innerHTML = ruleHtml;
-
     // Tiêu đề khu vực ứng viên
-    const optNoun = E.kind === 1 ? 'phương án' : 'ứng viên';
     $('optSectionTitle').textContent = `Danh sách ${optNoun} (${E.options.length})`;
     $('optSectionRule').textContent = k === 1
       ? `Chọn 1 ${optNoun} duy nhất để ký ủy quyền`

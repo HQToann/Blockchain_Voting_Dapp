@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="vi" class="h-full">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Đăng nhập Quản trị viên — VoteChain Admin Portal</title>
+  
+  <link rel="icon" type="image/png" href="/static/img/favicon.png">
+  
+  <!-- Font chữ Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS & Icon Fonts -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'Inter', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            brand: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              200: '#bfdbfe',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              800: '#1e40af',
+              900: '#1e3a8a',
+            }
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      line-height: 1;
+      vertical-align: middle;
+    }
+    /* Chuyển động lơ lửng nhẹ cho watermark */
+    @keyframes floatSlow {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-12px) rotate(2deg); }
+    }
+    @keyframes floatReverse {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(14px) rotate(-3deg); }
+    }
+    .float-slow {
+      animation: floatSlow 12s ease-in-out infinite;
+    }
+    .float-reverse {
+      animation: floatReverse 14s ease-in-out infinite;
+    }
+  </style>
+</head>
+
+<body class="h-screen w-screen flex flex-col justify-between relative bg-gradient-to-br from-[#0c1e4a] via-[#102d6b] to-[#091536] text-slate-800 antialiased overflow-x-hidden overflow-y-auto lg:overflow-hidden selection:bg-blue-500 selection:text-white">
+
+  <!-- ===================================================================== -->
+  <!-- WATERMARK LOGO CHÌM PHÍA SAU (ETHEREUM, SOLIDITY, CUBE, SMART CONTRACT) -->
+  <!-- ===================================================================== -->
+  <div class="pointer-events-none fixed inset-0 z-0 overflow-hidden select-none">
+    
+    <!-- Watermark 1: Con dấu Ethereum Diamond to ở góc trên bên phải -->
+    <div class="absolute -top-16 -right-16 text-blue-400/10 float-slow w-[360px] h-[360px] lg:w-[480px] lg:h-[480px]">
+      <svg viewBox="0 0 256 417" class="w-full h-full fill-current">
+        <path d="M127.961 0l-2.795 9.5v275.668l2.795 2.79 127.962-75.638z" />
+        <path d="M127.962 0L0 209.82l127.962 75.638V0z" />
+        <path d="M127.961 312.187l-1.575 1.92v98.199l1.575 4.6L256 236.587z" />
+        <path d="M127.962 416.905v-104.72L0 236.585z" />
+        <path d="M127.961 287.958l127.96-75.637-127.96-58.162z" />
+        <path d="M0 212.32l127.96 75.638v-133.8z" />
+      </svg>
+    </div>
+
+    <!-- Watermark 2: Con dấu Solidity Prism chìm ở góc dưới bên trái -->
+    <div class="absolute -bottom-16 -left-16 text-indigo-400/10 float-reverse w-[300px] h-[300px] lg:w-[420px] lg:h-[420px]">
+      <svg viewBox="0 0 100 100" class="w-full h-full fill-current">
+        <path d="M30 15 L50 25 L30 35 L10 25 Z" />
+        <path d="M50 25 L70 35 L50 45 L30 35 Z" />
+        <path d="M70 35 L90 45 L70 55 L50 45 Z" />
+        <path d="M30 35 L50 45 L30 55 L10 45 Z" />
+        <path d="M50 45 L70 55 L50 65 L30 55 Z" />
+        <path d="M70 55 L90 65 L70 75 L50 65 Z" />
+        <path d="M30 55 L50 65 L30 75 L10 65 Z" />
+        <path d="M50 65 L70 75 L50 85 L30 75 Z" />
+      </svg>
+    </div>
+
+    <!-- Watermark 3: Vòng tròn mờ trung tâm với biểu tượng chuỗi khối -->
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[650px] h-[650px] bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+    <!-- Watermark 4: Huy hiệu VoteChain trung tâm chìm mờ -->
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white/[0.03] w-[420px] h-[420px] flex items-center justify-center pointer-events-none">
+      <i class="fa-solid fa-cube text-[320px]"></i>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- PHẦN ĐỈNH: THANH ĐIỀU HƯỚNG QUAY VỀ DAPP & TIÊU ĐỀ HỆ THỐNG             -->
+  <!-- ===================================================================== -->
+  <header class="relative z-10 w-full px-4 sm:px-8 py-2.5 sm:py-3 flex items-center justify-between shrink-0">
+    <!-- Nút Quay lại DApp Bầu cử (Góc trên bên trái) -->
+    <a href="/" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-blue-100 hover:text-white border border-white/15 text-xs font-semibold transition-all backdrop-blur-md text-decoration-none shadow-sm hover:-translate-x-0.5">
+      <span class="material-symbols-outlined text-[16px]">arrow_back</span>
+      <span>Cổng tra cứu &amp; bầu cử DApp</span>
+    </a>
+
+    <!-- Trạng thái mạng lưới -->
+    <div class="hidden sm:flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/15 text-[11px] font-mono text-blue-200 backdrop-blur-md">
+      <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+      <span>Network: Sepolia Testnet</span>
+    </div>
+  </header>
+
+  <!-- ===================================================================== -->
+  <!-- PHẦN GIỮA: KHU VỰC THƯƠNG HIỆU & THẺ CARD 2 CỘT                        -->
+  <!-- ===================================================================== -->
+  <main class="relative z-10 flex-1 flex flex-col items-center justify-center px-4 sm:px-6 py-2 sm:py-3 w-full max-w-4xl mx-auto my-auto">
+    
+    <!-- Tiêu đề thương hiệu trung tâm -->
+    <div class="text-center mb-3 sm:mb-4 space-y-1 sm:space-y-1.5 shrink-0">
+      <!-- Logo VoteChain 3D nổi bật -->
+      <div class="inline-flex items-center justify-center w-11 h-11 sm:w-13 sm:h-13 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-700 text-white shadow-lg shadow-blue-500/25 border-2 border-white/30 mb-0.5">
+        <i class="fa-solid fa-cube text-lg sm:text-xl"></i>
+      </div>
+      
+      <h1 class="text-lg sm:text-xl lg:text-2xl font-black text-white tracking-wider uppercase font-sans drop-shadow-md">
+        VoteChain Platform
+      </h1>
+      <p class="text-[11px] sm:text-xs font-semibold text-blue-200/90 tracking-wide uppercase font-mono">
+        Hệ Thống Quản Trị &amp; Vận Hành Hòm Phiếu On-Chain
+      </p>
+    </div>
+
+    <!-- =================================================================== -->
+    <!-- THẺ TRUNG TÂM 2 CỘT (ĐƯỢC TINH GỌN VỪA VẶN MÀN HÌNH)                  -->
+    <!-- =================================================================== -->
+    <div class="w-full bg-white rounded-2xl sm:rounded-3xl shadow-2xl shadow-slate-950/40 border border-white/80 overflow-hidden grid grid-cols-1 lg:grid-cols-12 shrink-0">
+      
+      <!-- CỘT TRÁI: FORM ĐĂNG NHẬP TÀI KHOẢN QUẢN TRỊ (7/12 CỘT) -->
+      <div class="lg:col-span-7 p-5 sm:p-6 lg:p-7 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-slate-100">
+        <div>
+          <!-- Tiêu đề form -->
+          <div class="flex items-center justify-between mb-3.5 sm:mb-4">
+            <div>
+              <h2 class="text-lg sm:text-xl font-bold text-slate-900 tracking-tight">Đăng nhập tài khoản</h2>
+              <p class="text-xs text-slate-500 mt-0.5 font-medium">Dành cho Người vận hành &amp; Quản trị viên hệ thống</p>
+            </div>
+            <span class="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 border border-blue-100">
+              <span class="material-symbols-outlined text-[18px]">admin_panel_settings</span>
+            </span>
+          </div>
+
+          <!-- Thông báo lỗi đăng nhập nếu có -->
+          {% if form.errors and not form.non_field_errors %}
+          <div class="mb-3 p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-start gap-2">
+            <span class="material-symbols-outlined text-[16px] text-rose-600 shrink-0 mt-0.5">error</span>
+            <div class="flex-1">
+              <p class="font-bold">Đăng nhập không thành công!</p>
+              <p class="text-[11px] text-rose-700 mt-0.5">Vui lòng kiểm tra lại Tên tài khoản và Mật khẩu chính xác.</p>
+            </div>
+          </div>
+          {% endif %}
+
+          {% if form.non_field_errors %}
+          <div class="mb-3 p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-start gap-2">
+            <span class="material-symbols-outlined text-[16px] text-rose-600 shrink-0 mt-0.5">error</span>
+            <div>
+              {% for error in form.non_field_errors %}
+                <p class="font-semibold">{{ error }}</p>
+              {% endfor %}
+            </div>
+          </div>
+          {% endif %}
+
+          {% if user.is_authenticated %}
+          <div class="mb-3 p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs flex items-start gap-2">
+            <span class="material-symbols-outlined text-[16px] text-amber-600 shrink-0 mt-0.5">warning</span>
+            <div>
+              <p class="font-bold">Đang đăng nhập: <span class="font-mono text-blue-700">{{ user.get_username }}</span></p>
+              <p class="text-[11px] text-amber-800 mt-0.5">Tài khoản này không có quyền quản trị viên. Vui lòng đăng nhập tài khoản Admin.</p>
+            </div>
+          </div>
+          {% endif %}
+
+          <!-- FORM ĐĂNG NHẬP CHUẨN DJANGO ADMIN -->
+          <form action="{{ app_path }}" method="post" id="login-form" class="space-y-3">
+            {% csrf_token %}
+
+            <!-- Trường 1: Tên đăng nhập (Username) -->
+            <div class="space-y-1">
+              <label for="id_username" class="text-xs font-bold text-slate-700 block">
+                Tài khoản quản trị (Username)
+              </label>
+              <div class="relative flex items-center">
+                <span class="material-symbols-outlined absolute left-3 text-slate-400 text-[17px] pointer-events-none">person</span>
+                <input type="text" name="username" id="id_username" required autofocus
+                  placeholder="Nhập tên đăng nhập quản trị..."
+                  class="w-full pl-9 pr-3.5 py-2 sm:py-2.5 rounded-xl bg-slate-50 hover:bg-slate-50/80 focus:bg-white text-slate-900 font-semibold text-xs sm:text-sm border border-slate-200 focus:border-blue-600 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all">
+              </div>
+            </div>
+
+            <!-- Trường 2: Mật khẩu (Password) kèm nút Ẩn/Hiện -->
+            <div class="space-y-1">
+              <div class="flex items-center justify-between">
+                <label for="id_password" class="text-xs font-bold text-slate-700 block">
+                  Mật khẩu
+                </label>
+              </div>
+              <div class="relative flex items-center">
+                <span class="material-symbols-outlined absolute left-3 text-slate-400 text-[17px] pointer-events-none">lock</span>
+                <input type="password" name="password" id="id_password" required
+                  placeholder="Nhập mật khẩu quản trị..."
+                  class="w-full pl-9 pr-10 py-2 sm:py-2.5 rounded-xl bg-slate-50 hover:bg-slate-50/80 focus:bg-white text-slate-900 font-semibold text-xs sm:text-sm border border-slate-200 focus:border-blue-600 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-mono">
+                <!-- Nút mắt toggle mật khẩu -->
+                <button type="button" id="togglePasswordBtn" title="Hiện/ẩn mật khẩu"
+                  class="absolute right-2.5 text-slate-400 hover:text-slate-600 p-1 flex items-center justify-center cursor-pointer transition-colors border-0 bg-transparent">
+                  <span id="eyeIcon" class="material-symbols-outlined text-[18px]">visibility</span>
+                </button>
+              </div>
+            </div>
+
+            {% url 'admin_password_reset' as password_reset_url %}
+            {% if password_reset_url %}
+            <div class="text-right">
+              <a href="{{ password_reset_url }}" class="text-[11px] text-blue-600 hover:text-blue-800 font-semibold transition-colors">Quên mật khẩu?</a>
+            </div>
+            {% endif %}
+
+            <!-- Input ẩn chuyển tiếp URL sau đăng nhập -->
+            <input type="hidden" name="next" value="{{ next }}">
+
+            <!-- Nút bấm Đăng nhập nổi bật -->
+            <div class="pt-1">
+              <button type="submit"
+                class="w-full py-2.5 sm:py-2.75 rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md shadow-blue-600/25 hover:shadow-lg hover:shadow-blue-600/35 hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer border-0">
+                <span class="material-symbols-outlined text-[18px]">login</span>
+                <span>Đăng nhập hệ thống</span>
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Chú thích hỗ trợ dưới form -->
+        <div class="mt-3.5 pt-3 border-t border-slate-100 text-center text-[11px] text-slate-500 font-medium">
+          Trường hợp quên tài khoản hoặc gặp sự cố, vui lòng liên hệ <span class="text-blue-600 font-bold">Ban Quản Trị VoteChain</span>.
+        </div>
+      </div>
+
+      <!-- CỘT PHẢI: CỔNG TRUY CẬP PHÂN HỆ NHANH (5/12 CỘT) -->
+      <div class="lg:col-span-5 p-5 sm:p-6 lg:p-7 bg-slate-50 flex flex-col justify-between">
+        <div class="space-y-3">
+          <div>
+            <h3 class="text-sm sm:text-base font-bold text-slate-800 tracking-tight flex items-center gap-2">
+              <span class="material-symbols-outlined text-blue-600 text-[18px]">grid_view</span>
+              <span>Cổng truy cập phân hệ</span>
+            </h3>
+            <p class="text-[11px] text-slate-500 mt-0.5">Truy cập trực tiếp các cổng tính năng dành cho Cử tri &amp; Cộng đồng:</p>
+          </div>
+
+          <!-- Danh sách nút truy cập phân hệ -->
+          <div class="space-y-2 pt-0.5">
+            
+            <!-- Phân hệ 1: Cổng Cử tri bỏ phiếu (DApp) -->
+            <a href="/" class="w-full px-3 py-2 sm:py-2.25 rounded-xl bg-white hover:bg-blue-50/70 border border-slate-200/90 hover:border-blue-300 text-slate-700 hover:text-blue-700 font-semibold text-xs flex items-center justify-between gap-2.5 transition-all shadow-2xs hover:shadow-xs hover:-translate-y-0.5 text-decoration-none group">
+              <div class="flex items-center gap-2.5">
+                <div class="w-7 h-7 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                  <span class="material-symbols-outlined text-[16px]">how_to_vote</span>
+                </div>
+                <div>
+                  <div class="font-bold text-slate-900 group-hover:text-blue-700 text-xs">Cổng Cử tri Bỏ phiếu</div>
+                  <div class="text-[10px] text-slate-400 font-normal">Trang chủ khám phá &amp; biểu quyết</div>
+                </div>
+              </div>
+              <span class="material-symbols-outlined text-[15px] text-slate-400 group-hover:text-blue-600 group-hover:translate-x-0.5 transition-all">chevron_right</span>
+            </a>
+
+            <!-- Phân hệ 2: Tạo hòm phiếu bầu cử mới -->
+            <a href="/create/" class="w-full px-3 py-2 sm:py-2.25 rounded-xl bg-white hover:bg-blue-50/70 border border-slate-200/90 hover:border-blue-300 text-slate-700 hover:text-blue-700 font-semibold text-xs flex items-center justify-between gap-2.5 transition-all shadow-2xs hover:shadow-xs hover:-translate-y-0.5 text-decoration-none group">
+              <div class="flex items-center gap-2.5">
+                <div class="w-7 h-7 rounded-lg bg-indigo-100 text-indigo-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                  <span class="material-symbols-outlined text-[16px]">add_box</span>
+                </div>
+                <div>
+                  <div class="font-bold text-slate-900 group-hover:text-blue-700 text-xs">Thiết Lập Hòm Phiếu</div>
+                  <div class="text-[10px] text-slate-400 font-normal">Tạo cuộc bầu cử &amp; Whitelist</div>
+                </div>
+              </div>
+              <span class="material-symbols-outlined text-[15px] text-slate-400 group-hover:text-blue-600 group-hover:translate-x-0.5 transition-all">chevron_right</span>
+            </a>
+
+            <!-- Phân hệ 3: Hòm phiếu của tôi -->
+            <a href="/my/" class="w-full px-3 py-2 sm:py-2.25 rounded-xl bg-white hover:bg-blue-50/70 border border-slate-200/90 hover:border-blue-300 text-slate-700 hover:text-blue-700 font-semibold text-xs flex items-center justify-between gap-2.5 transition-all shadow-2xs hover:shadow-xs hover:-translate-y-0.5 text-decoration-none group">
+              <div class="flex items-center gap-2.5">
+                <div class="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                  <span class="material-symbols-outlined text-[16px]">inventory_2</span>
+                </div>
+                <div>
+                  <div class="font-bold text-slate-900 group-hover:text-blue-700 text-xs">Quản Lý Của Tôi</div>
+                  <div class="text-[10px] text-slate-400 font-normal">Hòm phiếu đã tạo &amp; phiếu đã bầu</div>
+                </div>
+              </div>
+              <span class="material-symbols-outlined text-[15px] text-slate-400 group-hover:text-blue-600 group-hover:translate-x-0.5 transition-all">chevron_right</span>
+            </a>
+
+            <!-- Phân hệ 4: Kiểm tra & Xác minh phiếu bầu EIP-712 -->
+            <a href="/verify/" class="w-full px-3 py-2 sm:py-2.25 rounded-xl bg-white hover:bg-blue-50/70 border border-slate-200/90 hover:border-blue-300 text-slate-700 hover:text-blue-700 font-semibold text-xs flex items-center justify-between gap-2.5 transition-all shadow-2xs hover:shadow-xs hover:-translate-y-0.5 text-decoration-none group">
+              <div class="flex items-center gap-2.5">
+                <div class="w-7 h-7 rounded-lg bg-violet-100 text-violet-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                  <span class="material-symbols-outlined text-[16px]">verified_user</span>
+                </div>
+                <div>
+                  <div class="font-bold text-slate-900 group-hover:text-blue-700 text-xs">Xác Minh Chữ Ký EIP-712</div>
+                  <div class="text-[10px] text-slate-400 font-normal">Đối soát mật mã độc lập</div>
+                </div>
+              </div>
+              <span class="material-symbols-outlined text-[15px] text-slate-400 group-hover:text-blue-600 group-hover:translate-x-0.5 transition-all">chevron_right</span>
+            </a>
+
+          </div>
+        </div>
+
+        <!-- Huy hiệu tiêu chuẩn công nghệ dưới cột phải -->
+        <div class="mt-3.5 pt-3 border-t border-slate-200/80 flex items-center justify-between text-[11px] font-mono text-slate-500">
+          <span class="flex items-center gap-1">
+            <span class="material-symbols-outlined text-[13px] text-emerald-600">verified</span>
+            <span>ERC-1202 Std</span>
+          </span>
+          <span class="flex items-center gap-1">
+            <i class="fa-brands fa-ethereum text-blue-600"></i>
+            <span>Ethereum EVM</span>
+          </span>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ===================================================================== -->
+  <!-- PHẦN ĐÁY (FOOTER): THÔNG TIN BẢN QUYỀN & CƠ QUAN CHỦ QUẢN             -->
+  <!-- ===================================================================== -->
+  <footer class="relative z-10 w-full py-2.5 px-4 sm:px-8 border-t border-white/10 bg-slate-950/40 backdrop-blur-md text-center text-xs text-blue-200/80 font-medium shrink-0">
+    <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-1 sm:gap-2">
+      <div>
+        <span>Cơ quan chủ quản: <strong>Dự án VoteChain — Bầu Cử Minh Bạch Trên Blockchain</strong></span>
+      </div>
+      <div class="flex items-center gap-2 sm:gap-3 text-[10px] sm:text-[11px] font-mono text-blue-300/80">
+        <span>Solidity ^0.8.20</span>
+        <span>•</span>
+        <span>Sepolia Network</span>
+        <span>•</span>
+        <span>Django 5.x</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- SCRIPT BẬT/TẮT MẮT MẬT KHẨU -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const toggleBtn = document.getElementById('togglePasswordBtn');
+      const passInput = document.getElementById('id_password');
+      const eyeIcon = document.getElementById('eyeIcon');
+      
+      if (toggleBtn && passInput && eyeIcon) {
+        toggleBtn.addEventListener('click', function () {
+          if (passInput.type === 'password') {
+            passInput.type = 'text';
+            eyeIcon.textContent = 'visibility_off';
+          } else {
+            passInput.type = 'password';
+            eyeIcon.textContent = 'visibility';
+          }
+        });
+      }
+    });
+  </script>
+
+</body>
+</html>
