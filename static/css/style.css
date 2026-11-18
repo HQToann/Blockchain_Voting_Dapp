@@ -22,7 +22,7 @@ button, input, textarea, select {
 /* Đảm bảo dấu thanh Tiếng Việt (hỏi, ngã, mũ, râu) không bị đè dính hoặc cắt góc */
 h1, h2, h3, h4, h5, h6 {
     text-rendering: optimizeLegibility;
-    letter-spacing: -0.012em;
+    letter-spacing: normal;
 }
 
 /* Thông báo Toasts dạng nổi */

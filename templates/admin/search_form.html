@@ -1,0 +1,34 @@
+{% load i18n static %}
+{% if cl.search_fields %}
+<div id="toolbar" class="w-full">
+  <form id="changelist-search" method="get" role="search" class="w-full flex items-center gap-2.5 m-0 p-0">
+    <div class="relative flex-1 flex items-center">
+      <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-[18px] pointer-events-none select-none">search</span>
+      <input type="text" name="{{ search_var }}" value="{{ cl.query }}" id="searchbar"
+        placeholder="Tìm kiếm theo từ khóa..."
+        class="w-full rounded-xl bg-slate-50 hover:bg-slate-50/80 focus:bg-white text-slate-900 font-semibold text-xs sm:text-sm border border-slate-200 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/15 outline-none transition-all shadow-2xs">
+    </div>
+
+    <button type="submit"
+      class="rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5 transition-all shadow-2xs cursor-pointer border-0 shrink-0">
+      <span class="material-symbols-outlined text-[16px]">search</span>
+      <span>Tìm kiếm</span>
+    </button>
+
+    {% if show_result_count %}
+      <span class="text-xs text-slate-500 font-mono font-medium shrink-0 ml-1">
+        ({{ cl.result_count }} kết quả
+        {% if cl.show_full_result_count %}
+          / <a href="?{% if cl.is_popup %}{{ is_popup_var }}=1{% if cl.add_facets %}&{% endif %}{% endif %}{% if cl.add_facets %}{{ is_facets_var }}{% endif %}" class="text-blue-600 hover:underline font-bold">Xem tất cả {{ cl.full_result_count }}</a>
+        {% endif %})
+      </span>
+    {% endif %}
+
+    {% for pair in cl.params.items %}
+      {% if pair.0 != search_var %}
+        <input type="hidden" name="{{ pair.0 }}" value="{{ pair.1 }}">
+      {% endif %}
+    {% endfor %}
+  </form>
+</div>
+{% endif %}

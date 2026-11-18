@@ -55,7 +55,6 @@ if not DEBUG:
 
 INSTALLED_APPS = [
     'daphne',
-    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -203,40 +202,3 @@ STATIC_ROOT      = BASE_DIR / 'staticfiles'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
-# Jazzmin (Admin UI)
-
-JAZZMIN_SETTINGS = {
-    'site_title':   'Web3 Voting Admin',
-    'site_header':  'Nền tảng Hòm phiếu Cộng đồng',
-    'site_brand':   'Quản trị nền tảng',
-    'welcome_sign': 'Chào mừng đến với Bảng điều khiển Web3',
-    'copyright':    '2026 Web3 Voting Project',
-    'show_ui_builder': False,
-    'topmenu_links': [
-        {'name': 'Trang Chủ',      'url': 'admin:index',       'permissions': ['auth.view_user']},
-        {'name': 'Vào Web Bầu Cử', 'url': '/', 'new_window': True},
-    ],
-    'icons': {
-        'auth':                    'fas fa-users-cog',
-        'auth.user':               'fas fa-user',
-        'auth.Group':              'fas fa-users',
-        'election.Election':       'fas fa-box-open',
-        'election.Option':         'fas fa-list-ol',
-        'election.VoteRecord':     'fas fa-vote-yea',
-        'election.WhitelistEntry': 'fas fa-id-card',
-        'election.MetadataBlob':   'fas fa-file-code',
-        'election.SystemLog':      'fas fa-terminal',
-        'election.IndexerState':   'fas fa-heartbeat',
-    },
-    'default_icon_parents':  'fas fa-chevron-circle-right',
-    'default_icon_children': 'fas fa-circle',
-    'related_modal_active':  True,
-    'custom_css': None,
-    'custom_js':  None,
-}
-
-JAZZMIN_UI_TWEAKS = {
-    'theme':              'darkly',
-    'default_theme_mode': 'dark',
-}
