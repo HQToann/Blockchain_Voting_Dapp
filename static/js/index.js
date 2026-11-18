@@ -39,9 +39,9 @@
     }
   }
 
-  // 2. Tải danh sách hòm phiếu thật từ API
+  // 2. Tải danh sách hòm phiếu thật từ API (3 cột x 3 hàng = 9 hòm phiếu mỗi trang)
   async function load() {
-    const p = new URLSearchParams({ status: st.status, page: st.page, page_size: 12 });
+    const p = new URLSearchParams({ status: st.status, page: st.page, page_size: 9 });
     if (st.kind) p.set('kind', st.kind);
     if (st.q) p.set('q', st.q);
     if (st.sort) p.set('sort', st.sort);

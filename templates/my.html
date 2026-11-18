@@ -10,274 +10,371 @@
 {% block mob_nav_my %}bg-blue-50 text-blue-600 font-bold{% endblock %}
 
 {% block content %}
-<div class="relative w-full flex flex-col gap-6 sm:gap-space-md mt-2 sm:mt-0">
+<div class="relative w-full flex flex-col gap-6 sm:gap-8 mt-2 sm:mt-0">
   
-  <!-- Hiệu ứng màu nền dạng vòng tròn mờ (Ambient Glow) -->
-  <div class="absolute top-4 left-1/2 -translate-x-1/2 w-[320px] sm:w-[680px] h-[280px] bg-gradient-to-r from-primary-container/10 via-secondary-container/8 to-tertiary-fixed/15 blur-3xl pointer-events-none -z-10 rounded-full"></div>
-
-  <!-- PHẦN 1: Thanh điều hướng (Breadcrumb) và Nhãn kết nối ví Sepolia -->
-  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-space-sm pb-4 sm:pb-space-md border-b border-surface-container-high/60">
+  <!-- ===================================================================== -->
+  <!-- PHẦN 1: Breadcrumbs & Nhãn kết nối ví Sepolia                        -->
+  <!-- ===================================================================== -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 sm:pb-4 border-b border-slate-200">
     <!-- Đường dẫn về Trang chủ -->
-    <div class="flex items-center gap-1 sm:gap-space-xs text-on-surface-variant font-body-sm text-xs sm:text-body-sm">
-      <a class="hover:text-primary transition-colors flex items-center gap-1 text-decoration-none" href="/">
+    <div class="flex items-center gap-1.5 text-slate-500 font-body-sm text-xs sm:text-sm font-medium">
+      <a class="hover:text-blue-600 transition-colors flex items-center gap-1 text-decoration-none" href="/">
         <span class="material-symbols-outlined text-[16px]">home</span>
         <span>Trang chủ</span>
       </a>
-      <span class="material-symbols-outlined text-[14px] text-outline">chevron_right</span>
-      <span class="font-semibold text-primary">Hòm phiếu của tôi</span>
+      <span class="material-symbols-outlined text-[14px] text-slate-400">chevron_right</span>
+      <span class="font-semibold text-blue-600">Hòm phiếu của tôi</span>
     </div>
 
     <!-- Nhãn trạng thái hợp đồng và ví -->
-    <div class="flex items-center gap-2 sm:gap-space-xs flex-wrap">
-      <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container-lowest shadow-sm border border-slate-200">
-        <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-tertiary-container animate-pulse shrink-0"></span>
-        <span class="font-label-code text-[10px] sm:text-label-code text-on-surface font-medium">Hợp đồng Sepolia</span>
-        <span class="text-outline text-xs">|</span>
-        <span id="headerWalletBadge" class="font-label-code text-[10px] sm:text-label-code text-primary font-semibold truncate max-w-[120px] sm:max-w-none">Chưa kết nối ví</span>
+    <div class="flex items-center gap-2 flex-wrap">
+      <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white shadow-2xs border border-slate-200">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>
+        <span class="font-mono text-[11px] text-slate-700 font-medium">Sepolia Testnet</span>
+        <span class="text-slate-300 text-xs">|</span>
+        <span id="headerWalletBadge" class="font-mono text-[11px] text-blue-600 font-semibold truncate max-w-[140px] sm:max-w-none">Chưa kết nối ví</span>
       </div>
     </div>
   </div>
 
-  <!-- PHẦN 2: Tiêu đề trang (Hero Section) và Các khối thống kê nhanh -->
-  <div class="rounded-3xl bg-gradient-to-br from-blue-50/90 via-slate-50 to-indigo-50/60 p-5 sm:p-7 border border-slate-200 shadow-sm flex flex-col gap-6 sm:gap-space-md mb-2">
-    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 sm:gap-space-md">
-      
-      <!-- Cụm Tiêu đề và Mô tả -->
-      <div class="max-w-2xl">
-        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary-fixed text-on-primary-fixed mb-2 sm:mb-space-xs font-label-tag text-[10px] sm:text-label-tag uppercase tracking-wider font-bold">
-          <span class="material-symbols-outlined text-[14px]">shield_person</span>
-          <span>TRUNG TÂM QUẢN LÝ &amp; LỊCH SỬ</span>
-        </div>
-        <h1 class="font-headline-xl text-3xl sm:text-headline-xl text-on-surface tracking-tight font-bold flex items-center gap-2 sm:gap-space-xs">
-          <span>Hòm Phiếu Của Tôi</span>
-          <!-- Huy hiệu hiển thị tổng số lượng (JS sẽ điền vào) -->
-          <span id="heroTotalBadge" class="inline-flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-primary-container/10 text-primary text-sm font-label-code font-bold">0</span>
+  <!-- ===================================================================== -->
+  <!-- PHẦN 2: HERO BANNER (THEO PHONG CÁCH ĐỒNG BỘ TRANG KHÁM PHÁ)        -->
+  <!-- ===================================================================== -->
+  <section class="relative rounded-2xl sm:rounded-3xl bg-white p-5 sm:p-8 lg:p-10 overflow-hidden shadow-sm border border-slate-200">
+    <!-- Hiệu ứng ánh sáng nền trang trí (Ambient Glow) -->
+    <div class="pointer-events-none absolute -top-40 right-10 w-[550px] h-[550px] bg-blue-400/10 rounded-full blur-3xl"></div>
+    <div class="pointer-events-none absolute top-96 -left-32 w-[480px] h-[480px] bg-indigo-400/8 rounded-full blur-3xl"></div>
+
+    <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
+
+      <!-- Cột trái: Nội dung giới thiệu & Nút hành động -->
+      <div class="lg:col-span-7 space-y-4 sm:space-y-5">
+<!-- Tiêu đề cấp cao Typography -->
+        <h1 class="text-3xl sm:text-4xl lg:text-[2.65rem] font-bold text-slate-900 tracking-[-0.01em] leading-[1.25]">
+          Hòm Phiếu Của Tôi.
+          <span class="block bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 bg-clip-text text-transparent pb-0.5">Quản Trị Bầu Cử &amp; Minh Bạch On-Chain.</span>
         </h1>
-        <p class="font-body-md text-sm sm:text-body-md text-on-surface-variant mt-2 sm:mt-1.5 leading-relaxed">
-          Quản lý toàn diện các cuộc bầu cử bạn đã khởi tạo trên blockchain và theo dõi lịch sử các lá phiếu bạn đã bỏ với tính minh bạch tuyệt đối.
+
+        <p class="font-body-lg text-sm sm:text-base text-slate-600 max-w-xl leading-relaxed">
+          Quản lý toàn diện các cuộc bầu cử bạn đã khởi tạo trên blockchain và theo dõi lịch sử các lá phiếu bạn đã bỏ với tính minh bạch tuyệt đối trên sổ cái Ethereum Sepolia.
         </p>
+
+        <!-- Cụm nút thao tác nhanh -->
+        <div class="flex flex-wrap items-center gap-3 pt-2">
+          <a class="px-6 py-3.5 rounded-xl bg-blue-600 text-white font-bold text-sm sm:text-base flex items-center justify-center gap-2 shadow-[0_10px_25px_-5px_rgba(37,99,235,0.35)] hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-500/30 hover:-translate-y-0.5 active:translate-y-0 transition-all text-decoration-none" href="/create/">
+            <span class="material-symbols-outlined text-[20px]">add_box</span>
+            <span>Tạo hòm phiếu mới</span>
+          </a>
+          <a class="px-5 py-3.5 rounded-xl bg-slate-50 text-slate-700 font-bold text-sm sm:text-base flex items-center justify-center gap-2 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-300 hover:shadow-sm hover:-translate-y-0.5 active:translate-y-0 transition-all text-decoration-none border border-slate-200" href="/">
+            <span class="material-symbols-outlined text-blue-600 text-[20px]">explore</span>
+            <span>Khám phá cộng đồng</span>
+          </a>
+        </div>
       </div>
 
-      <!-- Nút thao tác nhanh: Tạo hòm phiếu mới -->
-      <div class="shrink-0 flex items-center gap-3 sm:gap-space-sm w-full md:w-auto mt-2 md:mt-0">
-        <a class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 sm:px-space-lg py-3 sm:py-3.5 rounded-xl bg-primary-container text-on-primary font-headline-sm text-sm sm:text-headline-sm font-bold shadow-md hover:shadow-lg hover:bg-primary transition-all duration-200 text-decoration-none" href="/create/">
-          <span class="material-symbols-outlined text-[18px] sm:text-[20px]">add_circle</span>
-          <span>Tạo hòm phiếu mới</span>
-        </a>
-      </div>
-    </div>
-  </div>
+      <!-- Cột phải: Bảng thống kê dữ liệu cá nhân (Bento Stats phong cách Khám phá) -->
+      <div class="lg:col-span-5 relative flex flex-col gap-4 sm:gap-space-md mt-6 lg:mt-0">
+        <!-- Vầng sáng xanh dịu -->
+        <div class="pointer-events-none absolute -inset-2 bg-blue-400/15 rounded-3xl blur-2xl"></div>
 
-  <div class="pt-2 pb-6 sm:pb-space-lg flex flex-col gap-6 sm:gap-space-md">
-    <!-- 3 Thẻ thống kê (Mosaic Bento Cards) hiển thị số liệu cá nhân -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-space-md pt-2 sm:pt-space-xs">
-      
-      <!-- Thẻ 1: Số hòm phiếu đã tạo (Kèm thanh tiến trình) -->
-      <div class="relative overflow-hidden rounded-2xl bg-surface-container-lowest p-4 sm:p-space-md shadow-sm hover:shadow-md transition-shadow border border-slate-200">
-        <div class="flex items-center justify-between">
-          <span class="font-label-tag text-[10px] sm:text-label-tag text-on-surface-variant uppercase tracking-wider font-bold">Cuộc bầu cử đã tạo</span>
-          <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-surface-container-high flex items-center justify-center text-primary shrink-0">
-            <span class="material-symbols-outlined text-[18px] sm:text-[20px]">ballot</span>
+        <div class="relative z-10 flex flex-col gap-4 sm:gap-space-md">
+          <!-- Ô 1: Cuộc bầu cử đã tạo (Ô chính phía trên) -->
+          <div class="p-5 sm:p-6 rounded-2xl bg-gradient-to-br from-blue-50 via-sky-50/60 to-indigo-50/70 shadow-sm shadow-blue-500/5 space-y-3 border border-blue-200/90 hover:border-blue-300 hover:shadow-md transition-all">
+            <div class="flex items-center justify-between text-xs font-semibold">
+              <span class="text-slate-700 font-bold uppercase tracking-wider">Cuộc bầu cử đã tạo</span>
+              <span class="font-mono text-[10px] text-blue-700 font-bold px-2.5 py-0.5 rounded-full bg-white border border-blue-200 shadow-2xs">Creator Stats</span>
+            </div>
+            <div id="statCreatedTotal" class="font-headline-xl text-3xl sm:text-4xl text-slate-900 font-black tracking-tight">0</div>
+            <!-- Thanh tiến trình minh hoạ tỷ lệ mở -->
+            <div class="w-full bg-blue-100/90 h-2.5 rounded-full overflow-hidden mt-2">
+              <div id="statCreatedBar" class="bg-blue-600 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+            <div class="flex justify-between font-mono text-[9px] sm:text-[10px] text-slate-500 uppercase font-bold pt-2">
+              <span id="statCreatedOpen" class="text-emerald-600 font-semibold flex items-center gap-1">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> 0 đang mở
+              </span>
+              <span id="statCreatedEnded" class="text-slate-500 font-semibold">• 0 đã kết thúc</span>
+            </div>
+          </div>
+
+          <!-- Thống kê phụ: 2 Ô lưới bên dưới -->
+          <div class="grid grid-cols-2 gap-3 sm:gap-space-sm">
+            <!-- Ô 2: Lá phiếu đã tham gia -->
+            <div class="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-blue-50 via-sky-50/60 to-indigo-50/70 shadow-sm shadow-blue-500/5 flex flex-col border border-blue-200/90 hover:border-blue-300 hover:shadow-md transition-all">
+              <span class="text-[9px] sm:text-[10px] text-slate-500 uppercase tracking-wider font-bold">Lá phiếu đã tham gia</span>
+              <div class="mt-2 flex items-baseline gap-1.5">
+                <span id="statVotedTotal" class="font-headline-lg text-xl sm:text-2xl text-blue-600 font-black">0</span>
+                <span class="text-[11px] text-slate-500 font-medium">phiếu</span>
+              </div>
+              <div id="statVotedRecent" class="font-mono text-[9px] sm:text-[10px] text-slate-500 font-semibold mt-auto pt-2 flex items-center gap-1 truncate border-t border-blue-100">
+                <span class="material-symbols-outlined text-[13px] text-emerald-600 shrink-0">check_circle</span>
+                <span class="truncate">Chưa bỏ phiếu</span>
+              </div>
+            </div>
+
+            <!-- Ô 3: Bảo chứng On-chain -->
+            <div class="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-blue-50 via-sky-50/60 to-indigo-50/70 shadow-sm shadow-blue-500/5 flex flex-col border border-blue-200/90 hover:border-blue-300 hover:shadow-md transition-all">
+              <span class="text-[9px] sm:text-[10px] text-slate-500 uppercase tracking-wider font-bold">Bảo chứng On-Chain</span>
+              <div class="mt-2 flex items-baseline gap-1.5">
+                <span class="font-headline-lg text-xl sm:text-2xl text-indigo-600 font-black">100%</span>
+                <span class="text-[11px] text-emerald-600 font-bold">Minh bạch</span>
+              </div>
+              <div class="font-mono text-[9px] sm:text-[10px] text-slate-500 font-semibold mt-auto pt-2 flex items-center gap-1 truncate border-t border-blue-100">
+                <span class="material-symbols-outlined text-[13px] text-blue-600 shrink-0">verified_user</span>
+                <span class="truncate">TxHash độc lập</span>
+              </div>
+            </div>
           </div>
         </div>
-        <div class="mt-2 flex items-baseline gap-2 flex-wrap">
-          <span id="statCreatedTotal" class="font-headline-xl text-3xl sm:text-headline-xl font-bold text-on-surface">0</span>
-          <span id="statCreatedOpen" class="font-body-sm text-xs sm:text-body-sm text-tertiary font-semibold flex items-center gap-1">
-            <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-tertiary-container"></span> 0 đang mở
-          </span>
-          <span id="statCreatedEnded" class="font-body-sm text-xs sm:text-body-sm text-on-surface-variant">• 0 đã kết thúc</span>
-        </div>
-        <div class="mt-3 w-full bg-surface-container-low h-1.5 rounded-full overflow-hidden">
-          <div id="statCreatedBar" class="bg-primary-container h-full rounded-full transition-all duration-500" style="width: 0%"></div>
-        </div>
       </div>
 
-      <!-- Thẻ 2: Số lần đã tham gia bỏ phiếu -->
-      <div class="relative overflow-hidden rounded-2xl bg-surface-container-lowest p-4 sm:p-space-md shadow-sm hover:shadow-md transition-shadow border border-slate-200">
-        <div class="flex items-center justify-between">
-          <span class="font-label-tag text-[10px] sm:text-label-tag text-on-surface-variant uppercase tracking-wider font-bold">Lá phiếu đã tham gia</span>
-          <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-secondary-fixed flex items-center justify-center text-secondary shrink-0">
-            <span class="material-symbols-outlined text-[18px] sm:text-[20px]">how_to_reg</span>
-          </div>
-        </div>
-        <div class="mt-2 flex items-baseline gap-2">
-          <span id="statVotedTotal" class="font-headline-xl text-3xl sm:text-headline-xl font-bold text-on-surface">0</span>
-          <span class="font-body-sm text-xs sm:text-body-sm text-on-surface-variant font-medium">phiếu hợp lệ</span>
-        </div>
-        <div id="statVotedRecent" class="mt-3 flex items-center gap-1.5 font-label-code text-xs sm:text-body-sm text-on-surface-variant truncate">
-          <span class="material-symbols-outlined text-[14px] sm:text-[16px] text-tertiary shrink-0">check_circle</span>
-          <span class="truncate">Chưa tham gia bỏ phiếu</span>
-        </div>
-      </div>
-
-      <!-- Thẻ 3: Biểu tượng minh bạch On-chain -->
-      <div class="relative overflow-hidden rounded-2xl bg-surface-container-lowest p-4 sm:p-space-md shadow-sm hover:shadow-md transition-shadow border border-slate-200 sm:col-span-2 md:col-span-1">
-        <div class="flex items-center justify-between">
-          <span class="font-label-tag text-[10px] sm:text-label-tag text-on-surface-variant uppercase tracking-wider font-bold">Bảo chứng On-Chain</span>
-          <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-on-tertiary-container/40 flex items-center justify-center text-tertiary shrink-0">
-            <span class="material-symbols-outlined text-[18px] sm:text-[20px]">lock</span>
-          </div>
-        </div>
-        <div class="mt-2 flex items-baseline gap-2">
-          <span class="font-headline-xl text-3xl sm:text-headline-xl font-bold text-on-surface">100%</span>
-          <span class="font-body-sm text-xs sm:text-body-sm text-tertiary font-semibold">Minh bạch</span>
-        </div>
-        <div class="mt-3 flex items-center gap-1.5 font-label-code text-xs sm:text-body-sm text-on-surface-variant">
-          <span class="material-symbols-outlined text-[14px] sm:text-[16px] text-primary shrink-0">verified_user</span>
-          <span class="truncate">Mọi phiếu sinh TxHash độc lập</span>
-        </div>
-      </div>
     </div>
-  </div>
+  </section>
 
-  <!-- PHẦN 3A: Màn hình yêu cầu khi CHƯA KẾT NỐI VÍ -->
-  <div id="needWallet" class="hidden bg-surface-container-lowest rounded-2xl p-6 sm:p-12 text-center shadow-sm border border-surface-container-high my-4 sm:my-8 flex flex-col items-center justify-center gap-4">
-    <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-surface-container flex items-center justify-center text-primary shrink-0">
-      <span class="material-symbols-outlined text-[32px] sm:text-[36px]">account_balance_wallet</span>
+  <!-- ===================================================================== -->
+  <!-- PHẦN 3A: CẢNH BÁO KHI CHƯA KẾT NỐI VÍ                                 -->
+  <!-- ===================================================================== -->
+  <div id="needWallet" class="hidden bg-white rounded-3xl p-8 sm:p-12 text-center shadow-sm border border-slate-200 my-4 flex flex-col items-center justify-center gap-4">
+    <div class="w-16 h-16 rounded-2xl bg-blue-50 border border-blue-200/80 flex items-center justify-center text-blue-600 shrink-0 shadow-2xs">
+      <span class="material-symbols-outlined text-[36px]">account_balance_wallet</span>
     </div>
-    <div class="flex flex-col gap-2 max-w-md">
-      <h3 class="font-headline-md text-xl sm:text-headline-md text-on-surface font-bold">Vui lòng kết nối ví MetaMask</h3>
-      <p class="font-body-md text-sm sm:text-base text-on-surface-variant leading-relaxed">
+    <div class="flex flex-col gap-1.5 max-w-md">
+      <h3 class="font-headline-md text-xl font-bold text-slate-900">Vui lòng kết nối ví MetaMask</h3>
+      <p class="font-body-md text-sm text-slate-600 leading-relaxed">
         Hệ thống cần đọc địa chỉ ví của bạn để tra cứu danh sách các cuộc bầu cử bạn đã tạo và các lá phiếu bạn đã bỏ trên blockchain.
       </p>
     </div>
-    <button id="btnConnect" type="button" class="w-full sm:w-auto px-6 sm:px-space-lg py-3 rounded-xl bg-primary-container text-on-primary font-headline-sm text-sm sm:text-headline-sm font-bold shadow-md hover:bg-primary transition-all flex items-center justify-center gap-2 cursor-pointer border-0">
-      <span class="material-symbols-outlined text-[18px] sm:text-[20px]">link</span>
+    <button id="btnConnect" type="button" class="px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer border-0">
+      <span class="material-symbols-outlined text-[20px]">link</span>
       <span>Kết nối MetaMask</span>
     </button>
   </div>
 
-  <!-- PHẦN 3B: Bảng quản lý khi ĐÃ KẾT NỐI VÍ -->
-  <div id="mine" class="flex flex-col gap-5 sm:gap-space-md">
+  <!-- ===================================================================== -->
+  <!-- PHẦN 3B: BỐ CỤC 2 CỘT: BỘ LỌC DỌC SÁT TRÁI + DANH SÁCH BÊN PHẢI       -->
+  <!-- ===================================================================== -->
+  <div id="mine" class="flex flex-col lg:flex-row items-start gap-6 lg:gap-8 w-full">
 
-    <!-- Cụm chức năng: Chuyển Tab (Tôi tạo / Lịch sử) & Bộ lọc -->
-    <div class="flex flex-col gap-4 sm:gap-space-md">
-      
-      <!-- Thanh Menu chọn Tab ngang -->
-      <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 sm:gap-space-sm bg-slate-100 p-1.5 rounded-2xl border border-slate-200/90 shadow-2xs">
-        <div class="flex flex-row items-center gap-1.5 overflow-x-auto no-scrollbar pb-1 lg:pb-0 w-full lg:w-auto">
-          <!-- Tab 1: Những hòm phiếu do ví này làm Owner -->
-          <button class="tab-btn active flex-1 lg:flex-none inline-flex items-center justify-center gap-1.5 sm:gap-2 px-3.5 sm:px-space-md py-2 sm:py-2.5 rounded-xl bg-white text-primary font-headline-sm text-xs sm:text-sm font-bold shadow-xs whitespace-nowrap transition-all cursor-pointer border border-slate-200/80" data-tab="owner">
-            <span class="material-symbols-outlined text-[18px]">how_to_vote</span>
-            <span>Hòm phiếu tôi tạo</span>
-            <span id="tabCountOwner" class="count-badge px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 font-label-code text-[11px] font-bold leading-none">0</span>
-          </button>
-
-          <!-- Tab 2: Lịch sử những hòm phiếu ví này đã bầu -->
-          <button class="tab-btn flex-1 lg:flex-none inline-flex items-center justify-center gap-1.5 sm:gap-2 px-3.5 sm:px-space-md py-2 sm:py-2.5 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-200/60 font-headline-sm text-xs sm:text-sm font-semibold whitespace-nowrap transition-all cursor-pointer border-0 bg-transparent" data-tab="voted">
-            <span class="material-symbols-outlined text-[18px]">how_to_reg</span>
-            <span>Lịch sử bỏ phiếu</span>
-            <span id="tabCountVoted" class="count-badge px-2 py-0.5 rounded-full bg-slate-200 text-slate-700 font-label-code text-[11px] font-bold leading-none">0</span>
-          </button>
-        </div>
-
-        <!-- Nhãn hiển thị chế độ (Creator Mode / Voter Mode) -->
-        <div class="flex items-center justify-center lg:justify-end gap-2 px-2 mt-1 lg:mt-0 w-full lg:w-auto">
-          <span class="font-body-sm text-xs sm:text-body-sm text-on-surface-variant font-medium">Chế độ xem:</span>
-          <span id="modePill" class="px-2.5 py-1 rounded-lg bg-surface-container-high text-on-surface font-label-code text-[10px] sm:text-label-code font-bold">Creator Mode</span>
-        </div>
-      </div>
-
-      <!-- Thanh công cụ: Tìm kiếm và Lọc theo Trạng thái -->
-      <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 sm:gap-space-sm bg-surface-container-lowest p-3 sm:p-space-sm rounded-2xl shadow-sm border border-slate-200">
-        <!-- Ô nhập tìm kiếm -->
-        <div class="relative flex-1 w-full lg:min-w-[280px] flex items-center">
-          <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-primary text-[18px] sm:text-[20px] pointer-events-none">search</span>
-          <input id="searchInput" type="text" placeholder="Tìm tên hòm phiếu, ứng viên, mã #ID, địa chỉ ví..." class="w-full pl-10 pr-10 py-2.5 rounded-xl bg-surface-container-low font-body-md text-xs sm:text-sm text-on-surface placeholder:text-outline focus:outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary border border-transparent focus:border-primary shadow-inner transition-all">
-          <button id="clearSearchBtn" type="button" title="Xóa tìm kiếm"
-            class="hidden absolute right-2.5 w-6 h-6 rounded-md bg-surface-container-high hover:bg-surface-container-highest text-on-surface-variant hover:text-on-surface flex items-center justify-center transition-colors border-0 cursor-pointer">
+    <!-- =================================================================== -->
+    <!-- 1. THANH DỌC BỘ LỌC SÁT BÊN TRÁI (LEFT SIDEBAR FILTER)              -->
+    <!-- =================================================================== -->
+    <aside class="w-full lg:w-72 xl:w-80 shrink-0 lg:sticky lg:top-24 self-start">
+      <div class="p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-white shadow-sm border border-slate-200 space-y-4">
+        
+        <!-- Tiêu đề bộ lọc -->
+        <div class="flex items-center justify-between pb-2.5 border-b border-slate-100">
+          <div class="flex items-center gap-2 text-slate-800 font-bold text-sm">
+            <span class="material-symbols-outlined text-[20px] text-blue-600">tune</span>
+            <span>Bộ lọc &amp; Quản trị</span>
+          </div>
+          <!-- Nút xóa nhanh từ khóa (X) -->
+          <button id="clearSearchBtn" type="button" title="Xóa từ khóa tìm kiếm"
+            class="hidden text-xs text-blue-600 hover:text-blue-800 font-semibold cursor-pointer border-0 bg-transparent flex items-center gap-1 transition-colors">
             <span class="material-symbols-outlined text-[14px]">close</span>
+            <span>Xóa lọc</span>
           </button>
         </div>
 
-        <!-- Các nút bộ lọc: Tất cả / Đang diễn ra / Đã kết thúc -->
-        <div id="statusFilterGroup" class="inline-flex items-center gap-1 p-1 bg-slate-100 rounded-xl border border-slate-200/90 shadow-2xs overflow-x-auto no-scrollbar max-w-full">
-          <button id="filterAll" class="filter-pill active inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all border-0 cursor-pointer text-white bg-primary whitespace-nowrap focus:outline-none" data-status="all">
-            <span>Tất cả</span>
-            <span id="filterAllCount" class="count-badge px-2 py-0.5 rounded-full text-[11px] font-bold leading-none bg-white/20 text-white">0</span>
-          </button>
-          <button id="filterOpen" class="filter-pill inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all border-0 cursor-pointer text-slate-600 hover:text-slate-900 hover:bg-slate-200/70 whitespace-nowrap focus:outline-none" data-status="open">
-            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span>Đang diễn ra</span>
-            <span id="filterOpenCount" class="count-badge px-2 py-0.5 rounded-full text-[11px] font-bold leading-none bg-slate-200 text-slate-700">0</span>
-          </button>
-          <button id="filterEnded" class="filter-pill inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all border-0 cursor-pointer text-slate-600 hover:text-slate-900 hover:bg-slate-200/70 whitespace-nowrap focus:outline-none" data-status="ended">
-            <span>Đã kết thúc</span>
-            <span id="filterEndedCount" class="count-badge px-2 py-0.5 rounded-full text-[11px] font-bold leading-none bg-slate-200 text-slate-700">0</span>
-          </button>
+        <!-- Mục 1: Phân loại hòm phiếu (Tabs chuyển đổi) -->
+        <div class="space-y-1.5">
+          <label class="text-[11px] font-bold uppercase tracking-wider text-slate-500 font-mono block">
+            Chế độ xem
+          </label>
+          <div class="flex flex-col gap-1 p-1 bg-slate-100/90 rounded-2xl border border-slate-200/90 shadow-2xs w-full">
+            <!-- Tab 1: Những hòm phiếu do ví này làm Owner -->
+            <button class="tab-btn active w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all border-0 cursor-pointer focus:outline-none text-white bg-primary" data-tab="owner">
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-[18px]">how_to_vote</span>
+                <span>Hòm phiếu tôi tạo</span>
+              </div>
+              <span id="tabCountOwner" class="count-badge px-2 py-0.5 rounded-full bg-white/20 text-white font-mono text-[11px] font-bold">0</span>
+            </button>
+
+            <!-- Tab 2: Lịch sử những hòm phiếu ví này đã bầu -->
+            <button class="tab-btn w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all border-0 cursor-pointer focus:outline-none" data-tab="voted">
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-[18px]">how_to_reg</span>
+                <span>Lịch sử bỏ phiếu</span>
+              </div>
+              <span id="tabCountVoted" class="count-badge px-2 py-0.5 rounded-full bg-slate-200 text-slate-700 font-mono text-[11px] font-bold">0</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Mục 2: Ô tìm kiếm từ khóa -->
+        <div class="space-y-1.5">
+          <label for="searchInput" class="text-[11px] font-bold uppercase tracking-wider text-slate-500 font-mono block">
+            Tìm kiếm
+          </label>
+          <div class="relative flex items-center w-full">
+            <div class="absolute left-3 text-blue-600 flex items-center pointer-events-none">
+              <span class="material-symbols-outlined text-[18px]">search</span>
+            </div>
+            <input id="searchInput" type="text"
+              placeholder="Tên hòm phiếu, #ID, ví..."
+              class="w-full pl-9 pr-9 py-2 rounded-xl bg-slate-50 hover:bg-white focus:bg-white text-slate-800 placeholder:text-slate-400 text-xs sm:text-sm font-semibold border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/15 outline-none transition-all shadow-2xs">
+          </div>
+        </div>
+
+        <!-- Mục 3: Bộ lọc trạng thái (Xếp dọc dạng Menu List chuyên nghiệp) -->
+        <div class="space-y-1.5">
+          <label class="text-[11px] font-bold uppercase tracking-wider text-slate-500 font-mono block">
+            Trạng thái
+          </label>
+          <div id="statusFilterGroup" class="flex flex-col gap-1 p-1 bg-slate-100/90 rounded-2xl border border-slate-200/90 shadow-2xs w-full">
+            <button id="filterAll" class="filter-pill active w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all border-0 cursor-pointer focus:outline-none" data-status="all">
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-[18px]">apps</span>
+                <span>Tất cả</span>
+              </div>
+              <span id="filterAllCount" class="count-badge px-2 py-0.5 rounded-full text-[11px] font-bold leading-none bg-white/20 text-white">0</span>
+            </button>
+            <button id="filterOpen" class="filter-pill w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all border-0 cursor-pointer focus:outline-none" data-status="open">
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>
+                <span>Đang diễn ra</span>
+              </div>
+              <span id="filterOpenCount" class="count-badge px-2 py-0.5 rounded-full text-[11px] font-bold leading-none bg-slate-200 text-slate-700">0</span>
+            </button>
+            <button id="filterEnded" class="filter-pill w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all border-0 cursor-pointer focus:outline-none" data-status="ended">
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-[18px]">task_alt</span>
+                <span>Đã kết thúc</span>
+              </div>
+              <span id="filterEndedCount" class="count-badge px-2 py-0.5 rounded-full text-[11px] font-bold leading-none bg-slate-200 text-slate-700">0</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Mục 4: Phím tắt thao tác nhanh -->
+        <div class="pt-2 border-t border-slate-100 space-y-2">
+          <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500 font-mono block">
+            Thao tác nhanh
+          </span>
+          <a href="/create/" class="w-full py-2.5 px-3 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-xs flex items-center justify-center gap-1.5 transition-all text-decoration-none border border-blue-200/80">
+            <span class="material-symbols-outlined text-[16px]">add_circle</span>
+            <span>Tạo hòm phiếu mới</span>
+          </a>
+          <a href="/verify/" class="w-full py-2.5 px-3 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-600 font-semibold text-xs flex items-center justify-center gap-1.5 transition-all text-decoration-none border border-slate-200">
+            <span class="material-symbols-outlined text-[16px]">verified_user</span>
+            <span>Xác minh phiếu bầu</span>
+          </a>
+        </div>
+
+      </div>
+    </aside>
+
+    <!-- =================================================================== -->
+    <!-- 2. KHU VỰC HIỂN THỊ DANH SÁCH BÊN PHẢI                              -->
+    <!-- =================================================================== -->
+    <div class="flex-1 min-w-0 space-y-4">
+      
+      <!-- Thanh phản hồi trạng thái & số đếm -->
+      <div class="flex items-center justify-between p-3.5 sm:p-4 rounded-2xl bg-white border border-slate-200 shadow-2xs">
+        <div class="flex items-center gap-2.5">
+          <h3 class="font-headline-md text-sm sm:text-base font-bold text-slate-900">Danh Sách Hòm Phiếu</h3>
+          <span id="modePill" class="px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200/80 font-mono text-[10px] font-bold">Creator Mode</span>
+        </div>
+        <div class="flex items-center gap-1 text-xs text-slate-500 font-medium">
+          <span>Tổng số:</span>
+          <span id="heroTotalBadge" class="font-bold text-blue-600 font-mono text-sm">0</span>
         </div>
       </div>
 
-    </div>
+      <!-- Banner thông báo kết quả tìm kiếm nếu có từ khóa -->
+      <div id="searchFeedback" class="hidden p-3 px-4 rounded-xl bg-blue-50 border border-blue-200 text-blue-900 flex items-center justify-between gap-3 text-xs sm:text-sm font-medium">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-[18px] text-blue-600">manage_search</span>
+          <span>Kết quả tìm kiếm cho: "<strong id="searchFeedbackQuery" class="font-bold text-blue-600"></strong>" (<span id="searchFeedbackCount">0</span> hòm phiếu)</span>
+        </div>
+        <button id="btnResetSearch" type="button" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white hover:bg-blue-100 text-blue-600 font-bold text-xs shadow-sm transition-colors border border-blue-200 cursor-pointer">
+          <span class="material-symbols-outlined text-[14px]">close</span> Xóa bộ lọc
+        </button>
+      </div>
 
-    <!-- KHUNG CHỨA DANH SÁCH THẺ (JS sẽ tự động load hòm phiếu vào đây) -->
-    <div id="list" class="flex flex-col gap-4 sm:gap-space-lg mt-2">
-    </div>
+      <!-- KHUNG CHỨA DANH SÁCH THẺ (3 CỘT HIỂN THỊ CARD ĐỒNG BỘ TRANG KHÁM PHÁ) -->
+      <div id="list" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-5 w-full">
+      </div>
 
-    <!-- Khung chức năng chuyển trang (Phân trang) -->
-    <div id="pager" class="pager flex justify-center py-4 sm:py-space-md"></div>
+      <!-- Thanh điều hướng phân trang (Chuyển trang tiếp theo / Quay lại) -->
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 mt-2 border-t border-slate-200/80">
+        <div id="paginationSummary" class="font-body-sm text-xs sm:text-body-sm text-slate-500 font-medium">
+          Đang tải hòm phiếu...
+        </div>
+        <div id="pager" class="pager flex justify-center"></div>
+      </div>
+
+    </div>
 
   </div>
 
-  <!-- PHẦN 4: Banner cảnh báo bảo mật và nút Tra cứu mã băm Hash dưới cùng -->
-  <div class="mt-6 sm:mt-space-xl p-4 sm:p-space-md rounded-2xl bg-surface-container-lowest shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4 sm:gap-space-md border border-slate-200">
-    <div class="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-space-md">
-      <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-tertiary-container/10 flex items-center justify-center text-tertiary shrink-0">
-        <span class="material-symbols-outlined text-[24px] sm:text-[28px]">verified_user</span>
+  <!-- PHẦN 4: Banner bảo mật mật mã học dưới cùng -->
+  <div class="p-4 sm:p-6 rounded-2xl bg-white shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border border-slate-200">
+    <div class="flex flex-col sm:flex-row sm:items-center gap-4">
+      <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 shrink-0 border border-blue-200/60 shadow-2xs">
+        <span class="material-symbols-outlined text-[24px] sm:text-[26px]">verified_user</span>
       </div>
       <div>
-        <h4 class="font-headline-sm text-sm sm:text-headline-sm font-bold text-on-surface">
-          Tính minh bạch và bảo mật mật mã học
+        <h4 class="font-headline-sm text-sm sm:text-base font-bold text-slate-900">
+          Tính minh bạch &amp; bảo mật mật mã học On-Chain
         </h4>
-        <p class="font-body-sm text-xs sm:text-body-sm text-on-surface-variant mt-1 sm:mt-0 leading-relaxed">
-          Mọi thao tác quản trị hòm phiếu và lá phiếu đều được đóng dấu thời gian (timestamp) bất biến trên blockchain Ethereum. Không một cá nhân nào có thể chỉnh sửa dữ liệu đã xác nhận.
+        <p class="font-body-sm text-xs sm:text-sm text-slate-500 mt-0.5 leading-relaxed">
+          Mọi thao tác quản trị hòm phiếu và lá phiếu đều được đóng dấu thời gian (timestamp) bất biến trên blockchain Ethereum Sepolia.
         </p>
       </div>
     </div>
     <div class="shrink-0 flex items-center w-full md:w-auto mt-2 md:mt-0">
-      <a class="w-full md:w-auto justify-center px-4 py-2.5 rounded-xl bg-surface-container-high hover:bg-surface-container-highest text-primary font-headline-sm text-xs sm:text-sm font-bold transition-colors flex items-center gap-1.5 text-decoration-none" href="/verify/">
-        <span class="material-symbols-outlined text-[16px] sm:text-[18px]">search</span>
+      <a class="w-full md:w-auto justify-center px-4 py-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-700 font-bold text-xs sm:text-sm transition-colors flex items-center gap-1.5 text-decoration-none border border-slate-200 shadow-2xs" href="/verify/">
+        <span class="material-symbols-outlined text-[16px]">search</span>
         <span>Tra cứu mã băm Hash</span>
       </a>
     </div>
   </div>
   
-  <!-- Chú ý: Đây là phần ẩn (ID giả) giữ lại để file JS cũ hoạt động không bị lỗi -->
+  <!-- Giữ lại thẻ ẩn để JS cũ nếu có đọc không bị lỗi -->
   <span id="footerContract" class="hidden"></span>
 
 </div>
 {% endblock %}
 
-<!-- Khối nhúng Script JS và tinh chỉnh CSS để ghi đè hiệu ứng Tab -->
 {% block scripts %}
 <style>
   /* Ghi đè lại màu sắc cho Nút Tab đang được chọn */
   .tab-btn.active {
-    background-color: var(--color-surface-container-lowest, #ffffff) !important;
-    color: var(--color-primary, #2563eb) !important;
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+    background-color: #2563eb !important;
+    color: #ffffff !important;
+    box-shadow: 0 2px 8px -1px rgba(37, 99, 235, 0.35) !important;
   }
   .tab-btn:not(.active) {
     background-color: transparent !important;
-    color: var(--color-on-surface-variant, #434655) !important;
+    color: #475569 !important;
+  }
+  .tab-btn.active .count-badge {
+    background-color: rgba(255, 255, 255, 0.22) !important;
+    color: #ffffff !important;
+  }
+  .tab-btn:not(.active) .count-badge {
+    background-color: #e2e8f0 !important;
+    color: #334155 !important;
   }
   
-  /* Ghi đè lại màu sắc và khóa cố định kích thước cho Nút Bộ Lọc (Filter) tránh bị to/nhảy kích thước */
-  .filter-pill {
-    font-size: 12px !important;
-    line-height: 16px !important;
-    padding-top: 8px !important;
-    padding-bottom: 8px !important;
-    border: 0 !important;
-    box-sizing: border-box !important;
-  }
+  /* Ghi đè màu sắc cho Nút Bộ Lọc (Filter) */
   .filter-pill.active {
-    background-color: var(--color-primary, #2563eb) !important;
-    color: var(--color-on-primary, #ffffff) !important;
+    background-color: #2563eb !important;
+    color: #ffffff !important;
+    box-shadow: 0 2px 8px -1px rgba(37, 99, 235, 0.35) !important;
   }
   .filter-pill:not(.active) {
-    background-color: var(--color-surface-container-low, #f1f5f9) !important;
-    color: var(--color-on-surface-variant, #434655) !important;
+    background-color: transparent !important;
+    color: #475569 !important;
+  }
+  .filter-pill.active .count-badge {
+    background-color: rgba(255, 255, 255, 0.22) !important;
+    color: #ffffff !important;
+  }
+  .filter-pill:not(.active) .count-badge {
+    background-color: #e2e8f0 !important;
+    color: #334155 !important;
   }
 </style>
 <script src="{% static 'js/my.js' %}"></script>

@@ -296,7 +296,7 @@ def elections_list(request):
     else:
         qs = qs.order_by('-id')
 
-    page_size = _int_param(request, 'page_size', 12, 1, 50)
+    page_size = _int_param(request, 'page_size', 9, 1, 50)
     page = _int_param(request, 'page', 1, 1, 10_000)
     total = qs.count()
     rows = list(qs[(page - 1) * page_size: page * page_size])

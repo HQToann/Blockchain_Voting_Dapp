@@ -597,6 +597,7 @@
 
     if ($('draftBanner')) $('draftBanner').classList.toggle('hidden', count === 0);
     if ($('draftCountBadge')) $('draftCountBadge').textContent = count;
+    if ($('draftCountHero')) $('draftCountHero').textContent = count;
 
     if ($('btnQuickDrafts')) $('btnQuickDrafts').classList.toggle('hidden', count === 0);
     if ($('quickDraftsLabel')) $('quickDraftsLabel').textContent = `Nháp (${count})`;
@@ -1200,6 +1201,7 @@
 
   if ($('btnOpenDrafts')) $('btnOpenDrafts').addEventListener('click', showDraftsModal);
   if ($('btnQuickDrafts')) $('btnQuickDrafts').addEventListener('click', showDraftsModal);
+  if ($('btnOpenDraftsCard')) $('btnOpenDraftsCard').addEventListener('click', showDraftsModal);
 
   if ($('btnCloseDrafts')) $('btnCloseDrafts').addEventListener('click', hideDraftsModal);
   if ($('btnCloseDraftsBtn')) $('btnCloseDraftsBtn').addEventListener('click', hideDraftsModal);

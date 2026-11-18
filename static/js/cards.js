@@ -28,15 +28,17 @@ var ElectionCards = window.ElectionCards = (function () {
     ? window.App.sameAddr(a, b)
     : (!!a && !!b && a.toLowerCase() === b.toLowerCase());
 
-  // 1. Thẻ Hòm Phiếu Khám Phá (Dùng trên trang Chủ / Khám Phá)
-  function card(e, me) {
+  // 1. Thẻ Hòm Phiếu Khám Phá & Quản Lý (Dùng trên trang Chủ / Khám Phá & Hòm Phiếu Của Tôi)
+    // 1. Thẻ Hòm Phiếu Khám Phá & Quản Lý (Tối ưu theo Phương án B: Cân bằng thông tin, Tinh giản & Hiện đại)
+  function card(e, me, isVotedTab) {
     const isOwner = me && sameAddr(me, e.owner);
-    const rule = e.max_choices > 1 ? `chọn từ 1 đến ${e.max_choices}` : 'chọn 1';
+    const isProp = e.kind === 1;
+    const rule = e.max_choices > 1 ? `chọn 1-${e.max_choices}` : 'chọn 1';
     const pollId = `#${e.address.slice(2, 6).toUpperCase()}-${e.address.slice(-4).toUpperCase()}`;
 
     let statusHtml = '';
     if (e.status === 'open') {
-      let openText = 'Đang mở • Không hẹn giờ';
+      let openText = 'Đang mở';
       let titleAttr = 'Hòm phiếu mở không giới hạn thời gian (Đóng thủ công)';
       if (e.end_time) {
         const diff = Date.parse(e.end_time) - Date.now();
@@ -45,70 +47,68 @@ var ElectionCards = window.ElectionCards = (function () {
           const d = Math.floor(s / 86400);
           const h = Math.floor((s % 86400) / 3600);
           const m = Math.floor((s % 3600) / 60);
-          let remStr = '';
-          if (d > 0) remStr = `${d} ngày`;
-          else if (h > 0) remStr = `${h} giờ`;
-          else if (m > 0) remStr = `${m} phút`;
-          else remStr = `${s}s`;
-          openText = `Đang mở • Còn ${remStr}`;
+          let remStr = d > 0 ? `${d} ngày` : (h > 0 ? `${h} giờ` : (m > 0 ? `${m}p` : `${s}s`));
+          openText = `Còn ${remStr}`;
           titleAttr = `Hẹn giờ kết thúc: ${fmtDate(e.end_time)}`;
         } else {
-          openText = 'Đang mở • Sắp đóng';
+          openText = 'Sắp đóng';
           titleAttr = `Đã đến hạn kết thúc: ${fmtDate(e.end_time)}`;
         }
       }
       statusHtml = `
-        <span class="px-2.5 py-0.5 rounded-full bg-[#ECFDF5] text-[#065F46] font-semibold flex items-center gap-1.5 text-xs whitespace-nowrap shrink-0" title="${esc(titleAttr)}">
-          <span class="w-1.5 h-1.5 rounded-full bg-[#10B981] animate-pulse"></span>
-          ${esc(openText)}
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 font-semibold text-xs whitespace-nowrap shrink-0 border border-emerald-200/80" title="${esc(titleAttr)}">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span>${esc(openText)}</span>
         </span>
       `;
     } else if (e.status === 'upcoming') {
       statusHtml = `
-        <span class="px-2.5 py-0.5 rounded-full bg-[#FFFBEB] text-[#92400E] font-semibold flex items-center gap-1.5 text-xs whitespace-nowrap shrink-0">
-          <span class="w-1.5 h-1.5 rounded-full bg-[#F59E0B]"></span>
-          Sắp diễn ra
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-50 text-amber-800 font-semibold text-xs whitespace-nowrap shrink-0 border border-amber-200/80">
+          <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+          <span>Sắp diễn ra</span>
         </span>
       `;
     } else {
       statusHtml = `
-        <span class="px-2.5 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant font-semibold flex items-center gap-1.5 text-xs whitespace-nowrap shrink-0">
-          <span class="w-1.5 h-1.5 rounded-full bg-outline"></span>
-          Đã kết thúc
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 font-medium text-xs whitespace-nowrap shrink-0 border border-slate-200/80">
+          <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+          <span>Đã kết thúc</span>
         </span>
       `;
     }
 
-    const kindLabel = e.kind === 1 ? 'LẤY Ý KIẾN CỘNG ĐỒNG' : 'BẦU CỬ ỨNG VIÊN';
-
     let extraBadges = '';
     if (e.is_private) {
-      extraBadges += `<span class="px-2 py-0.5 rounded-md bg-purple-50 text-purple-700 text-[11px] font-semibold border border-purple-200">Riêng tư</span> `;
+      extraBadges += `<span class="px-2 py-0.5 rounded-md bg-purple-50 text-purple-700 text-[11px] font-semibold border border-purple-200">Riêng tư</span>`;
     }
     if (isOwner) {
       extraBadges += `<span class="px-2 py-0.5 rounded-md bg-amber-50 text-amber-700 text-[11px] font-semibold border border-amber-200">Của bạn</span>`;
     }
+    if (isVotedTab) {
+      extraBadges += `<span class="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 text-[11px] font-semibold border border-emerald-200">Đã bỏ phiếu</span>`;
+    }
 
     let actionBtn = '';
     if (e.status === 'open') {
+      const btnLabel = isOwner ? 'Vào hòm phiếu' : (isProp ? 'Biểu quyết ngay' : 'Bỏ phiếu ngay');
       actionBtn = `
-        <a class="btn-card-action w-full py-2.5 rounded-xl bg-primary text-white font-headline-sm text-sm sm:text-headline-sm font-bold flex items-center justify-center gap-2 hover:bg-blue-700 hover:shadow-md hover:shadow-blue-500/20 hover:-translate-y-0.5 active:translate-y-0 transition-all text-decoration-none shadow-sm" href="/election/${esc(e.address)}/">
+        <a class="btn-card-action w-full py-2.5 rounded-xl bg-blue-600 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 hover:bg-blue-700 hover:shadow-md hover:shadow-blue-500/20 hover:-translate-y-0.5 active:translate-y-0 transition-all text-decoration-none shadow-sm" href="/election/${esc(e.address)}/">
           <span class="material-symbols-outlined text-[18px]">how_to_vote</span>
-          Bỏ phiếu ngay
+          <span>${btnLabel}</span>
         </a>
       `;
     } else if (e.status === 'upcoming') {
       actionBtn = `
-        <a class="btn-card-action w-full py-2.5 rounded-xl bg-surface-container-high text-on-surface font-headline-sm text-sm sm:text-headline-sm font-semibold flex items-center justify-center gap-2 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200 border border-slate-200/80 hover:shadow-sm hover:-translate-y-0.5 active:translate-y-0 transition-all text-decoration-none" href="/election/${esc(e.address)}/">
-          <span class="material-symbols-outlined text-[18px] text-primary">schedule</span>
-          Xem chi tiết
+        <a class="btn-card-action w-full py-2.5 rounded-xl bg-slate-50 hover:bg-blue-50 text-slate-700 hover:text-blue-700 font-semibold text-xs sm:text-sm border border-slate-200/90 hover:border-blue-200 hover:shadow-sm hover:-translate-y-0.5 active:translate-y-0 transition-all flex items-center justify-center gap-2 text-decoration-none" href="/election/${esc(e.address)}/">
+          <span class="material-symbols-outlined text-[18px] text-blue-600">schedule</span>
+          <span>Xem chi tiết</span>
         </a>
       `;
     } else {
       actionBtn = `
-        <a class="btn-card-action w-full py-2.5 rounded-xl bg-surface-container-high text-on-surface font-headline-sm text-sm sm:text-headline-sm font-semibold flex items-center justify-center gap-2 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200 border border-slate-200/80 hover:shadow-sm hover:-translate-y-0.5 active:translate-y-0 transition-all text-decoration-none" href="/election/${esc(e.address)}/">
-          <span class="material-symbols-outlined text-[18px] text-tertiary">query_stats</span>
-          Xem kết quả
+        <a class="btn-card-action w-full py-2.5 rounded-xl bg-slate-50 hover:bg-blue-50 text-slate-700 hover:text-blue-700 font-semibold text-xs sm:text-sm border border-slate-200/90 hover:border-blue-200 hover:shadow-sm hover:-translate-y-0.5 active:translate-y-0 transition-all flex items-center justify-center gap-2 text-decoration-none" href="/election/${esc(e.address)}/">
+          <span class="material-symbols-outlined text-[18px] text-blue-600">query_stats</span>
+          <span>Xem kết quả</span>
         </a>
       `;
     }
@@ -117,44 +117,62 @@ var ElectionCards = window.ElectionCards = (function () {
     const optsCount = e.option_count || 0;
     
     return `
-      <div class="rounded-2xl bg-surface-container-lowest p-space-lg shadow-sm hover:shadow-md hover:border-blue-300 transition-all flex flex-col justify-between space-y-space-md border border-slate-200/90 h-full">
-        <div class="space-y-space-sm">
-          <div class="flex items-center justify-between text-xs gap-2 min-w-0">
-            ${statusHtml}
-            <span class="font-label-code text-[11px] text-outline shrink-0 whitespace-nowrap">${pollId}</span>
-          </div>
-
-          <div>
-            <div class="flex items-center gap-1.5 flex-wrap">
-              <span class="font-label-tag text-label-tag text-primary uppercase font-bold text-xs">${kindLabel}</span>
+      <div class="rounded-2xl bg-white p-5 shadow-sm hover:shadow-md hover:border-blue-300 transition-all flex flex-col justify-between space-y-4 border border-slate-200/90 h-full">
+        <div class="space-y-3">
+          <!-- Hàng 1: Thể loại + Trạng thái trên cùng một hàng gọn gàng -->
+          <div class="flex items-center justify-between gap-2 min-w-0">
+            <div class="flex items-center gap-1.5 flex-wrap min-w-0">
+              <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg ${isProp ? 'bg-sky-50 text-blue-700 border border-blue-200/80' : 'bg-blue-50 text-blue-700 border border-blue-200/80'} font-bold text-xs">
+                <span class="material-symbols-outlined text-[15px]">${isProp ? 'poll' : 'how_to_vote'}</span>
+                <span>${isProp ? 'Biểu quyết' : 'Bầu cử'}</span>
+              </span>
               ${extraBadges}
             </div>
-            <h4 class="font-headline-sm text-headline-sm text-on-surface font-bold mt-1 line-clamp-1">
-              <a href="/election/${esc(e.address)}/" class="text-on-surface hover:text-primary transition-colors text-decoration-none" title="${esc(e.name)}">${esc(e.name)}</a>
-            </h4>
-            <p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2 mt-1">
-              Gồm <b>${optsCount}</b> lựa chọn (${rule}). Tạo bởi ví <span class="font-label-code text-xs text-primary">${esc(short(e.owner))}</span>.
-            </p>
+            ${statusHtml}
           </div>
 
-          <div class="space-y-1 pt-1">
-            <div class="flex items-center justify-between font-label-code text-label-code text-xs">
-              <span class="text-on-surface-variant flex items-center gap-1">
-                <span class="material-symbols-outlined text-[15px] text-outline">group</span>
-                Tiến độ: <b class="text-on-surface font-semibold">${votersCount}</b> cử tri đã bỏ phiếu
-              </span>
-            </div>
-            <div class="w-full h-2 bg-surface-container rounded-full overflow-hidden">
-              <div class="h-full bg-primary rounded-full transition-all" style="width: ${votersCount > 0 ? Math.min(100, Math.max(15, votersCount * 10)) : 0}%"></div>
-            </div>
+          <!-- Hàng 2: Tiêu đề hòm phiếu làm trung tâm, thoáng đãng -->
+          <div>
+            <h4 class="font-bold text-slate-900 text-base sm:text-lg line-clamp-2 hover:text-blue-600 transition-colors leading-snug">
+              <a href="/election/${esc(e.address)}/" class="text-slate-900 hover:text-blue-600 transition-colors text-decoration-none" title="${esc(e.name)}">${esc(e.name)}</a>
+            </h4>
+          </div>
+
+          <!-- Hàng 3: Cụm chỉ số tinh giản (Pill Tags) thay cho các câu chữ dài dòng -->
+          <div class="flex flex-wrap items-center gap-2 pt-0.5">
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-50 border border-slate-200 text-slate-700 text-xs font-medium">
+              <span class="material-symbols-outlined text-[15px] text-blue-600">group</span>
+              <span><b>${votersCount}</b> cử tri</span>
+            </span>
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-50 border border-slate-200 text-slate-700 text-xs font-medium">
+              <span class="material-symbols-outlined text-[15px] text-slate-500">${isProp ? 'format_list_bulleted' : 'person'}</span>
+              <span><b>${optsCount}</b> ${isProp ? 'phương án' : 'ứng viên'} (${rule})</span>
+            </span>
+          </div>
+
+          <!-- Hàng 4: Thanh tiến trình siêu mảnh tinh tế -->
+          <div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden mt-1">
+            <div class="h-full bg-blue-600 rounded-full transition-all duration-500" style="width: ${votersCount > 0 ? Math.min(100, Math.max(12, votersCount * 8)) : 0}%"></div>
+          </div>
+
+          <!-- Hàng 5: Thông tin người tạo và mã băm kín đáo (Phương án B) -->
+          <div class="flex items-center justify-between text-[11px] text-slate-400 pt-0.5 font-mono">
+            <span class="truncate max-w-[160px]">Ví tạo: <span class="text-slate-600 font-semibold">${esc(short(e.owner))}</span></span>
+            <span class="shrink-0 text-slate-400">${pollId}</span>
           </div>
         </div>
 
-        <div class="pt-space-sm border-t border-surface-container">
+        <!-- Hàng 6: Nút hành động kêu gọi trực quan -->
+        <div class="pt-3 border-t border-slate-100">
           ${actionBtn}
         </div>
       </div>
     `;
+  }
+
+  // 2. Thẻ Hòm Phiếu Cá Nhân (Hỗ trợ gọi từ myCard)
+  function myCard(e, me, isVotedTab) {
+    return card(e, me, isVotedTab);
   }
 
   // 2. Thẻ Hòm Phiếu Cá Nhân (Dùng trên trang Hòm Phiếu Của Tôi)
@@ -427,12 +445,12 @@ var ElectionCards = window.ElectionCards = (function () {
               ${canPick ? `
                 <button class="candidate-select-btn w-full sm:w-auto px-space-lg py-space-sm rounded-xl font-headline-sm text-headline-sm font-bold flex items-center justify-center gap-space-xs transition-all shadow-sm ${sel ? 'bg-primary text-white hover:bg-blue-700 hover:shadow-md hover:-translate-y-0.5' : 'bg-surface-container-high text-on-surface hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200 border border-slate-200/80 hover:shadow-sm hover:-translate-y-0.5 cursor-pointer'}" type="button">
                   <span class="material-symbols-outlined text-[20px]">${sel ? 'radio_button_checked' : 'radio_button_unchecked'}</span>
-                  ${sel ? 'Đã chọn ứng viên này' : 'Chọn ứng viên'}
+                  ${sel ? (kind === 1 ? 'Đã chọn phương án này' : 'Đã chọn ứng viên này') : (kind === 1 ? 'Chọn phương án này' : 'Chọn ứng viên')}
                 </button>
               ` : (myVoted ? `
                 <div class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 text-white font-headline-sm text-xs sm:text-sm font-bold shadow-md shadow-emerald-600/20 ring-2 ring-emerald-300">
                   <span class="material-symbols-outlined text-white text-[18px]">how_to_reg</span>
-                  <span>Bạn đã bỏ phiếu cho lựa chọn này</span>
+                  <span>${kind === 1 ? 'Bạn đã biểu quyết cho phương án này' : 'Bạn đã bỏ phiếu cho ứng viên này'}</span>
                 </div>
               ` : `
                 <span class="font-body-sm text-xs text-outline flex items-center gap-1.5 py-1.5 px-3 rounded-lg bg-surface-container-low border border-surface-container-high/40">

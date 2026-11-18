@@ -329,9 +329,14 @@
       return opt ? opt.label : '';
     }).filter(Boolean);
 
+    const isProp = E.kind === 1;
+    if ($('selected-candidate-title')) {
+      $('selected-candidate-title').textContent = isProp ? 'Phương án đã chọn:' : 'Ứng viên đã chọn:';
+    }
+
     if ($('selected-candidate-label')) {
       if (!selectedNames.length) {
-        $('selected-candidate-label').textContent = 'Chưa chọn ứng viên';
+        $('selected-candidate-label').textContent = isProp ? 'Chưa chọn phương án' : 'Chưa chọn ứng viên';
         $('selected-candidate-label').className = 'font-headline-sm text-headline-sm text-outline font-medium truncate max-w-[180px]';
       } else {
         $('selected-candidate-label').textContent = selectedNames.join(', ');
@@ -355,11 +360,11 @@
       } else if (E.is_private && !elig.whitelisted) {
         btnVoteText.textContent = 'Không có quyền Whitelist';
       } else if (!selected.size) {
-        btnVoteText.textContent = 'Vui lòng chọn ứng viên';
+        btnVoteText.textContent = isProp ? 'Vui lòng chọn phương án' : 'Vui lòng chọn ứng viên';
       } else if (selected.size === 1) {
-        btnVoteText.textContent = `Bỏ phiếu cho ${selectedNames[0]}`;
+        btnVoteText.textContent = isProp ? `Biểu quyết: ${selectedNames[0]}` : `Bỏ phiếu cho ${selectedNames[0]}`;
       } else {
-        btnVoteText.textContent = `Bỏ phiếu cho ${selected.size} lựa chọn`;
+        btnVoteText.textContent = isProp ? `Biểu quyết cho ${selected.size} phương án` : `Bỏ phiếu cho ${selected.size} lựa chọn`;
       }
     }
   }
