@@ -251,7 +251,7 @@ def process_log(w3, log, factory_address=None):
     return _ELECTION_HANDLERS[name](election, evt, log)
 
 # Quét lịch sử (catch-up / rescan)
-# Sắp xếp các log theo đúng thứ tự thời gian (theo khối và theo vị trí log trong khối)
+# Sắp xếp các Log theo đúng thứ tự thời gian (theo khối và theo vị trí log trong khối)
 def _sorted(logs):
     return sorted(logs, key=lambda l: (int(l['blockNumber']), int(l['logIndex'])))
 
